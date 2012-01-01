@@ -1,5 +1,5 @@
-obj/src/main.o: src/main.c FreeRTOS/Source/include/FreeRTOS.h \
- FreeRTOS/Source/include/projdefs.h \
+obj/src/module.o: src/module.c src/module.h \
+ FreeRTOS/Source/include/FreeRTOS.h FreeRTOS/Source/include/projdefs.h \
  FreeRTOS/Source/include/FreeRTOSConfig.h \
  libs/Device/STM32F4xx/Include/stm32f4xx.h libs/CMSIS/Include/core_cm4.h \
  libs/CMSIS/Include/core_cmInstr.h libs/CMSIS/Include/core_cmFunc.h \
@@ -33,10 +33,11 @@ obj/src/main.o: src/main.c FreeRTOS/Source/include/FreeRTOS.h \
  libs/STM32F4xx_StdPeriph_Driver/inc/misc.h src/ustime.h \
  FreeRTOS/Source/include/portable.h \
  FreeRTOS/Source/include/../../Source/portable/GCC/ARM_CM4F/portmacro.h \
- FreeRTOS/Source/include/mpu_wrappers.h FreeRTOS/Source/include/task.h \
- FreeRTOS/Source/include/list.h FreeRTOS/Source/include/semphr.h \
- FreeRTOS/Source/include/queue.h src/clock.h src/module.h \
- src/command_parser.h src/usart_rtos.h src/hbconfig.h
+ FreeRTOS/Source/include/mpu_wrappers.h FreeRTOS/Source/include/semphr.h \
+ FreeRTOS/Source/include/queue.h FreeRTOS/Source/include/task.h \
+ FreeRTOS/Source/include/list.h
+
+src/module.h:
 
 FreeRTOS/Source/include/FreeRTOS.h:
 
@@ -118,20 +119,10 @@ FreeRTOS/Source/include/../../Source/portable/GCC/ARM_CM4F/portmacro.h:
 
 FreeRTOS/Source/include/mpu_wrappers.h:
 
-FreeRTOS/Source/include/task.h:
-
-FreeRTOS/Source/include/list.h:
-
 FreeRTOS/Source/include/semphr.h:
 
 FreeRTOS/Source/include/queue.h:
 
-src/clock.h:
+FreeRTOS/Source/include/task.h:
 
-src/module.h:
-
-src/command_parser.h:
-
-src/usart_rtos.h:
-
-src/hbconfig.h:
+FreeRTOS/Source/include/list.h:

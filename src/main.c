@@ -1,49 +1,52 @@
-/**
- * Copyright (C) 2013 Chetan Patil, http://chetanpatil.info
- * 
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- * 
- * @author Chetan Patil | http://chetanpatil.info
- */
-
-//Example code to loop back the data sent to USART2 on STM32F4DISCOVERY
-
-//Inlcude header files
 #include "FreeRTOS.h"
 #include "task.h"
 #include "semphr.h"
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "hbperiph.h"
+#include <stdarg.h>
+#include <unistd.h>
 #include "clock.h"
+#include "module.h"
+#include "command_parser.h"
+#include "hbconfig.h"
 
 //Task For Sending Data Via USART
 
+//MAKE THIS A SEPERATE CONFIG FILE LATER//
 
-#define MAX_STRLEN 300 // this is the maximum string length of our string in characters
-volatile char received_string[MAX_STRLEN+1]; // this will hold the recieved string
 
-uint8_t write_pos = 0;
-uint8_t read_pos = 0;
+//-------------------------------//
+//FIND A WAY TO GET MUTEX FROM OTHER PRIOTIY.  IF THERE IS NO WAY SET UP A TMP BUFFER WHERE IT CAN STORE VALUES TO WAIT TO COPY// 
+//FUNCTIONS TO COPY STRINGS TO SEPERATE BUFFER FOR COMMAND_HANDLER
+// USART_IRQ():
+//  create task copy_buffer() with high priority and pass pointer to buffer 
+//  copy_buffer() will then have a callback function which will be command_handler which will pass newly copied pointer
+//USE sent_mutex to check if usart has sent message
 
-volatile uint8_t input_lock = 0;
+void vUSART_command_handler (char *pos) {
+    char term = '\003';
+    replace_char(pos, ' ', term);
+    command_routing(pos, term);
+    vTaskDelete(NULL);
+}
+
+
+
+USART_rtos USART1_rtos;
+USART_rtos USART2_rtos;
+
+//xSemaphoreHandle USART2_mutex;
+//xSemaphoreHandle USART1_mutex;
+
+//xSemaphoreHandle USART1_mutex_input;
+//xSemaphoreHandle USART2_mutex_input;
+
+
+
+//volatile uint8_t USART1_input_lock = 0;
+
+//volatile uint8_t USART2_input_lock = 0;
 
 
 void setSysTick(void){
@@ -52,97 +55,10 @@ void setSysTick(void){
     }
 }
 
-void USART_put(USART_TypeDef* USARTx, volatile char c) {
-    // wait until data register is empty
-    while(!(USARTx->SR & 0x00000040) );
-    USART_SendData(USARTx, c);
-}
-
-void USART_puts(USART_TypeDef* USARTx, volatile char *s){
-	while(*s){
-        USART_put(USARTx, *s);
-		*s++;
-	}
-}
-
-void USART_put_int(USART_TypeDef* USARTx, int number) {
-    uint8_t neg = 0;
-
-    if (number < 0) {
-        number*=-1;
-        neg = 1;
-    }
-    char value[10];
-    int i=0;
-    do {
-        value[i++] = (char)(number % 10) + '0';
-        number /= 10;
-    } while (number);
-
-    if (neg) USART_put(USARTx, '-');    
-    while(i) {
-        USART_put(USARTx, value[--i]);
-    }
-}
-
-void USART_getline(void) {
-    if (!input_lock) {
-        input_lock=1;
-        while(input_lock){
-            delay_ms(250);
-            GPIO_WriteBit(GPIOD, GPIO_Pin_12, Bit_SET);
-            delay_ms(250);
-            GPIO_WriteBit(GPIOD, GPIO_Pin_12, Bit_RESET);
-        }
-    }
-}
-
-char USART_getkey(void) {
-    static char prev_key;
-    prev_key = received_string[write_pos-1];
-    while (prev_key == received_string[write_pos-1]);
-    return received_string[write_pos-1]; 
-}
-
-int USART_nextline_length(void) {
-    int i;
-    for(i=read_pos; received_string[i]!='\r'; i++);
-
-    return (i-read_pos)+1;
-}
-/*
-int char_array_compare(char *str, char end, char *str2 char end2) {
-    while (*str != end || *str2 != end2) {
-        if (str != str2) return 0;
-    }
-
-    return 1;
-}
-*/
-void handle_uart_command(char *command) {
-
-    USART_puts(USART2, "Command: ");
-
-    char *pos = command;
-/*
-    while(*command != '\r') {
-        if (*command == ' ') {
-            while (pos != command) {
-                if (pos == )
-                //something like this in python command[pos1:pos2] == "command1"
-                pos++;
-            }
-        }
-        USART_put(USART2, *command);
-        command++;
-    }
-    */
-
-    USART_puts(USART2, "\r\n");
-    vTaskDelete(NULL);
-}
 
 void idle_blinky (void *pvParameters) {
+
+    GPIO_SetBits(GPIOD, GPIO_Pin_4);
     while(1) {
         GPIO_SetBits(GPIOD, GPIO_Pin_12);
         delay_ms(500);
@@ -165,56 +81,67 @@ void idle_blinky (void *pvParameters) {
 }
 
 
-void USART_readline(char *buffer, uint8_t length) {
-    int i;
- //   static uint8_t first=1;
+void USART1_IRQHandler(void){
+	// check if the USART2 receive interrupt flag was set
+	if( USART_GetITStatus(USART1, USART_IT_RXNE)){
+        static unsigned int count=0;
 
-    buffer[length-1] = '\0';
+		
+		//static uint8_t cnt = 0; // this counter is used to determine the string length
+		char t = USART1->DR; // the character from the USART2 data register is saved in t
 
-    //for(i=0; received_string[read_pos]!='\r' && buffer[i]!='\0'; i++) {
-    for(i=0; i<length-1;i++){
-        if (read_pos == MAX_STRLEN-1) read_pos=0;
-        buffer[i] = received_string[read_pos];
-        read_pos++;
-    }
-   // if (!first) read_pos++; //This skips the previous Carriage return added to the end of data added to buffer
-    //else first = 0;
-    read_pos++;
 
-}
+        if (t == 8 || t== 127) {
+            USART1_rtos.write_pos--;
+            USART1_rtos.buffer[USART1_rtos.write_pos] = '\r';
+            USART_put(USART1, '\b');
+            USART_put(USART1, ' ');
+            USART_put(USART1, '\b');
+            return;
 
-void USART_readline_int(int *num) {
-    *(num) = 0;
-    int i=0;
-    uint8_t neg = 0;
-
-    int len = USART_nextline_length();
-    char buffer[len];
-    USART_readline(buffer, len);
-
-    if (buffer[i] == '-') {
-        i++;
-        neg = 1;
-
-    }
-
-    for(i; buffer[i]!='\0'; i++) {
-        if (buffer[i] >= '0' && buffer[i]<='9'){
-            *(num) *= 10; 
-            *(num) += buffer[i]-'0';
         }
 
-        else {
-            break;
-        }    
-    }
+		// check if the received character is not the LF character (used to determine end of string) 
+		// or the if the maximum string length has been been reached 
+		else if/*(*/ (t != '\r')/* && (cnt< MAX_STRLEN-1) )*/{ 
+            count++;
+        if (USART1_rtos.write_pos == USART_BUFFER_LEN-1) USART1_rtos.write_pos=0;
 
-    if (neg) {
-        *(num) *= -1;
-    }
+			USART1_rtos.buffer[USART1_rtos.write_pos] = t;
+            USART_put(USART1, t);
+            USART1_rtos.write_pos++;
 
+		}
+
+		else{ // otherwise reset the character counter and print newline 
+            if (count != 0) {
+                
+                USART1_rtos.buffer[USART1_rtos.write_pos] = '\r';
+
+                USART_puts(USART1, "\r\n");
+
+                //char *pos = &USART1_received_string[USART1_write_pos-count];
+                //char command[len];
+//                USART_readline(USART1, &command, len);
+                char *pos = &USART1_rtos.buffer[USART1_rtos.write_pos-count];
+
+
+                xTaskCreate(vUSART_command_handler, (signed char*)"vUSART_command_handler", 468, pos, tskIDLE_PRIORITY+9, NULL);
+//                xTaskCreate(idle_blinky, (signed char*)"idle_blinky", 128, NULL, tskIDLE_PRIORITY, NULL);
+
+
+                xSemaphoreGive(USART1_rtos.transmit_event_mutex);
+
+                count = 0;
+                USART1_rtos.write_pos++;
+
+            }
+            else USART_puts(USART1, "\r\n");
+		}
+	}
 }
 
+/*
 void USART2_IRQHandler(void){
 	// check if the USART2 receive interrupt flag was set
 	if( USART_GetITStatus(USART2, USART_IT_RXNE)){
@@ -224,11 +151,11 @@ void USART2_IRQHandler(void){
 		//static uint8_t cnt = 0; // this counter is used to determine the string length
 		char t = USART2->DR; // the character from the USART2 data register is saved in t
 
-        if (write_pos == MAX_STRLEN-1) write_pos=0;
+        if (USART2_write_pos == MAX_STRLEN-1) USART2_write_pos=0;
 
         if (t == 8 || t== 127) {
-            write_pos--;
-            received_string[write_pos] = '\r';
+            USART2_write_pos--;
+            USART2_received_string[USART2_write_pos] = '\r';
             USART_put(USART2, '\b');
             USART_put(USART2, ' ');
             USART_put(USART2, '\b');
@@ -238,9 +165,9 @@ void USART2_IRQHandler(void){
 
 		// check if the received character is not the LF character (used to determine end of string) 
 		// or the if the maximum string length has been been reached 
-		else if/*(*/ (t != '\r')/* && (cnt< MAX_STRLEN-1) )*/{ 
+		else if(t != '\r') && (cnt< MAX_STRLEN-1) ){ 
             count++;
-			received_string[/*cnt*/write_pos] = t;
+			USART2_received_string[USART2_write_pos] = t;
             USART_put(USART2, t);
 
 		}
@@ -248,27 +175,83 @@ void USART2_IRQHandler(void){
 		else{ // otherwise reset the character counter and print newline 
             if (count != 0) {
                 
-                received_string[/*cnt*/write_pos] = '\r';
+                USART2_received_string[USART2_write_pos] = '\r';
                 USART_puts(USART2, "\r\n");
 
-                char *command = &received_string[write_pos-count];
+                char *command = &USART2_received_string[USART2_write_pos-count];
+                //change this to copy because it is volatile
 
-                xTaskCreate(handle_uart_command, (signed char*)"handle_uart_command", 128, command, tskIDLE_PRIORITY+1, NULL);
+                xTaskCreate(handle_usart_command, (signed char*)"handle_uart_command", 128, command, tskIDLE_PRIORITY+1, NULL);
 //                xTaskCreate(idle_blinky, (signed char*)"idle_blinky", 128, NULL, tskIDLE_PRIORITY, NULL);
 
 
-                input_lock = 0;
+                USART_puts(USART2, "HAVENT IMPLENETED WAITING FOR TRANSMIT\r\n");
                 count = 0;
             }
             else USART_puts(USART2, "\r\n");
 		}
-        write_pos++;
+        USART2_write_pos++;
 	}
 }
 
-
+*/
 
 //Initialize GPIO and USART2
+//
+
+void USART1_Init(void) {
+
+    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
+
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);	
+
+	//Structure With Data For GPIO Configuration
+	GPIO_InitTypeDef GPIO_InitStructure;
+
+	//Structure With Data For USART Configuration
+	USART_InitTypeDef USART_InitStructure;
+
+    NVIC_InitTypeDef NVIC_InitStructure;
+
+	//GPIO Configuration
+  	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7 | GPIO_Pin_6;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+
+	//Connect USART pins to AF
+	GPIO_PinAFConfig(GPIOB, GPIO_PinSource6, GPIO_AF_USART1);
+	GPIO_PinAFConfig(GPIOB, GPIO_PinSource7, GPIO_AF_USART1);
+
+
+	//USART Parameters
+	USART_InitStructure.USART_BaudRate = 38400;
+	USART_InitStructure.USART_WordLength = USART_WordLength_8b;
+	USART_InitStructure.USART_StopBits = USART_StopBits_1;
+	USART_InitStructure.USART_Parity = USART_Parity_No ;
+	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;  
+    USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx ;
+
+	//Configuring And Enabling USART2
+	USART_Init(USART1, &USART_InitStructure);
+
+
+    USART_ITConfig(USART1, USART_IT_RXNE, ENABLE); //allow usart interrupt
+
+    NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+
+    NVIC_Init(&NVIC_InitStructure);
+
+	USART_Cmd(USART1, ENABLE);
+
+
+}
 void initx(void){
 	//Enable GPIO Clocks For USART2
         RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
@@ -333,7 +316,9 @@ void initx(void){
 
 void TIM_PWM_init() {
     //TIMER SETUP
-    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE); //USART2
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1, ENABLE); //USART1
+
 
     TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStruct;
 
@@ -343,6 +328,7 @@ void TIM_PWM_init() {
     TIM_TimeBaseInitStruct.TIM_CounterMode = TIM_CounterMode_Up;
 
     TIM_TimeBaseInit(TIM4, &TIM_TimeBaseInitStruct);
+    TIM_TimeBaseInit(TIM1, &TIM_TimeBaseInitStruct);
 
 
     //pwm setup
@@ -370,67 +356,8 @@ void TIM_PWM_init() {
 
 
 
-enum Module_State {MODULE_RUNNING, MODULE_STANDBY, MODULE_EXECUTED, MODULE_ERROR};
-enum System_State {SYSTEM_WRITING, SYSTEM_WRITTEN, SYSTEM_READ};
+enum System_State {SYSTEM_WRITING, SYSTEM_WRITTEN, SYSTEM_READ, SYSTEM_ERROR};
 
-
-
-
-
-typedef struct{
-    volatile uint16_t *CCR;
-    uint16_t offset;
-    uint8_t ratio;
-    uint8_t last_pos;
-    uint8_t current_pos;
-    enum Module_State state;
-} Servo_Module;
-
-typedef struct {
-    int value;
-    xSemaphoreHandle mutex;
-    enum Module_State state;
-} PHMeter_Module;
-
-typedef struct {
-    int distance;
-    int lighton;
-    enum Module_State state;
-    Servo_Module *servo;
-}Light_Module;
-
-typedef struct {
-    int value;
-    xSemaphoreHandle mutex;
-    enum Module_State state;
-} Temperature_Module;
-
-typedef struct {
-    float tank;
-    GPIO_TypeDef port_out;
-    uint16_t pin_out;
-    enum Module_State state;
-    xSemaphoreHandle mutex;
-    int tank_height;
-} PPump_Module;
-
-typedef struct {
-    GPIO_TypeDef port_in;
-    GPIO_TypeDef port_out;
-    uint16_t pin_in;
-    uint16_t pin_out;
-    uint16_t timeout;
-    xSemaphoreHandle mutex;
-    enum Module_State state;
-    int value;
-} UDS_Module; //(U)ltrasonic (D)istance (S)ensor
-
-typedef struct {
-    GPIO_TypeDef port_out;
-    uint16_t pin_out;
-    uint16_t speed;
-
-} Fan_Module;
 
 typedef struct {
     PPump_Module *ppump;
@@ -438,11 +365,6 @@ typedef struct {
 
 } vPPump_parameters;
 
-
-typedef struct {
-    portTickType delay ;
-    int target_ph;
-} vPH_parameters;
 
 
 typedef struct {
@@ -453,19 +375,23 @@ typedef struct {
 
 typedef struct {
     enum System_State state;
-    PPump_Module *PPump_PHUP;
-    PPump_Module *PPump_PHDOWN;
-    PPump_Module *PPump_NUTRIENT;
-    uint16_t nutrient_schedule[52];
-    uint16_t ph_schedule[52];
+    PPump_Module PPump_PHUp;
+    UDS_Module UDS_PHUp;
+    PPump_Module PPump_PHDown;
+    UDS_Module UDS_PHDown;
+    PPump_Module PPump_Nutrient;
+    UDS_Module UDS_Nutrient;
+    PHMeter_Module PHMeter_Resvoir;
+    int target_ph;
+    int ph_delay;
 } HydroponicSystem;
 
 
 typedef struct {
     Light_Module Lighting; //change to Lighting_Module
     enum System_State state;
-    uint16_t lighting_schedule[52]; // array with weekly lighting schedule 
-    uint16_t distance_schedule[52]; 
+    int distance;
+    int hours_on;
 } LightingSystem;
 
 
@@ -478,6 +404,7 @@ typedef struct {
     Temperature_Module Temperature_Resevoir; // straightforward, above comments apply here
     Temperature_Module Temperature_Plant;
 } ACSystem;
+
 /*
 void System_update_member(NULL *system_member, NULL* member_value ) {
     if (system_member && member_value) {
@@ -487,38 +414,175 @@ void System_update_member(NULL *system_member, NULL* member_value ) {
     //error
 }
 */
-PPump_Module PPump_PHUP;
-UDS_Module UDS_PHUP;
-
-PPump_Module PPump_PHDOWN;
-UDS_Module UDS_PHDOWN;
-
-PPump_Module PPump_NUTRIENT;
-UDS_Module UDS_NUTRIENT;
-
-PHMeter_Module PHMeter_Resvoir;
+HydroponicSystem hydroponics;
+LightingSystem lighting;
+ACSystem AC;
 
 
+void vACSystem_Init(void) {
+    USART_rtos_packet packet, packet1;
+    packet.USARTx_rtos = &USART1_rtos;
+    USART_rtos_puts(&packet, "Init AC System...");
 
-void PHMeter_Init(PHMeter_Module *module) {
-    if (module) {
-        module->state = MODULE_STANDBY;
-    }
+
+    AC.state = SYSTEM_WRITING;
+
+    AC.state = SYSTEM_WRITTEN;
+//    USART_puts(USART2, "AC successfully initialized...\r\n");
+
+    packet1.USARTx_rtos = &USART1_rtos;
+    USART_rtos_puts(&packet1, " OK\r\n");
+
+
+    USART_rtos_wait_send(&packet);
+    USART_rtos_wait_send(&packet1);
+
+    vTaskDelete(NULL);
 }
 
-void PPump_Init(PPump_Module *module, UDS_Module *sensor) {
-    if (module) {
-        //use sensor to calculate distance Make this a task.  One parent task for getting tank size and one for ultrasonic distance finding
-        sensor->value = 8;
-        sensor->state = MODULE_EXECUTED;
-        module->tank = 100*(sensor->value/module->tank_height);
-        module->state = MODULE_STANDBY;
+void vLightingSystem_Init(void) {
+    //USART_rtos_puts(USART2, "Init Lighting System...");
+
+    lighting.state = SYSTEM_WRITING;
+
+    lighting.state = SYSTEM_WRITTEN;
+    //USART_puts(USART2, "Lighting successfully initialized...\r\n");
+    
+    //USART_rtos_puts(USART2, " OK\r\n");
+
+    vTaskDelete(NULL);
+}
+
+
+void HydroponicUDS_Init(void) {
+
+    hydroponics.UDS_PHUp.state = MODULE_RUNNING;
+    hydroponics.UDS_PHDown.state = MODULE_RUNNING;
+    hydroponics.UDS_Nutrient.state = MODULE_RUNNING;
+
+
+	//RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);
+
+    GPIO_InitTypeDef gpio_ultrasonic;
+
+    gpio_ultrasonic.GPIO_Pin = GPIO_Pin_3; //echo
+    gpio_ultrasonic.GPIO_OType = GPIO_OType_PP; //PP
+    gpio_ultrasonic.GPIO_Mode = GPIO_Mode_IN;
+    gpio_ultrasonic.GPIO_Speed = GPIO_Speed_100MHz;
+
+    GPIO_Init(GPIOD, &gpio_ultrasonic);
+
+    gpio_ultrasonic.GPIO_Pin = GPIO_Pin_4; //trigger
+	gpio_ultrasonic.GPIO_PuPd = GPIO_PuPd_NOPULL;
+    gpio_ultrasonic.GPIO_Mode = GPIO_Mode_OUT;
+    GPIO_Init(GPIOD, &gpio_ultrasonic);
+
+    hydroponics.UDS_PHUp.pin_in = UDS_PHUP_PIN_IN;
+    hydroponics.UDS_PHUp.port_in = UDS_PHUP_PORT_IN;
+    hydroponics.UDS_PHUp.pin_out = UDS_PHUP_PIN_OUT;
+    hydroponics.UDS_PHUp.port_out = UDS_PHUP_PORT_OUT;
+
+
+    UDS_Module_Init(&hydroponics.UDS_PHUp);
+    UDS_Module_Init(&hydroponics.UDS_PHDown);
+    UDS_Module_Init(&hydroponics.UDS_Nutrient);
+
+
+
+}
+void HydroponicPPumps_Init(void) {
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
+    GPIO_InitTypeDef gpio_ppump;
+
+    gpio_ppump.GPIO_Pin = GPIO_Pin_6; //echo
+	gpio_ppump.GPIO_PuPd = GPIO_PuPd_NOPULL;
+    gpio_ppump.GPIO_Mode = GPIO_Mode_OUT;
+    gpio_ppump.GPIO_OType = GPIO_OType_PP; //PP
+    gpio_ppump.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOC, &gpio_ppump);
+
+/*
+    gpio_ppump.GPIO_Pin = GPIO_Pin_6;
+    GPIO_Init(GPIOC, &gpio_ppump);
+
+    gpio_ppump.GPIO_Pin = GPIO_Pin_6;
+    GPIO_Init(GPIOC, &gpio_ppump);
+*/
+
+    hydroponics.PPump_PHDown.port_out = GPIOC;
+    hydroponics.PPump_PHDown.pin_out = GPIO_Pin_6;
+
+    hydroponics.PPump_PHUp.state = MODULE_RUNNING;
+    hydroponics.PPump_PHDown.state = MODULE_RUNNING;
+    hydroponics.PPump_Nutrient.state = MODULE_RUNNING;
+
+    PPump_Module_Init(&hydroponics.PPump_PHUp, &hydroponics.UDS_PHUp);
+    PPump_Module_Init(&hydroponics.PPump_PHDown, &hydroponics.UDS_PHDown);
+    PPump_Module_Init(&hydroponics.PPump_Nutrient, &hydroponics.UDS_Nutrient);
+
+/*
+    GPIO_Init(GPIOD, &gpio_ppump);
+
+    GPIO_ResetBits(GPIOD, GPIO_Pin_3);
+    delay_ms(1000);
+    GPIO_SetBits(GPIOD, GPIO_Pin_3);
+*/
+
+}
+
+void vHydroponicSystem_Init(void) {
+
+    USART_rtos_packet packet;
+    packet.USARTx_rtos = &USART1_rtos;
+    USART_rtos_puts(&packet, " Init Hydroponic System...");
+
+    hydroponics.state = SYSTEM_WRITING;
+
+    HydroponicPPumps_Init();
+    HydroponicUDS_Init();
+
+
+
+    hydroponics.PHMeter_Resvoir.state = MODULE_RUNNING;
+    PHMeter_Module_Init(&hydroponics.PHMeter_Resvoir);
+
+
+
+    if (hydroponics.PPump_PHUp.state == MODULE_STANDBY &&
+        hydroponics.PPump_PHDown.state == MODULE_STANDBY &&
+        hydroponics.PPump_Nutrient.state == MODULE_STANDBY &&  
+        hydroponics.UDS_PHUp.state == MODULE_STANDBY &&
+        hydroponics.UDS_PHDown.state == MODULE_STANDBY &&
+        hydroponics.UDS_Nutrient.state == MODULE_STANDBY &&
+        hydroponics.PHMeter_Resvoir.state == MODULE_STANDBY) {
+
+        hydroponics.state = SYSTEM_WRITTEN;
+        //USART_puts(USART2, "Hydroponics successfully initialized...\r\n");
     }
+
+    else {
+        //USART2_rtos_puts("Hydroponics could not initialize...\r\n");
+
+        hydroponics.state = SYSTEM_ERROR;
+        //xTaskCreate(vHydroponicSystem_Init, (signed char*)"vHydroponicSystem_Init", 64, NULL, tskIDLE_PRIORITY+10, NULL);
+
+    }
+    //vTaskDelay() Delay for a little than do the task again
+    //
+    //USART_rtos_puts(USART2, " OK\r\n");
+
+    USART_rtos_packet packet1;
+    packet1.USARTx_rtos = &USART1_rtos;
+    USART_rtos_puts(&packet1, " Ok\r\n");
+
+    USART_rtos_wait_send(&packet);
+    USART_rtos_wait_send(&packet1);
+
+    vTaskDelete(NULL);
 
 }
 
 void vLight_task(vLight_parameters *params) {
-    USART_puts(USART2, "Executed Light_task\r\n");
     /*
     Light_set(params->status);
     int height = Plant_get_height();
@@ -527,168 +591,287 @@ void vLight_task(vLight_parameters *params) {
     //maybe look for something like recurring task
     //you need to find a way to change variable while its waiting;
     */
+
+    static int counter = 5;
+    int i;
+    while (1) {
+        for(i=0; i<counter; i++) {
+            vTaskDelay((portTickType)(1000*3600) / portTICK_RATE_MS);
+        }
+    }
+
     vTaskDelete(NULL);
 } 
 
 int TEST_PH_VALUE = 50;
 
+void vUDS_read_distance(UDS_Module *module) {
+
+   USART_rtos_packet packet1;
+   packet1.USARTx_rtos = &USART1_rtos;
+
+   USART_rtos_puts(&packet1, "Reading Ultrasonic Distance Sensor...\r\n");
+
+   taskENTER_CRITICAL();
+   int v = UDS_read_distance(module); 
+   taskEXIT_CRITICAL();
+
+
+
+   USART_puts(USART1, "\r\nDistance: ");
+   USART_put_int(USART1, v);
+   USART_puts(USART1, "\r\n");
+   //USART_rtos_sputs(&packet, "Distance: %d", v);
+
+   //USART_rtos_wait_send(&packet);
+   //USART_rtos_wait_send(&packet1);
+   
+   USART_puts(USART1, "FUCK"); //ERROR OCCURS WHEN I UNCOMMENT THE CODE CODE ABOVE
+
+   vTaskDelete(NULL);
+}
+
+
 
 void vPH_read_value(PHMeter_Module *meter) {
-    meter->state = MODULE_RUNNING;
-    if (xSemaphoreTake(meter->mutex, (portTickType) 100) == pdTRUE) {
-        USART_puts(USART2, "Read pH Meter...\r\n");
+    if (meter) {
+        meter->state = MODULE_RUNNING;
+     //   USART_rtos_puts(USART2, "Reading PHMeter Reservoir...\r\n");
+        //USART2_rtos_puts("Read pH Meter...\r\n");
         meter->value = TEST_PH_VALUE;
         meter->state = MODULE_EXECUTED;
         xSemaphoreGive(meter->mutex);
 
-    }
-
-    else {
-        USART_puts(USART2, "COULDNT TAKE SEMAPHORE");
-
-    }
+        }
 
     vTaskDelete(NULL);
-
 }
 
 void vPPump_dispense(vPPump_parameters *params) {
     params->ppump->state = MODULE_RUNNING; 
-    if (xSemaphoreTake(PHMeter_Resvoir.mutex, (portTickType) 100) == pdTRUE) {
-        const int ppump_speed = 1;
-        //GPIO_WriteBit(params->port, params->pin, Bit_SET);
-        USART_puts(USART2, "Starting to dispense...\r\n");
-        if (params->ppump == &PPump_PHUP) TEST_PH_VALUE+=5;
-        else if(params->ppump == &PPump_PHDOWN) TEST_PH_VALUE-=5; 
+    //GPIO_WriteBit(params->port, params->pin, Bit_SET);
+    //USART2_rtos_puts("Starting to dispense...\r\n");
+    
+    taskENTER_CRITICAL();
+    PPump_Module_dispense(params->ppump, params->amount);
 
-        portTickType xDelay = (1000 * ppump_speed) / portTICK_RATE_MS;
-        vTaskDelay(xDelay);
-        USART_puts(USART2, "Finished dispensing\r\n");
-        xSemaphoreGive(PHMeter_Resvoir.mutex);
-        params->ppump->state = MODULE_EXECUTED; 
+    taskEXIT_CRITICAL();
+    //    TEST_PH_VALUE+=5;
 
-    }
+    params->ppump->state = MODULE_EXECUTED; 
 
-    else {
-        USART_puts(USART2, "PPUMP_DISPENSE COULDNT GET MUTEX\r\n");
-    }
     vTaskDelete(NULL);
 }
 
+void vPH_task(void) {
+    static int16_t counter = 24 - 1; //24 hours
 
-void vPH_task(vPH_parameters *params) {
-    USART_puts(USART2, "-----------------\r\n(1)target ph: ");
-    USART_put_int(USART2, params->target_ph);
-    USART_puts(USART2, "\r\n");
+    USART_rtos_packet packet, packet1, packet2, packet3;
 
-    USART_puts(USART2, "Executing PH_task...\r\n");
+    packet.USARTx_rtos = packet1.USARTx_rtos = packet2.USARTx_rtos = packet3.USARTx_rtos = &USART1_rtos;
+    USART_rtos_puts(&packet, "PH Task Launched...\r\n");
 
-    PHMeter_Resvoir.mutex = xSemaphoreCreateMutex();
-    xSemaphoreGive(PHMeter_Resvoir.mutex);
+    unsigned portBASE_TYPE parent_priority = uxTaskPriorityGet(NULL);
 
+    while (1) {
 
-    if (PHMeter_Resvoir.mutex == NULL) USART_puts(USART2, "PH_METER->mutex == NULL\r\n");
-
-    //PH_CHANGING = 1; use this so the web console knows when changes are happening
-   //add if sepamphore is not null error check
-    int read_ph=1; 
-    int TARGET_PH_REACHED = 0;
-    /*
-     *
-     *
-     *
-     * MAKE SUB TASKS CREATED INCREMENT ITS PRIORITY BY ONE RELATIVE TO PARENT TASK
-     */
-//    params->target_ph = 100;
-    USART_puts(USART2, "-----------------\r\ntarget ph: ");
-    USART_put_int(USART2, params->target_ph);
-    USART_puts(USART2, "\r\n");
-
-    while (!TARGET_PH_REACHED) {
-
-        if (read_ph){ 
-            read_ph=0;
-            xTaskCreate(vPH_read_value, (signed char*)"PH Read", 128, &PHMeter_Resvoir, tskIDLE_PRIORITY+4, NULL);
+        if (hydroponics.PHMeter_Resvoir.mutex == NULL) {
+            hydroponics.PHMeter_Resvoir.mutex = xSemaphoreCreateMutex();
+            continue;
         }
 
-        vTaskDelay((portTickType) 500 / portTICK_RATE_MS);
+       //add if sepamphore is not null error check
+        int TARGET_PH_REACHED = 0;
+         //MAKE SUB TASKS CREATED INCREMENT ITS PRIORITY BY ONE RELATIVE TO PARENT TASK
+        
+        if (xSemaphoreTake(hydroponics.PHMeter_Resvoir.mutex, portMAX_DELAY) == pdTRUE) {
+            USART_rtos_puts(&packet1, "Acquired mutex for PHMeter...\r\n");
 
-        if (PHMeter_Resvoir.state == MODULE_EXECUTED) { 
-            if (xSemaphoreTake(PHMeter_Resvoir.mutex, (portTickType) 10) == pdTRUE) {
-                int value = PHMeter_Resvoir.value; 
-
-                USART_puts(USART2, "METER READ SUCCESSFULLY. PH=");
-                USART_put_int(USART2, value);
-                USART_puts(USART2, "\ttarget_PH=");
-                USART_put_int(USART2, params->target_ph);
-                USART_puts(USART2, "\r\n");
+            hydroponics.PHMeter_Resvoir.state = MODULE_STANDBY;
+            while (!TARGET_PH_REACHED) {
                 vPPump_parameters ppump_params;
+                portTickType start_time;
+                portTickType end_time;
 
-                xSemaphoreGive(PHMeter_Resvoir.mutex);
-  
-                if (value < params->target_ph){
-                    USART_puts(USART2, "ADDING PH UP\r\n");
-                    ppump_params.amount = params->target_ph - value;
-                    ppump_params.ppump = &PPump_PHUP;
-                    
-                    xTaskCreate(vPPump_dispense, (signed char*)"PP", 128, &ppump_params, tskIDLE_PRIORITY+3, NULL); 
+                xTaskCreate(vPH_read_value, (signed char*)"PH Read", 128, &hydroponics.PHMeter_Resvoir, parent_priority+1, NULL);
+
+                while(hydroponics.PHMeter_Resvoir.state != MODULE_EXECUTED);
+
+                int value = hydroponics.PHMeter_Resvoir.value; 
+                char msg[20];
+                packet3.msg = msg;
+                USART_rtos_sputs(&packet3, "PH VALUE: %d\r\n", value);
+
+                hydroponics.PHMeter_Resvoir.state = MODULE_STANDBY;
+
+                int amount;
+                PPump_Module *ppump;
+
+                if (value < hydroponics.target_ph){
+                    USART_rtos_puts(&packet2, "Adding PH Up...\r\n");
+                    TEST_PH_VALUE+=5;
+                 ///   USART_rtos_puts(USART2, "ADDING PH UP\r\n");
+                    amount = hydroponics.target_ph - value;
+                    ppump = &hydroponics.PPump_PHUp;
 
                 }
-                else if (value > params->target_ph) {
-                    USART_puts(USART2, "ADDING PH DOWN\r\n");
-                    ppump_params.amount = value - params->target_ph;
-                    ppump_params.ppump = &PPump_PHDOWN;
-
-                    xTaskCreate(vPPump_dispense, (signed char*)"PP", 128, &ppump_params, tskIDLE_PRIORITY+3, NULL); 
+                else if (value > hydroponics.target_ph) {
+                    USART_rtos_puts(&packet2, "Adding PH DOwn...\r\n");
+                    TEST_PH_VALUE-=5;
+                    amount = value - hydroponics.target_ph;
+                    ppump = &hydroponics.PPump_PHDown;
 
                 }
                 else {
-                    USART_puts(USART2, "STABILIZED PH LEVELS @");
-                    USART_put_int(USART2, value);
-                    USART_puts(USART2, "\r\n");
-                    break;
+                    TARGET_PH_REACHED = 1;
+                    USART_rtos_puts(&packet2, "Stabilized PH...\r\n");
+                    continue;
                 };
 
-                read_ph=1;
-                while(ppump_params.ppump->state == MODULE_RUNNING) {
-                    taskYIELD();
+                start_time = xTaskGetTickCount();
+                end_time = (portTickType)(1000*hydroponics.ph_delay) / portTICK_RATE_MS;
+
+                if (xSemaphoreTake(hydroponics.PHMeter_Resvoir.mutex, portMAX_DELAY) == pdTRUE) {
+                    PPump_Module_dispense(ppump, amount);
                 }
+                else {
+                    continue;
+                }
+
+                vTaskDelayUntil(&start_time, end_time);
 
                 switch (ppump_params.ppump->state) {
                     case MODULE_EXECUTED: 
+                      ///  USART_rtos_puts(USART2, "VPPUMP EXITED SUCCESSFULLY!\r\n");
                         break;
                     case MODULE_ERROR:
+                       /// USART_rtos_puts(USART2, "VPPUMP EXITED WITH AN ERROR!\r\n");
                         break;
-
                 }
-
             }
-            else {
-                USART_puts(USART2, "COULDNT ACCESS SAFELY IN PH_TASK\r\n");
-            }
-            PHMeter_Resvoir.state = MODULE_STANDBY;
+        }
+        int i;
+        for(i=0; i<counter; i++) {
+            vTaskDelay((portTickType)(1000*3600) / portTICK_RATE_MS);
         }
     }
-    //PH_CHANGING = 0;  
     vTaskDelete(NULL);
 }
 
-    vPH_parameters ph_p;
 
+typedef struct {
+    char ucMessageID;
+    //char u
+
+} command_data;
+
+#define HEX_2_DEC(val) (((val)/16)*10+((val)%16))
+
+void vRTC_Init(void) {
+    RTC_InitTypeDef RTC_InitStructure;
+    RTC_TimeTypeDef RTC_TimeStructure;
+    RTC_DateTypeDef RTC_DateStructure;
+
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, ENABLE);
+    PWR_BackupAccessCmd(ENABLE);
+
+    RCC_LSICmd(ENABLE);
+    while(RCC_GetFlagStatus(RCC_FLAG_LSIRDY) == RESET);
+    RCC_RTCCLKConfig(RCC_RTCCLKSource_LSI);
+    RCC_RTCCLKCmd(ENABLE);
+    RTC_WaitForSynchro();
+
+    if (RTC_ReadBackupRegister(RTC_BKP_DR0)!=0x9527) {
+        RTC_WriteProtectionCmd(DISABLE); 
+        RTC_EnterInitMode();
+
+        RTC_InitStructure.RTC_HourFormat = RTC_HourFormat_24;
+        RTC_InitStructure.RTC_AsynchPrediv = 0x7D-1;
+        RTC_InitStructure.RTC_SynchPrediv = 0xFF-1;
+        RTC_Init(&RTC_InitStructure);
+
+        RTC_TimeStructure.RTC_Seconds = 0x00;
+        RTC_TimeStructure.RTC_Minutes = 0x01;
+        RTC_TimeStructure.RTC_Hours = 0x01;
+        RTC_TimeStructure.RTC_H12 = RTC_H12_AM;
+        RTC_SetTime(RTC_Format_BCD,&RTC_TimeStructure);
+
+        RTC_DateStructure.RTC_Date = 30;
+        RTC_DateStructure.RTC_Month = 5;
+        RTC_DateStructure.RTC_WeekDay= RTC_Weekday_Thursday;
+        RTC_DateStructure.RTC_Year = 12;
+        RTC_SetDate(RTC_Format_BCD,&RTC_DateStructure);
+
+        RTC_ExitInitMode();
+        RTC_WriteBackupRegister(RTC_BKP_DR0,0X9527);
+        RTC_WriteProtectionCmd(ENABLE);
+        RTC_WriteBackupRegister(RTC_BKP_DR0,0x9527);  //Initialization is complete, set the flag
+    }
+
+      PWR_BackupAccessCmd(DISABLE);
+}
 //Main Function
+
+void vIncrementDay(void) {
+    RTC_TimeTypeDef t;
+    portTickType xLastWake = xTaskGetTickCount();
+
+
+    while(1) {
+        int i;
+        for(i=0; i<23; i++){
+            /*
+            USART_rtos_packet packet;
+            packet.USARTx_rtos = &USART1_rtos; 
+*/
+            vTaskDelayUntil(&xLastWake, ((1000*3600) / portTICK_RATE_MS));
+            xLastWake = xTaskGetTickCount();
+            RTC_GetTime(RTC_Format_BIN, &t);
+
+            USART_put_int(USART1, t.RTC_Hours);
+            USART_put(USART1, ':');
+            USART_put_int(USART1, t.RTC_Minutes);
+            USART_puts(USART1, " (");
+            USART_put_int(USART1, i);
+            USART_puts(USART1, ")\r\n");
+
+
+           /* 
+            char buffer[60]; 
+            packet.msg = buffer;
+            USART_rtos_sputs(&packet, "HELLO%d\r\n", 69);
+*/
+
+            //USART_rtos_sputs(&packet, "%d:%d (%d)\r\n", t.RTC_Hours, t.RTC_Minutes, i);
+//            USART_rtos_wait_send(&packet);
+
+
+           
+            //USART_puts(USART1, "5\r\n");
+
+        }
+        USART_puts(USART1, "=----DONE----=\r\n");
+    }
+}
+
 int main(void){
 	//Call initx(); To Initialize USART & GPIO
 
 	initx();
+    USART1_Init();
     init_us_timer();
-    //
-    //CLOCK_SetClockTo168MHz();
-    //setSysTick();
+    vRTC_Init();
 
+
+    USART_rtos_init(&USART1_rtos, USART1);
+    setup_output(&USART1_rtos);
+
+    //CLOCK_SetClockTo168MHz();
+   // setSysTick();
 
     int i;
 
-    USART_puts(USART2, "Booting up...\r\n");
+    USART_puts(USART1, "\nBooting up...\r\n");
     for(i=0; i<2; i++) { 
         GPIO_SetBits(GPIOD, GPIO_Pin_12);
         GPIO_SetBits(GPIOD, GPIO_Pin_13);
@@ -698,51 +881,99 @@ int main(void){
 
         GPIO_ResetBits(GPIOD, GPIO_Pin_12|GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15);
         delay_ms(500);
-
     }
-
 
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);
 
+
+    GPIO_InitTypeDef gpio_ppump;
+
+    gpio_ppump.GPIO_Pin = GPIO_Pin_5; 
+    gpio_ppump.GPIO_OType = GPIO_OType_PP; 
+    gpio_ppump.GPIO_Mode = GPIO_Mode_OUT; 
+    gpio_ppump.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOE, &gpio_ppump);
+
+    GPIO_ResetBits(GPIOE, GPIO_Pin_5);
+
+
+/*
+    RTC_TimeTypeDef t;
+    for(i=0; i<10; i++) {
+        RTC_GetTime(RTC_Format_BIN, &t);
+        USART_put_int(USART1, t.RTC_Seconds);
+        USART_puts(USART1, "\r\n");
+        delay_ms(1000);
+    }
+
+    USART_puts(USART1, "======\r\n");
+*/
+/*
+    GPIO_InitTypeDef gpio_ppump;
+
+    gpio_ppump.GPIO_Pin = GPIO_Pin_6; 
+    gpio_ppump.GPIO_OType = GPIO_OType_PP; 
+    gpio_ppump.GPIO_Mode = GPIO_Mode_OUT; 
+    gpio_ppump.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOE, &gpio_ppump);
+
+
+    PPump_Typedef ppump;
+    ppump.pin_out = GPIO_Pin_6;
+    ppump.port_out = GPIOE;
+    ppump.ml_per_m = 60;
+
+        USART_puts(USART1, "DISPENSING...\r\n");
+        GPIO_SetBits(GPIOE, GPIO_Pin_6);
+
+*/
+
+
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
+
     GPIO_InitTypeDef gpio_ultrasonic;
 
-    gpio_ultrasonic.GPIO_Pin = GPIO_Pin_0;
-    gpio_ultrasonic.GPIO_OType = GPIO_OType_PP; //PP
-    gpio_ultrasonic.GPIO_Mode = GPIO_Mode_OUT;
-    //gpio_ultrasonic.GPIO_PuPd = GPIO_PuPd_NOPULL;
-
-    gpio_ultrasonic.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_Init(GPIOE, &gpio_ultrasonic);
-
-
-    gpio_ultrasonic.GPIO_Pin = GPIO_Pin_1;
+    gpio_ultrasonic.GPIO_Pin = GPIO_Pin_7; //echo
     gpio_ultrasonic.GPIO_OType = GPIO_OType_PP;
     //gpio_ultrasonic.GPIO_PuPd = GPIO_PuPd_DOWN;
     gpio_ultrasonic.GPIO_Mode = GPIO_Mode_IN;
+    gpio_ultrasonic.GPIO_Speed = GPIO_Speed_100MHz;
     GPIO_Init(GPIOE, &gpio_ultrasonic);
 
-    Ultrasonic_Typedef sensor;
-    ultrasonic_init(&sensor, GPIOE, GPIOE, GPIO_Pin_1, GPIO_Pin_0, 300); 
-    
+    gpio_ultrasonic.GPIO_Pin = GPIO_Pin_8; //trigger
+    gpio_ultrasonic.GPIO_Mode = GPIO_Mode_OUT;
+    GPIO_Init(GPIOE, &gpio_ultrasonic);
 
-    /*
-    while (1) {
-        USART_puts(USART2, "Type 'Enter'");
-        USART_getline();
-        int d = ultrasonic_read_distance(&sensor);
-        USART_puts(USART2, "Distance: ");
-        USART_put_int(USART2, d);
-        USART_puts(USART2, "\r\n");
+
+
+    UDS_Module uds;
+
+    uds.port_in = GPIOE;
+    uds.pin_in = GPIO_Pin_7;
+    uds.port_out = GPIOE;
+    uds.pin_out = GPIO_Pin_8;
+    uds.timeout = 500;
+
+    UDS_Module_Init(&uds);
+
+
+    USART_puts(USART1, "Starting UDS...\r\n");
+    while(1) {
+        int d = UDS_Module_distance(&uds);
+        USART_puts(USART1, "Distance: ");
+        USART_put_int(USART1, d);
+        USART_puts(USART1, "\r\n");
+        delay_ms(1000);
     }
-    */
+    /*
+
+    
     //SERVO SETUP
     TIM_PWM_init();
 
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
     GPIO_PinAFConfig(GPIOB, GPIO_PinSource7, GPIO_AF_TIM4);
     GPIO_PinAFConfig(GPIOB, GPIO_PinSource6, GPIO_AF_TIM4);
-
-
 
 
     GPIO_InitTypeDef GPIO_InitStructServo;
@@ -756,45 +987,32 @@ int main(void){
 
 
     Servo_Typedef servo1, servo2;
-    servo_init(&servo1, &(TIM4->CCR1), 500, 1850/*61*/); //up and down servo
+    servo_init(&servo1, &(TIM4->CCR1), 500, 1850); //up and down servo
     servo_init(&servo2, &(TIM4->CCR2), 500, 1000);
     servo_set_degrees(&servo1, 90);
-
-    char hello[] = "hello";
+*/
 
     xTaskCreate(idle_blinky, (signed char*)"idle_blinky", 128, NULL, tskIDLE_PRIORITY, NULL);
-
-
-    PPump_PHUP.tank_height = 10;
-    PPump_PHDOWN.tank_height = 10;
-
-    PPump_Init(&PPump_PHUP, &UDS_PHUP);
-    PPump_Init(&PPump_PHUP, &UDS_PHDOWN);
-
-    ph_p.target_ph = 20;
+    xTaskCreate(vIncrementDay, (signed char*)"vIncrementDay", 128, NULL, tskIDLE_PRIORITY+10, NULL);
 
 
     vLight_parameters light_p;
     //ph_p.target_ph = 200;
 
+    USART_puts(USART1, "LOOK AT LINE 18 FOR TODO!\r\n");
 
     //xTaskCreate(vLight_task, (signed char*)"vLight", 128, &light_p, tskIDLE_PRIORITY+1, NULL);
+    //
+
+    xTaskCreate(vHydroponicSystem_Init, (signed char*)"vHydroponicSystem_Init", 256, NULL, tskIDLE_PRIORITY+10, NULL);
+    //xTaskCreate(vLightingSystem_Init, (signed char*)"vLightingSystem_Init", 64, NULL, tskIDLE_PRIORITY+10, NULL);
+    //xTaskCreate(vACSystem_Init, (signed char*)"vACSystem_Init", 64, NULL, tskIDLE_PRIORITY+10, NULL);
 
 
-    xTaskCreate(vPH_task, (signed char*)"vPH", 128, &ph_p, tskIDLE_PRIORITY+2, NULL);
-
-    //ph_p.target_ph = 100;
-
-    USART_puts(USART2, "-----------------\r\n(2)target ph: ");
-    USART_put_int(USART2, ph_p.target_ph);
-    USART_puts(USART2, "\r\n");
+    xTaskCreate(vPH_task, (signed char*)"vPH", 256, NULL, tskIDLE_PRIORITY+2, NULL);
+   
 
 
-
-
-
-
- //   xTaskCreate(handle_uart_command, (signed char*)"handle_uart_command", 128, hello, tskIDLE_PRIORITY+1, NULL);
 
 
 	//xTaskCreate(UsartTask, (signed char*)"UsartTask", 128, NULL, tskIDLE_PRIORITY+1, NULL);
@@ -803,6 +1021,4 @@ int main(void){
 	vTaskStartScheduler();
     //
     
-   
-
 }

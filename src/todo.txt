@@ -1,0 +1,22 @@
+
+GET PARAMS for vPH vLight task from systems. 
+
+DelayUntil
+
+
+CONTROLLER {
+
+    semaPH;
+    PH_time;
+    
+    while (1) {
+        if (ph_time-current_time() <= PH_DELAY) {
+            GIVE(semaPH); //this causes vPH task to start executing
+        }
+        
+    }
+}
+
+
+
+FIND A WAY TO DYNAMICALLY STORE USART_RTOS_PACKETS SO THE POINTER TO THE STRUCT DOESNT GET REMOVED WHEN FUNCTIONS STACK IS DELETED

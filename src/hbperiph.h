@@ -6,6 +6,16 @@
 
 #define HBPERIPH_H_INCLUDED
 
+#define CM_CONVERSION ((float)58.2) 
+
+typedef struct {
+    GPIO_TypeDef *port_out;
+    uint16_t *pin_out; 
+    uint16_t ml_per_m;
+} PPump_Typedef;
+
+void ppump_dispense(PPump_Typedef *ppump, int amount);
+
 typedef struct{
     volatile uint16_t *CCR;
     uint16_t offset;

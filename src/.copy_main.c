@@ -31,6 +31,8 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
+#include <unistd.h>
 #include "hbperiph.h"
 #include "clock.h"
 
@@ -216,7 +218,6 @@ void USART_readline_int(int *num) {
 }
 
 void USART2_IRQHandler(void){
-	
 	// check if the USART2 receive interrupt flag was set
 	if( USART_GetITStatus(USART2, USART_IT_RXNE)){
         static uint8_t count=0;
@@ -271,7 +272,6 @@ void USART2_IRQHandler(void){
 
 //Initialize GPIO and USART2
 void initx(void){
-
 	//Enable GPIO Clocks For USART2
         RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
 
@@ -333,9 +333,7 @@ void initx(void){
 
 }
 
-
 void TIM_PWM_init() {
-
     //TIMER SETUP
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);
 
@@ -372,17 +370,85 @@ void TIM_PWM_init() {
 }
 
 
+
+
+enum Module_State {MODULE_RUNNING, MODULE_STANDBY, MODULE_EXECUTED, MODULE_ERROR};
+enum System_State {SYSTEM_WRITING, SYSTEM_WRITTEN, SYSTEM_READ, SYSTEM_ERROR};
+
+
+
+
+
+typedef struct{
+    volatile uint16_t *CCR;
+    uint16_t offset;
+    uint8_t ratio;
+    uint8_t last_pos;
+    uint8_t current_pos;
+    enum Module_State state;
+} Servo_Module;
+
 typedef struct {
-    int  port;
-    int pin;
+    int value;
+    xSemaphoreHandle mutex;
+    enum Module_State state;
+} PHMeter_Module;
+
+typedef struct {
+    int distance;
+    int lighton;
+    enum Module_State state;
+    Servo_Module *servo;
+}Light_Module;
+
+typedef struct {
+    int value;
+    xSemaphoreHandle mutex;
+    enum Module_State state;
+} Temperature_Module;
+
+typedef struct {
+    float tank;
+    GPIO_TypeDef port_out;
+    uint16_t pin_out;
+    enum Module_State state;
+    xSemaphoreHandle mutex;
+    int tank_height;
+} PPump_Module;
+
+typedef struct {
+    GPIO_TypeDef port_in;
+    GPIO_TypeDef port_out;
+    uint16_t pin_in;
+    uint16_t pin_out;
+    uint16_t timeout;
+    xSemaphoreHandle mutex;
+    enum Module_State state;
+    int value;
+} UDS_Module; //(U)ltrasonic (D)istance (S)ensor
+
+typedef struct {
+    GPIO_TypeDef port_out;
+    uint16_t pin_out;
+    uint16_t speed;
+    xSemaphoreHandle mutex;
+    enum Module_State state;
+
+
+} Fan_Module;
+
+typedef struct {
+    PPump_Module *ppump;
     int amount;
 
 } vPPump_parameters;
+
 
 typedef struct {
     portTickType delay ;
     int target_ph;
 } vPH_parameters;
+
 
 typedef struct {
     int status;
@@ -391,14 +457,209 @@ typedef struct {
 
 
 typedef struct {
-    int value;
-    xSemaphoreHandle mutex;
-} pHMeter_t;
+    enum System_State state;
+    PPump_Module PPump_PHUp;
+    UDS_Module UDS_PHUp;
+    PPump_Module PPump_PHDown;
+    UDS_Module UDS_PHDown;
+    PPump_Module PPump_Nutrient;
+    UDS_Module UDS_Nutrient;
+    PHMeter_Module PHMeter_Resvoir;
+    uint16_t nutrient_schedule[52];
+    uint16_t ph_schedule[52];
+} HydroponicSystem;
 
 
+typedef struct {
+    Light_Module Lighting; //change to Lighting_Module
+    enum System_State state;
+    uint16_t lighting_schedule[52]; // array with weekly lighting schedule 
+    uint16_t distance_schedule[52]; 
+} LightingSystem;
+
+
+typedef struct {
+    enum System_State state;
+    Fan_Module Fan_Reservoir; //fans the water
+    Fan_Module Fan_Plant; //fans the plants
+    Fan_Module Fan_In; //brings in co2
+    Fan_Module Fan_Out; //puts out oxygen through carbon filter
+    Temperature_Module Temperature_Resevoir; // straightforward, above comments apply here
+    Temperature_Module Temperature_Plant;
+} ACSystem;
+/*
+void System_update_member(NULL *system_member, NULL* member_value ) {
+    if (system_member && member_value) {
+        //do an if stsatement to check if system member and member value are of the same type
+        return;
+    }
+    //error
+}
+*/
+HydroponicSystem hydroponics;
+LightingSystem lighting;
+ACSystem AC;
+
+xSemaphoreHandle USART2_mutex;
+
+void vUSART2_puts(char *msg) {
+
+    if (USART2_mutex == NULL) {
+        USART2_mutex = xSemaphoreCreateMutex();
+    }
+
+    if (xSemaphoreTake(USART2_mutex, portMAX_DELAY) == pdTRUE) {
+        USART_puts(USART2, msg);
+        xSemaphoreGive(USART2_mutex);
+    } 
+
+    vTaskDelete(NULL);
+}
+
+void USART2_rtos_puts(char *msg) {
+    xTaskCreate(vUSART2_puts, (signed char*)"vUSART2_puts", 128, msg, tskIDLE_PRIORITY+8, NULL);
+};
+
+int USART2_rtos_sputs(char *buffer, const char *format, ...) {
+    va_list ap;
+    int rv;
+
+    va_start(ap, format);
+    rv = vsprintf(buffer, format, ap);
+    va_end(ap);
+
+    USART2_rtos_puts(buffer);
+
+    return rv;
+}
+
+
+void PHMeter_Module_Init(PHMeter_Module *module) {
+    if (module) {
+        module->state = MODULE_STANDBY;
+        module->mutex = xSemaphoreCreateMutex();
+    }
+}
+
+void UDS_Module_Init( UDS_Module *module) { 
+    if (module) {
+        module->state = MODULE_STANDBY;
+    }
+}
+
+void PPump_Module_Init(PPump_Module *module, UDS_Module *sensor) {
+    if (module) {
+        //use sensor to calculate distance Make this a task.  One parent task for getting tank size and one for ultrasonic distance finding
+        sensor->value = 8;
+        module->tank = 100*(sensor->value/module->tank_height); //finds the percentage filled
+        module->state = MODULE_STANDBY;
+        module->mutex = xSemaphoreCreateMutex();
+
+    }
+}
+
+void Fan_Module_Init(Fan_Module *module) {
+    if (module){
+        module->mutex = xSemaphoreCreateMutex();
+        module->state = MODULE_STANDBY;
+    }
+
+
+}
+
+
+void vACSystem_Init(void) {
+    char msg[30];
+    USART2_rtos_sputs(msg, "Init AC System. :%d\r\n", 5);
+
+
+
+    AC.state = SYSTEM_WRITING;
+
+    AC.state = SYSTEM_WRITTEN;
+//    USART_puts(USART2, "AC successfully initialized...\r\n");
+
+    vTaskDelete(NULL);
+}
+
+void vLightingSystem_Init(void) {
+    USART2_rtos_puts("Init Lighting System");
+    //USART2_rtos_puts("Init Lighting System...\r\n");
+
+    lighting.state = SYSTEM_WRITING;
+
+    lighting.state = SYSTEM_WRITTEN;
+    //USART_puts(USART2, "Lighting successfully initialized...\r\n");
+
+    vTaskDelete(NULL);
+}
+
+void vHydroponicSystem_Init(void) {
+    USART2_rtos_puts("Init Hydroponic System...\r\n");
+
+    //if (hydroponics in flash) then load to hydroponic variable || HOLD ON THIS FOR AWHILE
+    //else do this  
+    //
+    
+    hydroponics.state = SYSTEM_WRITING;
+
+    hydroponics.PPump_PHUp.tank_height = 10;
+    hydroponics.PPump_PHDown.tank_height = 10;
+
+   // TaskHandle_t xHandle("vHydroponicSystem_Init\0");
+
+    //if (xSemaphoreTake(hydroponics.PHMeter_Resvoir.mutex, 0) == pdTRUE) 
+
+        //if (sem)
+        hydroponics.UDS_PHUp.state = MODULE_RUNNING;
+        hydroponics.UDS_PHDown.state = MODULE_RUNNING;
+        hydroponics.UDS_Nutrient.state = MODULE_RUNNING;
+
+
+        hydroponics.PPump_PHUp.state = MODULE_RUNNING;
+        hydroponics.PPump_PHDown.state = MODULE_RUNNING;
+        hydroponics.PPump_Nutrient.state = MODULE_RUNNING;
+
+        hydroponics.PHMeter_Resvoir.state = MODULE_RUNNING;
+
+        UDS_Module_Init(&hydroponics.UDS_PHUp);
+        UDS_Module_Init(&hydroponics.UDS_PHDown);
+        UDS_Module_Init(&hydroponics.UDS_Nutrient);
+
+
+        PPump_Module_Init(&hydroponics.PPump_PHUp, &hydroponics.UDS_PHUp);
+        PPump_Module_Init(&hydroponics.PPump_PHDown, &hydroponics.UDS_PHDown);
+        PPump_Module_Init(&hydroponics.PPump_Nutrient, &hydroponics.UDS_Nutrient);
+
+        PHMeter_Module_Init(&hydroponics.PHMeter_Resvoir);
+
+
+    if (hydroponics.PPump_PHUp.state == MODULE_STANDBY &&
+        hydroponics.PPump_PHDown.state == MODULE_STANDBY &&
+        hydroponics.PPump_Nutrient.state == MODULE_STANDBY &&  
+        hydroponics.UDS_PHUp.state == MODULE_STANDBY &&
+        hydroponics.UDS_PHDown.state == MODULE_STANDBY &&
+        hydroponics.UDS_Nutrient.state == MODULE_STANDBY &&
+        hydroponics.PHMeter_Resvoir.state == MODULE_STANDBY) {
+
+        hydroponics.state = SYSTEM_WRITTEN;
+        //USART_puts(USART2, "Hydroponics successfully initialized...\r\n");
+    }
+
+    else {
+        //USART2_rtos_puts("Hydroponics could not initialize...\r\n");
+
+        hydroponics.state = SYSTEM_ERROR;
+        xTaskCreate(vHydroponicSystem_Init, (signed char*)"vHydroponicSystem_Init", 64, NULL, tskIDLE_PRIORITY+10, NULL);
+
+    }
+
+    //vTaskDelay() Delay for a little than do the task again
+    //
+    vTaskDelete(NULL);
+}
 
 void vLight_task(vLight_parameters *params) {
-    USART_puts(USART2, "Executed Light_task\r\n");
     /*
     Light_set(params->status);
     int height = Plant_get_height();
@@ -412,122 +673,175 @@ void vLight_task(vLight_parameters *params) {
 
 int TEST_PH_VALUE = 50;
 
-int PH_STATE = 0;
-void vPH_read_value(pHMeter_t *meter) {
-    PH_STATE = 1;
-    if (xSemaphoreTake(meter->mutex, (portTickType) 10) == pdTRUE) {
-        USART_puts(USART2, "Read pH Meter...\r\n");
+void vPH_read_value(PHMeter_Module *meter) {
+    meter->state = MODULE_RUNNING;
+    if (xSemaphoreTake(meter->mutex, portMAX_DELAY) == pdTRUE) {
+        USART2_rtos_puts("Reading PHMeter Reservoir...\r\n");
+        //USART2_rtos_puts("Read pH Meter...\r\n");
         meter->value = TEST_PH_VALUE;
+        meter->state = MODULE_EXECUTED;
         xSemaphoreGive(meter->mutex);
-
     }
 
     else {
-        USART_puts(USART2, "COULDNT TAKE SEMAPHORE");
-
+        USART2_rtos_puts("Couldn't get mutex for PHMETER RESERVOIR\r\n");
+        //USART2_rtos_puts("COULDNT TAKE SEMAPHORE");
     }
 
-    PH_STATE = 2;
     vTaskDelete(NULL);
-
 }
 
 void vPPump_dispense(vPPump_parameters *params) {
-    const int ppump_speed = 1;
-    //GPIO_WriteBit(params->port, params->pin, Bit_SET);
-    USART_puts(USART2, "Starting to dispense...\r\n");
-    if (params->pin == 1) TEST_PH_VALUE+=5;
-    else if(params->pin == 2) TEST_PH_VALUE-=5; 
+    params->ppump->state = MODULE_RUNNING; 
+    if (xSemaphoreTake(hydroponics.PHMeter_Resvoir.mutex, (portTickType) 100) == pdTRUE) {
+        const int ppump_speed = 1;
+        //GPIO_WriteBit(params->port, params->pin, Bit_SET);
+        //USART2_rtos_puts("Starting to dispense...\r\n");
+        if (params->ppump == &hydroponics.PPump_PHUp) TEST_PH_VALUE+=5;
+        else if(params->ppump == &hydroponics.PPump_PHDown) TEST_PH_VALUE-=5; 
 
-    portTickType xDelay = (1000 * ppump_speed) / portTICK_RATE_MS;
-    vTaskDelay(xDelay);
-    USART_puts(USART2, "Finished dispensing\r\n");
+        portTickType xDelay = (1000 * ppump_speed) / portTICK_RATE_MS;
+        vTaskDelay(xDelay);
+        //USART2_rtos_puts("Finished dispensing\r\n");
+        xSemaphoreGive(hydroponics.PHMeter_Resvoir.mutex);
+        params->ppump->state = MODULE_EXECUTED; 
+    }
 
+    else {
+        //USART2_rtos_puts("PPUMP_DISPENSE COULDNT GET MUTEX\r\n");
+    }
     vTaskDelete(NULL);
 }
 
 
 void vPH_task(vPH_parameters *params) {
-    USART_puts(USART2, "Executing PH_task...\r\n");
-
-    pHMeter_t ph_meter;
-    ph_meter.mutex = xSemaphoreCreateMutex();
-    xSemaphoreGive(ph_meter.mutex);
-
-    vPPump_parameters ppump_p; 
-
-    if (ph_meter.mutex == NULL) USART_puts(USART2, "PH_METER->mutex == NULL\r\n");
-
-    //PH_CHANGING = 1; use this so the web console knows when changes are happening
-    
-   //add if sepamphore is not null error check
-   //---------------------------------------
-  
-    int read_ph=1; 
-    int TARGET_PH_REACHED = 0;
-    /*
-     *
-     *
-     *
-     * MAKE SUB TASKS CREATED INCREMENT ITS PRIORITY BY ONE RELATIVE TO PARENT TASK
-     */
+    static int16_t counter = 24 - 1; //24 hours
 
     while (1) {
+        USART2_rtos_puts("Starting PH task\r\n");
 
-        if (read_ph){ 
-            read_ph=0;
-            xTaskCreate(vPH_read_value, (signed char*)"PH Read", 128, &ph_meter, tskIDLE_PRIORITY+4, NULL);
+
+        //USART_puts(USART2, "Executing PH_task...\r\n");
+
+
+        if (hydroponics.PHMeter_Resvoir.mutex == NULL) {
+            hydroponics.PHMeter_Resvoir.mutex = xSemaphoreCreateMutex();
+            USART2_rtos_puts("PH_METER->mutex == NULL\r\n");
+            continue;
         }
-        vTaskDelay((portTickType) 500 / portTICK_RATE_MS);
+       //add if sepamphore is not null error check
+        int TARGET_PH_REACHED = 0;
+        /*
+         *
+         * MAKE SUB TASKS CREATED INCREMENT ITS PRIORITY BY ONE RELATIVE TO PARENT TASK
+         */
+    //    params->target_ph = 100;
 
-        if (PH_STATE == 2) { 
-            if (xSemaphoreTake(ph_meter.mutex, (portTickType) 10) == pdTRUE) {
-                USART_puts(USART2, "METER READ SUCCESSFULLY. PH=");
-                USART_put_int(USART2, ph_meter.value);
-                USART_puts(USART2, "\r\n");
-     
-                if (ph_meter.value < params->target_ph){
-                    USART_puts(USART2, "ADDING PH UP\r\n");
-                    ppump_p.pin = 1;
-                    xTaskCreate(vPPump_dispense, (signed char*)"PP", 128, &ppump_p, tskIDLE_PRIORITY+3, NULL); 
+        
+        int READ_PH = 1;
+        hydroponics.PHMeter_Resvoir.state = MODULE_STANDBY;
+
+        while (!TARGET_PH_REACHED) {
+
+            if (hydroponics.PHMeter_Resvoir.state == MODULE_STANDBY && READ_PH){ 
+                READ_PH = 0;
+                xTaskCreate(vPH_read_value, (signed char*)"PH Read", 128, &hydroponics.PHMeter_Resvoir, uxTaskPriorityGet(NULL)+1, NULL);
+            }
+
+            else {
+                USART2_rtos_puts("PHMETTER RESVOIR IS IN USE\r\n");
+                char msg1[30];
+                USART2_rtos_sputs(msg1, "EX%d S%d R%d MOD%d\r\n", MODULE_EXECUTED, MODULE_STANDBY, MODULE_RUNNING, hydroponics.PHMeter_Resvoir.state);
+
+                continue;
+                //In the future add switch case instead and handle for different states
+            }
+            //vTaskDelay((portTickType) 500 / portTICK_RATE_MS);
+
+            //take time right here and store it in lets say start_time
+            
+
+            /*
+            while(hydroponics.PHMeter_Resvoir.state != MODULE_EXECUTED) {
+                //then compare it with current time here like so
+                //if start_time + 500 < current_time: //lets says 500 is in seconds so it will timeout after that long
+                USART2_rtos_puts("Waiting for PHMETER....\r\n.");
+                taskYIELD();
+            }
+            */
+
+            if (xSemaphoreTake(hydroponics.PHMeter_Resvoir.mutex, (portTickType) 10) == pdTRUE) {
+                //doesnt mutex because we
+                int value = hydroponics.PHMeter_Resvoir.value; 
+
+                char msg2[30];
+                USART2_rtos_sputs(msg2, "METER READ SUCCESSFULLY. PH=%d, target_ph=%d\r\n", value, params->target_ph);
+
+                READ_PH = 1; //TO read meter on the next loop 
+
+                vPPump_parameters ppump_params;
+
+                xSemaphoreGive(hydroponics.PHMeter_Resvoir.mutex);
+                hydroponics.PHMeter_Resvoir.state = MODULE_STANDBY;
+  
+                if (value < params->target_ph){
+                    USART2_rtos_puts("ADDING PH UP\r\n");
+                    ppump_params.amount = params->target_ph - value;
+                    ppump_params.ppump = &hydroponics.PPump_PHUp;
+                    
+                    xTaskCreate(vPPump_dispense, (signed char*)"PP", 128, &ppump_params, tskIDLE_PRIORITY+3, NULL); 
 
                 }
-                else if (ph_meter.value > params->target_ph) {
-                    ppump_p.pin = 2;
-                    USART_puts(USART2, "ADDING PH DOWN\r\n");
+                else if (value > params->target_ph) {
+                    USART2_rtos_puts("ADDING PH DOWN\r\n");
+                    ppump_params.amount = value - params->target_ph;
+                    ppump_params.ppump = &hydroponics.PPump_PHDown;
 
-                    xTaskCreate(vPPump_dispense, (signed char*)"PP", 128, &ppump_p, tskIDLE_PRIORITY+3, NULL); 
+                    xTaskCreate(vPPump_dispense, (signed char*)"PP", 128, &ppump_params, tskIDLE_PRIORITY+3, NULL); 
 
-                    
                 }
                 else {
-                    USART_puts(USART2, "STABILIZED PH LEVELS @");
-                    USART_put_int(USART2, ph_meter.value);
-                    USART_puts(USART2, "\r\n");
+                    char msg4[25];
+                    USART2_rtos_sputs(msg4, "STABILIZED PH LEVELS @%d\r\n", value);
+                    TARGET_PH_REACHED = 1;
                     break;
                 };
 
-                read_ph=1;
-                //vTaskDelay(params->delay);        
-                
-                xSemaphoreGive(ph_meter.mutex);
+                while(ppump_params.ppump->state == MODULE_RUNNING) {
+                    taskYIELD();
+                }
+
+                switch (ppump_params.ppump->state) {
+                    case MODULE_EXECUTED: 
+                        USART2_rtos_puts("VPPUMP EXITED SUCCESSFULLY!\r\n");
+                        break;
+                    case MODULE_ERROR:
+                        USART2_rtos_puts("VPPUMP EXITED WITH AN ERROR!\r\n");
+                        break;
+                }
 
             }
             else {
-                USART_puts(USART2, "COULDNT ACCESS SAFELY IN PH_TASK\r\n");
+                USART2_rtos_puts("COULDNT ACCESS SAFELY IN PH_TASK\r\n");
             }
-            PH_STATE = 0;
         }
+
+        char msg3[50];
+        USART2_rtos_sputs(msg3, "PH Task Succesful.  Executing again in %d hours\r\n", counter+1);
+        int i;
+        for(i=0; i<counter; i++) {
+            vTaskDelay((portTickType)(1000*3600) / portTICK_RATE_MS);
+        }
+
     }
-    //PH_CHANGING = 0;  
+    USART2_rtos_puts("ERROR: PH TASK EXITED!\r\n");
     vTaskDelete(NULL);
 }
 
+    vPH_parameters ph_p;
 
 //Main Function
-int main(void)
-{
-
+int main(void){
 	//Call initx(); To Initialize USART & GPIO
 
 	initx();
@@ -536,10 +850,9 @@ int main(void)
     //CLOCK_SetClockTo168MHz();
     //setSysTick();
 
-
     int i;
 
-    USART_puts(USART2, "Booting up...\r\n");
+    USART_puts(USART2, "\nBooting up...\r\n");
     for(i=0; i<2; i++) { 
         GPIO_SetBits(GPIOD, GPIO_Pin_12);
         GPIO_SetBits(GPIOD, GPIO_Pin_13);
@@ -594,8 +907,6 @@ int main(void)
     GPIO_PinAFConfig(GPIOB, GPIO_PinSource6, GPIO_AF_TIM4);
 
 
-
-
     GPIO_InitTypeDef GPIO_InitStructServo;
 
     GPIO_InitStructServo.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7;
@@ -611,25 +922,28 @@ int main(void)
     servo_init(&servo2, &(TIM4->CCR2), 500, 1000);
     servo_set_degrees(&servo1, 90);
 
-    char hello[] = "hello";
 
     xTaskCreate(idle_blinky, (signed char*)"idle_blinky", 128, NULL, tskIDLE_PRIORITY, NULL);
 
-    USART_puts(USART2, "pH Level: ");
-    USART_getline();
-    int target_ph = 0;
-    USART_readline_int(&target_ph);
-    USART_puts(USART2, "\r\nYOU SAID: ");
-    USART_put_int(USART2, target_ph);
-    USART_puts(USART2, "\r\n");
+
+    ph_p.target_ph = 20;
+
 
     vLight_parameters light_p;
-    vPH_parameters ph_p;
-    ph_p.target_ph = target_ph;
+    //ph_p.target_ph = 200;
 
-    xTaskCreate(vLight_task, (signed char*)"vLight", 128, &light_p, tskIDLE_PRIORITY+1, NULL);
 
-    xTaskCreate(vPH_task, (signed char*)"vPH", 128, &ph_p, tskIDLE_PRIORITY+2, NULL);
+    //xTaskCreate(vLight_task, (signed char*)"vLight", 128, &light_p, tskIDLE_PRIORITY+1, NULL);
+
+
+    //xTaskCreate(vHydroponicSystem_Init, (signed char*)"vHydroponicSystem_Init", 64, NULL, tskIDLE_PRIORITY+10, NULL);
+    //xTaskCreate(vLightingSystem_Init, (signed char*)"vLightingSystem_Init", 64, NULL, tskIDLE_PRIORITY+9, NULL);
+    //xTaskCreate(vACSystem_Init, (signed char*)"vACSystem_Init", 64, NULL, tskIDLE_PRIORITY+8, NULL);
+
+
+    xTaskCreate(vPH_task, (signed char*)"vPH", 256, &ph_p, tskIDLE_PRIORITY+2, NULL);
+
+    //ph_p.target_ph = 100;
 
 
  //   xTaskCreate(handle_uart_command, (signed char*)"handle_uart_command", 128, hello, tskIDLE_PRIORITY+1, NULL);
@@ -641,6 +955,5 @@ int main(void)
 	vTaskStartScheduler();
     //
     
-   
 
 }

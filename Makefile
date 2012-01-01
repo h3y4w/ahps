@@ -14,7 +14,6 @@ TARGET = $(OBJDIR)/app
 
 # Define all C source files (dependencies are generated automatically)
 #
-SOURCES += src/uart.c
 SOURCES += src/ustime.c
 SOURCES += src/main.c
 SOURCES += src/startup_stm32f4xx.s
@@ -22,8 +21,11 @@ SOURCES += src/system_stm32f4xx.c
 SOURCES += src/syscalls.c
 SOURCES += src/modbus.c
 SOURCES += src/test.c
-SOURCES += src/hbperiph.c
 SOURCES += src/clock.c
+SOURCES += src/module.c
+SOURCES += src/usart_rtos.c
+SOURCES += src/command_parser.c
+SOURCES += src/hbperiph.c
 
 
 SOURCES += FreeRTOS/Source/tasks.c

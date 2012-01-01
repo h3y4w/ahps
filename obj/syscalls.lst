@@ -8,7 +8,7 @@
    8              		.eabi_attribute 24, 1
    9              		.eabi_attribute 25, 1
   10              		.eabi_attribute 26, 1
-  11              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 30, 1
   12              		.eabi_attribute 34, 1
   13              		.eabi_attribute 18, 4
   14              		.thumb
@@ -16,20 +16,14 @@
   16              		.text
   17              	.Ltext0:
   18              		.cfi_sections	.debug_frame
-  19              		.global	__malloc_margin
-  20              		.section	.data.__malloc_margin,"aw",%progbits
-  21              		.align	2
-  24              	__malloc_margin:
-  25 0000 00010000 		.word	256
-  26              		.comm	__brkval,4,4
-  27              		.section	.text._exit,"ax",%progbits
-  28              		.align	2
-  29              		.global	_exit
-  30              		.thumb
-  31              		.thumb_func
-  33              	_exit:
-  34              	.LFB110:
-  35              		.file 1 "src/syscalls.c"
+  19              		.section	.text._exit,"ax",%progbits
+  20              		.align	2
+  21              		.global	_exit
+  22              		.thumb
+  23              		.thumb_func
+  25              	_exit:
+  26              	.LFB110:
+  27              		.file 1 "src/syscalls.c"
    1:src/syscalls.c **** #include "syscalls.h"
    2:src/syscalls.c **** #include "uart.h"
    3:src/syscalls.c **** #include "stm32f4xx.h"
@@ -46,390 +40,263 @@
   14:src/syscalls.c **** 
   15:src/syscalls.c **** void _exit(int code)
   16:src/syscalls.c **** {
-  36              		.loc 1 16 0
-  37              		.cfi_startproc
-  38              		@ args = 0, pretend = 0, frame = 8
-  39              		@ frame_needed = 1, uses_anonymous_args = 0
-  40              		@ link register save eliminated.
-  41 0000 80B4     		push	{r7}
-  42              	.LCFI0:
-  43              		.cfi_def_cfa_offset 4
-  44              		.cfi_offset 7, -4
-  45 0002 83B0     		sub	sp, sp, #12
-  46              	.LCFI1:
-  47              		.cfi_def_cfa_offset 16
-  48 0004 00AF     		add	r7, sp, #0
-  49              	.LCFI2:
-  50              		.cfi_def_cfa_register 7
-  51 0006 7860     		str	r0, [r7, #4]
-  52              	.L2:
+  28              		.loc 1 16 0
+  29              		.cfi_startproc
+  30              		@ Volatile: function does not return.
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		@ link register save eliminated.
+  34              	.LVL0:
+  35              	.L2:
+  36 0000 FEE7     		b	.L2
+  37              		.cfi_endproc
+  38              	.LFE110:
+  40 0002 00BF     		.section	.text._read_r,"ax",%progbits
+  41              		.align	2
+  42              		.global	_read_r
+  43              		.thumb
+  44              		.thumb_func
+  46              	_read_r:
+  47              	.LFB111:
   17:src/syscalls.c ****     for (;;);
-  53              		.loc 1 17 0 discriminator 1
-  54 0008 FEE7     		b	.L2
-  55              		.cfi_endproc
-  56              	.LFE110:
-  58 000a 00BF     		.section	.text._read_r,"ax",%progbits
-  59              		.align	2
-  60              		.global	_read_r
-  61              		.thumb
-  62              		.thumb_func
-  64              	_read_r:
-  65              	.LFB111:
   18:src/syscalls.c **** }
   19:src/syscalls.c **** 
   20:src/syscalls.c **** 
   21:src/syscalls.c **** ssize_t _read_r(struct _reent *r, int fd, void *ptr, size_t len)
   22:src/syscalls.c **** {
-  66              		.loc 1 22 0
-  67              		.cfi_startproc
-  68              		@ args = 0, pretend = 0, frame = 16
-  69              		@ frame_needed = 1, uses_anonymous_args = 0
-  70 0000 80B5     		push	{r7, lr}
-  71              	.LCFI3:
-  72              		.cfi_def_cfa_offset 8
-  73              		.cfi_offset 7, -8
-  74              		.cfi_offset 14, -4
-  75 0002 84B0     		sub	sp, sp, #16
-  76              	.LCFI4:
-  77              		.cfi_def_cfa_offset 24
-  78 0004 00AF     		add	r7, sp, #0
-  79              	.LCFI5:
-  80              		.cfi_def_cfa_register 7
-  81 0006 F860     		str	r0, [r7, #12]
-  82 0008 B960     		str	r1, [r7, #8]
-  83 000a 7A60     		str	r2, [r7, #4]
-  84 000c 3B60     		str	r3, [r7]
+  48              		.loc 1 22 0
+  49              		.cfi_startproc
+  50              		@ args = 0, pretend = 0, frame = 0
+  51              		@ frame_needed = 0, uses_anonymous_args = 0
+  52              	.LVL1:
+  53              		.loc 1 22 0
+  54 0000 08B5     		push	{r3, lr}
+  55              	.LCFI0:
+  56              		.cfi_def_cfa_offset 8
+  57              		.cfi_offset 3, -8
+  58              		.cfi_offset 14, -4
   23:src/syscalls.c ****     return uart_read_r(r, fd, ptr, len);
-  85              		.loc 1 23 0
-  86 000e F868     		ldr	r0, [r7, #12]
-  87 0010 B968     		ldr	r1, [r7, #8]
-  88 0012 7A68     		ldr	r2, [r7, #4]
-  89 0014 3B68     		ldr	r3, [r7]
-  90 0016 FFF7FEFF 		bl	uart_read_r
-  91 001a 0346     		mov	r3, r0
+  59              		.loc 1 23 0
+  60 0002 FFF7FEFF 		bl	uart_read_r
+  61              	.LVL2:
   24:src/syscalls.c **** }
-  92              		.loc 1 24 0
-  93 001c 1846     		mov	r0, r3
-  94 001e 1037     		adds	r7, r7, #16
-  95 0020 BD46     		mov	sp, r7
-  96              		@ sp needed
-  97 0022 80BD     		pop	{r7, pc}
-  98              		.cfi_endproc
-  99              	.LFE111:
- 101              		.section	.text._write_r,"ax",%progbits
- 102              		.align	2
- 103              		.global	_write_r
- 104              		.thumb
- 105              		.thumb_func
- 107              	_write_r:
- 108              	.LFB112:
+  62              		.loc 1 24 0
+  63 0006 08BD     		pop	{r3, pc}
+  64              		.cfi_endproc
+  65              	.LFE111:
+  67              		.section	.text._write_r,"ax",%progbits
+  68              		.align	2
+  69              		.global	_write_r
+  70              		.thumb
+  71              		.thumb_func
+  73              	_write_r:
+  74              	.LFB112:
   25:src/syscalls.c **** 
   26:src/syscalls.c **** 
   27:src/syscalls.c **** ssize_t _write_r(struct _reent *r, int fd, const void *ptr, size_t len)
   28:src/syscalls.c **** {
- 109              		.loc 1 28 0
- 110              		.cfi_startproc
- 111              		@ args = 0, pretend = 0, frame = 16
- 112              		@ frame_needed = 1, uses_anonymous_args = 0
- 113 0000 80B5     		push	{r7, lr}
- 114              	.LCFI6:
- 115              		.cfi_def_cfa_offset 8
- 116              		.cfi_offset 7, -8
- 117              		.cfi_offset 14, -4
- 118 0002 84B0     		sub	sp, sp, #16
- 119              	.LCFI7:
- 120              		.cfi_def_cfa_offset 24
- 121 0004 00AF     		add	r7, sp, #0
- 122              	.LCFI8:
- 123              		.cfi_def_cfa_register 7
- 124 0006 F860     		str	r0, [r7, #12]
- 125 0008 B960     		str	r1, [r7, #8]
- 126 000a 7A60     		str	r2, [r7, #4]
- 127 000c 3B60     		str	r3, [r7]
+  75              		.loc 1 28 0
+  76              		.cfi_startproc
+  77              		@ args = 0, pretend = 0, frame = 0
+  78              		@ frame_needed = 0, uses_anonymous_args = 0
+  79              	.LVL3:
+  80 0000 08B5     		push	{r3, lr}
+  81              	.LCFI1:
+  82              		.cfi_def_cfa_offset 8
+  83              		.cfi_offset 3, -8
+  84              		.cfi_offset 14, -4
   29:src/syscalls.c ****     return uart_write_r(r, fd, ptr, len);
- 128              		.loc 1 29 0
- 129 000e F868     		ldr	r0, [r7, #12]
- 130 0010 B968     		ldr	r1, [r7, #8]
- 131 0012 7A68     		ldr	r2, [r7, #4]
- 132 0014 3B68     		ldr	r3, [r7]
- 133 0016 FFF7FEFF 		bl	uart_write_r
- 134 001a 0346     		mov	r3, r0
+  85              		.loc 1 29 0
+  86 0002 FFF7FEFF 		bl	uart_write_r
+  87              	.LVL4:
   30:src/syscalls.c **** }
- 135              		.loc 1 30 0
- 136 001c 1846     		mov	r0, r3
- 137 001e 1037     		adds	r7, r7, #16
- 138 0020 BD46     		mov	sp, r7
- 139              		@ sp needed
- 140 0022 80BD     		pop	{r7, pc}
- 141              		.cfi_endproc
- 142              	.LFE112:
- 144              		.section	.text._lseek_r,"ax",%progbits
- 145              		.align	2
- 146              		.global	_lseek_r
- 147              		.thumb
- 148              		.thumb_func
- 150              	_lseek_r:
- 151              	.LFB113:
+  88              		.loc 1 30 0
+  89 0006 08BD     		pop	{r3, pc}
+  90              		.cfi_endproc
+  91              	.LFE112:
+  93              		.section	.text._lseek_r,"ax",%progbits
+  94              		.align	2
+  95              		.global	_lseek_r
+  96              		.thumb
+  97              		.thumb_func
+  99              	_lseek_r:
+ 100              	.LFB113:
   31:src/syscalls.c **** 
   32:src/syscalls.c **** 
   33:src/syscalls.c **** off_t _lseek_r(struct _reent *r, int fd, _off_t ptr, int dir)
   34:src/syscalls.c **** {
- 152              		.loc 1 34 0
- 153              		.cfi_startproc
- 154              		@ args = 0, pretend = 0, frame = 16
- 155              		@ frame_needed = 1, uses_anonymous_args = 0
- 156              		@ link register save eliminated.
- 157 0000 80B4     		push	{r7}
- 158              	.LCFI9:
- 159              		.cfi_def_cfa_offset 4
- 160              		.cfi_offset 7, -4
- 161 0002 85B0     		sub	sp, sp, #20
- 162              	.LCFI10:
- 163              		.cfi_def_cfa_offset 24
- 164 0004 00AF     		add	r7, sp, #0
- 165              	.LCFI11:
- 166              		.cfi_def_cfa_register 7
- 167 0006 F860     		str	r0, [r7, #12]
- 168 0008 B960     		str	r1, [r7, #8]
- 169 000a 7A60     		str	r2, [r7, #4]
- 170 000c 3B60     		str	r3, [r7]
+ 101              		.loc 1 34 0
+ 102              		.cfi_startproc
+ 103              		@ args = 0, pretend = 0, frame = 0
+ 104              		@ frame_needed = 0, uses_anonymous_args = 0
+ 105              		@ link register save eliminated.
+ 106              	.LVL5:
   35:src/syscalls.c ****     fd  = fd;
   36:src/syscalls.c ****     ptr = ptr;
   37:src/syscalls.c ****     dir = dir;
   38:src/syscalls.c ****     r->_errno = ENOSYS;
- 171              		.loc 1 38 0
- 172 000e FB68     		ldr	r3, [r7, #12]
- 173 0010 5822     		movs	r2, #88
- 174 0012 1A60     		str	r2, [r3]
+ 107              		.loc 1 38 0
+ 108 0000 5823     		movs	r3, #88
+ 109              	.LVL6:
+ 110 0002 0360     		str	r3, [r0]
   39:src/syscalls.c ****     return -1;
- 175              		.loc 1 39 0
- 176 0014 4FF0FF33 		mov	r3, #-1
   40:src/syscalls.c **** }
- 177              		.loc 1 40 0
- 178 0018 1846     		mov	r0, r3
- 179 001a 1437     		adds	r7, r7, #20
- 180 001c BD46     		mov	sp, r7
- 181              		@ sp needed
- 182 001e 5DF8047B 		ldr	r7, [sp], #4
- 183 0022 7047     		bx	lr
- 184              		.cfi_endproc
- 185              	.LFE113:
- 187              		.section	.text._close_r,"ax",%progbits
- 188              		.align	2
- 189              		.global	_close_r
- 190              		.thumb
- 191              		.thumb_func
- 193              	_close_r:
- 194              	.LFB114:
+ 111              		.loc 1 40 0
+ 112 0004 4FF0FF30 		mov	r0, #-1
+ 113              	.LVL7:
+ 114 0008 7047     		bx	lr
+ 115              		.cfi_endproc
+ 116              	.LFE113:
+ 118 000a 00BF     		.section	.text._close_r,"ax",%progbits
+ 119              		.align	2
+ 120              		.global	_close_r
+ 121              		.thumb
+ 122              		.thumb_func
+ 124              	_close_r:
+ 125              	.LFB114:
   41:src/syscalls.c **** 
   42:src/syscalls.c **** 
   43:src/syscalls.c **** int _close_r(struct _reent *r, int fd)
   44:src/syscalls.c **** {
- 195              		.loc 1 44 0
- 196              		.cfi_startproc
- 197              		@ args = 0, pretend = 0, frame = 8
- 198              		@ frame_needed = 1, uses_anonymous_args = 0
- 199              		@ link register save eliminated.
- 200 0000 80B4     		push	{r7}
- 201              	.LCFI12:
- 202              		.cfi_def_cfa_offset 4
- 203              		.cfi_offset 7, -4
- 204 0002 83B0     		sub	sp, sp, #12
- 205              	.LCFI13:
- 206              		.cfi_def_cfa_offset 16
- 207 0004 00AF     		add	r7, sp, #0
- 208              	.LCFI14:
- 209              		.cfi_def_cfa_register 7
- 210 0006 7860     		str	r0, [r7, #4]
- 211 0008 3960     		str	r1, [r7]
+ 126              		.loc 1 44 0
+ 127              		.cfi_startproc
+ 128              		@ args = 0, pretend = 0, frame = 0
+ 129              		@ frame_needed = 0, uses_anonymous_args = 0
+ 130              		@ link register save eliminated.
+ 131              	.LVL8:
   45:src/syscalls.c ****     fd = fd;
   46:src/syscalls.c ****     r->_errno = ENOSYS;
- 212              		.loc 1 46 0
- 213 000a 7B68     		ldr	r3, [r7, #4]
- 214 000c 5822     		movs	r2, #88
- 215 000e 1A60     		str	r2, [r3]
+ 132              		.loc 1 46 0
+ 133 0000 5823     		movs	r3, #88
+ 134 0002 0360     		str	r3, [r0]
   47:src/syscalls.c ****     return -1;
- 216              		.loc 1 47 0
- 217 0010 4FF0FF33 		mov	r3, #-1
   48:src/syscalls.c **** }
- 218              		.loc 1 48 0
- 219 0014 1846     		mov	r0, r3
- 220 0016 0C37     		adds	r7, r7, #12
- 221 0018 BD46     		mov	sp, r7
- 222              		@ sp needed
- 223 001a 5DF8047B 		ldr	r7, [sp], #4
- 224 001e 7047     		bx	lr
- 225              		.cfi_endproc
- 226              	.LFE114:
- 228              		.section	.text._fstat_r,"ax",%progbits
- 229              		.align	2
- 230              		.global	_fstat_r
- 231              		.thumb
- 232              		.thumb_func
- 234              	_fstat_r:
- 235              	.LFB115:
+ 135              		.loc 1 48 0
+ 136 0004 4FF0FF30 		mov	r0, #-1
+ 137              	.LVL9:
+ 138 0008 7047     		bx	lr
+ 139              		.cfi_endproc
+ 140              	.LFE114:
+ 142 000a 00BF     		.section	.text._fstat_r,"ax",%progbits
+ 143              		.align	2
+ 144              		.global	_fstat_r
+ 145              		.thumb
+ 146              		.thumb_func
+ 148              	_fstat_r:
+ 149              	.LFB115:
   49:src/syscalls.c **** 
   50:src/syscalls.c **** 
   51:src/syscalls.c **** int _fstat_r(struct _reent *r, int fd, struct stat *st)
   52:src/syscalls.c **** {
- 236              		.loc 1 52 0
- 237              		.cfi_startproc
- 238              		@ args = 0, pretend = 0, frame = 16
- 239              		@ frame_needed = 1, uses_anonymous_args = 0
- 240              		@ link register save eliminated.
- 241 0000 80B4     		push	{r7}
- 242              	.LCFI15:
- 243              		.cfi_def_cfa_offset 4
- 244              		.cfi_offset 7, -4
- 245 0002 85B0     		sub	sp, sp, #20
- 246              	.LCFI16:
- 247              		.cfi_def_cfa_offset 24
- 248 0004 00AF     		add	r7, sp, #0
- 249              	.LCFI17:
- 250              		.cfi_def_cfa_register 7
- 251 0006 F860     		str	r0, [r7, #12]
- 252 0008 B960     		str	r1, [r7, #8]
- 253 000a 7A60     		str	r2, [r7, #4]
+ 150              		.loc 1 52 0
+ 151              		.cfi_startproc
+ 152              		@ args = 0, pretend = 0, frame = 0
+ 153              		@ frame_needed = 0, uses_anonymous_args = 0
+ 154              		@ link register save eliminated.
+ 155              	.LVL10:
   53:src/syscalls.c ****     if ((fd >= STDIN_FILENO) && (fd <= STDERR_FILENO)) {
- 254              		.loc 1 53 0
- 255 000c BB68     		ldr	r3, [r7, #8]
- 256 000e 002B     		cmp	r3, #0
- 257 0010 08DB     		blt	.L12
- 258              		.loc 1 53 0 is_stmt 0 discriminator 1
- 259 0012 BB68     		ldr	r3, [r7, #8]
- 260 0014 022B     		cmp	r3, #2
- 261 0016 05DC     		bgt	.L12
+ 156              		.loc 1 53 0
+ 157 0000 0229     		cmp	r1, #2
   54:src/syscalls.c ****       st->st_mode = S_IFCHR;
- 262              		.loc 1 54 0 is_stmt 1
- 263 0018 7B68     		ldr	r3, [r7, #4]
- 264 001a 4FF40052 		mov	r2, #8192
- 265 001e 5A60     		str	r2, [r3, #4]
+ 158              		.loc 1 54 0
+ 159 0002 9DBF     		ittte	ls
+ 160 0004 4FF40053 		movls	r3, #8192
+ 161 0008 5360     		strls	r3, [r2, #4]
   55:src/syscalls.c ****       return 0;
- 266              		.loc 1 55 0
- 267 0020 0023     		movs	r3, #0
- 268 0022 04E0     		b	.L13
- 269              	.L12:
+ 162              		.loc 1 55 0
+ 163 000a 0020     		movls	r0, #0
+ 164              	.LVL11:
   56:src/syscalls.c ****     }
   57:src/syscalls.c **** 
   58:src/syscalls.c ****     r->_errno = ENOSYS;
- 270              		.loc 1 58 0
- 271 0024 FB68     		ldr	r3, [r7, #12]
- 272 0026 5822     		movs	r2, #88
- 273 0028 1A60     		str	r2, [r3]
+ 165              		.loc 1 58 0
+ 166 000c 5823     		movhi	r3, #88
+ 167 000e 84BF     		itt	hi
+ 168 0010 0360     		strhi	r3, [r0]
   59:src/syscalls.c ****     return -1;
- 274              		.loc 1 59 0
- 275 002a 4FF0FF33 		mov	r3, #-1
- 276              	.L13:
+ 169              		.loc 1 59 0
+ 170 0012 4FF0FF30 		movhi	r0, #-1
   60:src/syscalls.c **** }
- 277              		.loc 1 60 0
- 278 002e 1846     		mov	r0, r3
- 279 0030 1437     		adds	r7, r7, #20
- 280 0032 BD46     		mov	sp, r7
- 281              		@ sp needed
- 282 0034 5DF8047B 		ldr	r7, [sp], #4
- 283 0038 7047     		bx	lr
- 284              		.cfi_endproc
- 285              	.LFE115:
- 287              		.section	.text._isatty_r,"ax",%progbits
- 288              		.align	2
- 289              		.global	_isatty_r
- 290              		.thumb
- 291              		.thumb_func
- 293              	_isatty_r:
- 294              	.LFB116:
+ 171              		.loc 1 60 0
+ 172 0016 7047     		bx	lr
+ 173              		.cfi_endproc
+ 174              	.LFE115:
+ 176              		.section	.text._isatty_r,"ax",%progbits
+ 177              		.align	2
+ 178              		.global	_isatty_r
+ 179              		.thumb
+ 180              		.thumb_func
+ 182              	_isatty_r:
+ 183              	.LFB116:
   61:src/syscalls.c **** 
   62:src/syscalls.c **** 
   63:src/syscalls.c **** int _isatty_r(struct _reent *r, int fd)
   64:src/syscalls.c **** {
- 295              		.loc 1 64 0
- 296              		.cfi_startproc
- 297              		@ args = 0, pretend = 0, frame = 8
- 298              		@ frame_needed = 1, uses_anonymous_args = 0
- 299              		@ link register save eliminated.
- 300 0000 80B4     		push	{r7}
- 301              	.LCFI18:
- 302              		.cfi_def_cfa_offset 4
- 303              		.cfi_offset 7, -4
- 304 0002 83B0     		sub	sp, sp, #12
- 305              	.LCFI19:
- 306              		.cfi_def_cfa_offset 16
- 307 0004 00AF     		add	r7, sp, #0
- 308              	.LCFI20:
- 309              		.cfi_def_cfa_register 7
- 310 0006 7860     		str	r0, [r7, #4]
- 311 0008 3960     		str	r1, [r7]
+ 184              		.loc 1 64 0
+ 185              		.cfi_startproc
+ 186              		@ args = 0, pretend = 0, frame = 0
+ 187              		@ frame_needed = 0, uses_anonymous_args = 0
+ 188              		@ link register save eliminated.
+ 189              	.LVL12:
   65:src/syscalls.c ****     r  = r;
   66:src/syscalls.c ****     fd = fd;
   67:src/syscalls.c ****     return 1;
- 312              		.loc 1 67 0
- 313 000a 0123     		movs	r3, #1
   68:src/syscalls.c **** }
- 314              		.loc 1 68 0
- 315 000c 1846     		mov	r0, r3
- 316 000e 0C37     		adds	r7, r7, #12
- 317 0010 BD46     		mov	sp, r7
- 318              		@ sp needed
- 319 0012 5DF8047B 		ldr	r7, [sp], #4
- 320 0016 7047     		bx	lr
- 321              		.cfi_endproc
- 322              	.LFE116:
- 324              		.section	.text._sbrk_r,"ax",%progbits
- 325              		.align	2
- 326              		.global	_sbrk_r
- 327              		.thumb
- 328              		.thumb_func
- 330              	_sbrk_r:
- 331              	.LFB117:
+ 190              		.loc 1 68 0
+ 191 0000 0120     		movs	r0, #1
+ 192              	.LVL13:
+ 193 0002 7047     		bx	lr
+ 194              		.cfi_endproc
+ 195              	.LFE116:
+ 197              		.section	.text._sbrk_r,"ax",%progbits
+ 198              		.align	2
+ 199              		.global	_sbrk_r
+ 200              		.thumb
+ 201              		.thumb_func
+ 203              	_sbrk_r:
+ 204              	.LFB117:
   69:src/syscalls.c **** 
   70:src/syscalls.c **** 
   71:src/syscalls.c **** void *_sbrk_r(struct _reent *r, ptrdiff_t incr)
   72:src/syscalls.c **** {
- 332              		.loc 1 72 0
- 333              		.cfi_startproc
- 334              		@ args = 0, pretend = 0, frame = 16
- 335              		@ frame_needed = 1, uses_anonymous_args = 0
- 336              		@ link register save eliminated.
- 337 0000 90B4     		push	{r4, r7}
- 338              	.LCFI21:
- 339              		.cfi_def_cfa_offset 8
- 340              		.cfi_offset 4, -8
- 341              		.cfi_offset 7, -4
- 342 0002 84B0     		sub	sp, sp, #16
- 343              	.LCFI22:
- 344              		.cfi_def_cfa_offset 24
- 345 0004 00AF     		add	r7, sp, #0
- 346              	.LCFI23:
- 347              		.cfi_def_cfa_register 7
- 348 0006 7860     		str	r0, [r7, #4]
- 349 0008 3960     		str	r1, [r7]
+ 205              		.loc 1 72 0
+ 206              		.cfi_startproc
+ 207              		@ args = 0, pretend = 0, frame = 0
+ 208              		@ frame_needed = 0, uses_anonymous_args = 0
+ 209              		@ link register save eliminated.
+ 210              	.LVL14:
+ 211 0000 30B4     		push	{r4, r5}
+ 212              	.LCFI2:
+ 213              		.cfi_def_cfa_offset 8
+ 214              		.cfi_offset 4, -8
+ 215              		.cfi_offset 5, -4
   73:src/syscalls.c ****     extern char end;   // provided by the linker script
   74:src/syscalls.c **** 
   75:src/syscalls.c ****     if (__brkval == 0)
- 350              		.loc 1 75 0
- 351 000a 40F20003 		movw	r3, #:lower16:__brkval
- 352 000e C0F20003 		movt	r3, #:upper16:__brkval
- 353 0012 1B68     		ldr	r3, [r3]
- 354 0014 002B     		cmp	r3, #0
- 355 0016 08D1     		bne	.L17
+ 216              		.loc 1 75 0
+ 217 0002 40F20003 		movw	r3, #:lower16:__brkval
+ 218 0006 C0F20003 		movt	r3, #:upper16:__brkval
+ 219 000a 1B68     		ldr	r3, [r3]
+ 220 000c 43B9     		cbnz	r3, .L12
   76:src/syscalls.c ****         __brkval = &end;
- 356              		.loc 1 76 0
- 357 0018 40F20003 		movw	r3, #:lower16:__brkval
- 358 001c C0F20003 		movt	r3, #:upper16:__brkval
- 359 0020 40F20002 		movw	r2, #:lower16:end
- 360 0024 C0F20002 		movt	r2, #:upper16:end
- 361 0028 1A60     		str	r2, [r3]
- 362              	.L17:
+ 221              		.loc 1 76 0
+ 222 000e 40F20003 		movw	r3, #:lower16:__brkval
+ 223 0012 C0F20003 		movt	r3, #:upper16:__brkval
+ 224 0016 40F20002 		movw	r2, #:lower16:end
+ 225 001a C0F20002 		movt	r2, #:upper16:end
+ 226 001e 1A60     		str	r2, [r3]
+ 227              	.L12:
   77:src/syscalls.c **** 
   78:src/syscalls.c ****     if (__brkval + incr > (char*)__get_MSP() - __malloc_margin) {
- 363              		.loc 1 78 0
- 364 002a 40F20003 		movw	r3, #:lower16:__brkval
- 365 002e C0F20003 		movt	r3, #:upper16:__brkval
- 366 0032 1A68     		ldr	r2, [r3]
- 367 0034 3B68     		ldr	r3, [r7]
- 368 0036 1A44     		add	r2, r2, r3
- 369              	.LBB4:
- 370              	.LBB5:
- 371              		.file 2 "libs/CMSIS/Include/core_cmFunc.h"
+ 228              		.loc 1 78 0
+ 229 0020 40F20003 		movw	r3, #:lower16:__brkval
+ 230 0024 C0F20003 		movt	r3, #:upper16:__brkval
+ 231 0028 1A68     		ldr	r2, [r3]
+ 232 002a 1144     		add	r1, r1, r2
+ 233              	.LVL15:
+ 234              	.LBB4:
+ 235              	.LBB5:
+ 236              		.file 2 "libs/CMSIS/Include/core_cmFunc.h"
    1:libs/CMSIS/Include/core_cmFunc.h **** /**************************************************************************//**
    2:libs/CMSIS/Include/core_cmFunc.h ****  * @file     core_cmFunc.h
    3:libs/CMSIS/Include/core_cmFunc.h ****  * @brief    CMSIS Cortex-M Core Function Access Header File
@@ -864,280 +731,287 @@
  432:libs/CMSIS/Include/core_cmFunc.h ****   register uint32_t result;
  433:libs/CMSIS/Include/core_cmFunc.h **** 
  434:libs/CMSIS/Include/core_cmFunc.h ****   __ASM volatile ("MRS %0, msp\n" : "=r" (result) );
- 372              		.loc 2 434 0
- 373              	@ 434 "libs/CMSIS/Include/core_cmFunc.h" 1
- 374 0038 EFF30883 		MRS r3, msp
- 375              	
- 376              	@ 0 "" 2
- 377              		.thumb
- 378 003c 1C46     		mov	r4, r3
- 435:libs/CMSIS/Include/core_cmFunc.h ****   return(result);
- 379              		.loc 2 435 0
- 380 003e 2346     		mov	r3, r4
- 381              	.LBE5:
- 382              	.LBE4:
- 383              		.loc 1 78 0
- 384 0040 1946     		mov	r1, r3
- 385 0042 40F20003 		movw	r3, #:lower16:__malloc_margin
- 386 0046 C0F20003 		movt	r3, #:upper16:__malloc_margin
- 387 004a 1B68     		ldr	r3, [r3]
- 388 004c CB1A     		subs	r3, r1, r3
- 389 004e 9A42     		cmp	r2, r3
- 390 0050 05D9     		bls	.L19
+ 237              		.loc 2 434 0
+ 238              	@ 434 "libs/CMSIS/Include/core_cmFunc.h" 1
+ 239 002c EFF30885 		MRS r5, msp
+ 240              	
+ 241              	@ 0 "" 2
+ 242              		.thumb
+ 243              	.LBE5:
+ 244              	.LBE4:
+ 245              		.loc 1 78 0
+ 246 0030 40F20003 		movw	r3, #:lower16:.LANCHOR0
+ 247 0034 C0F20003 		movt	r3, #:upper16:.LANCHOR0
+ 248 0038 1C68     		ldr	r4, [r3]
+ 249 003a 2B1B     		subs	r3, r5, r4
+ 250 003c 9942     		cmp	r1, r3
   79:src/syscalls.c ****         r->_errno = ENOMEM;
- 391              		.loc 1 79 0
- 392 0052 7B68     		ldr	r3, [r7, #4]
- 393 0054 0C22     		movs	r2, #12
- 394 0056 1A60     		str	r2, [r3]
+ 251              		.loc 1 79 0
+ 252 003e 83BF     		ittte	hi
+ 253 0040 0C23     		movhi	r3, #12
+ 254 0042 0360     		strhi	r3, [r0]
   80:src/syscalls.c ****         return (void*)-1;
- 395              		.loc 1 80 0
- 396 0058 4FF0FF33 		mov	r3, #-1
- 397 005c 12E0     		b	.L20
- 398              	.L19:
+ 255              		.loc 1 80 0
+ 256 0044 4FF0FF30 		movhi	r0, #-1
+ 257              	.LVL16:
   81:src/syscalls.c ****     }
   82:src/syscalls.c **** 
   83:src/syscalls.c ****     void *ret = __brkval;
- 399              		.loc 1 83 0
- 400 005e 40F20003 		movw	r3, #:lower16:__brkval
- 401 0062 C0F20003 		movt	r3, #:upper16:__brkval
- 402 0066 1B68     		ldr	r3, [r3]
- 403 0068 FB60     		str	r3, [r7, #12]
   84:src/syscalls.c ****     __brkval += incr;
- 404              		.loc 1 84 0
- 405 006a 40F20003 		movw	r3, #:lower16:__brkval
- 406 006e C0F20003 		movt	r3, #:upper16:__brkval
- 407 0072 1A68     		ldr	r2, [r3]
- 408 0074 3B68     		ldr	r3, [r7]
- 409 0076 1A44     		add	r2, r2, r3
- 410 0078 40F20003 		movw	r3, #:lower16:__brkval
- 411 007c C0F20003 		movt	r3, #:upper16:__brkval
- 412 0080 1A60     		str	r2, [r3]
+ 258              		.loc 1 84 0
+ 259 0048 40F20003 		movwls	r3, #:lower16:__brkval
+ 260 004c 9EBF     		ittt	ls
+ 261 004e C0F20003 		movtls	r3, #:upper16:__brkval
+ 262 0052 1960     		strls	r1, [r3]
   85:src/syscalls.c **** 
   86:src/syscalls.c ****     return ret;
- 413              		.loc 1 86 0
- 414 0082 FB68     		ldr	r3, [r7, #12]
- 415              	.L20:
+ 263              		.loc 1 86 0
+ 264 0054 1046     		movls	r0, r2
   87:src/syscalls.c **** }
- 416              		.loc 1 87 0
- 417 0084 1846     		mov	r0, r3
- 418 0086 1037     		adds	r7, r7, #16
- 419 0088 BD46     		mov	sp, r7
- 420              		@ sp needed
- 421 008a 90BC     		pop	{r4, r7}
- 422 008c 7047     		bx	lr
- 423              		.cfi_endproc
- 424              	.LFE117:
- 426 008e 00BF     		.section	.text._kill_r,"ax",%progbits
- 427              		.align	2
- 428              		.global	_kill_r
- 429              		.thumb
- 430              		.thumb_func
- 432              	_kill_r:
- 433              	.LFB118:
+ 265              		.loc 1 87 0
+ 266 0056 30BC     		pop	{r4, r5}
+ 267 0058 7047     		bx	lr
+ 268              		.cfi_endproc
+ 269              	.LFE117:
+ 271 005a 00BF     		.section	.text._kill_r,"ax",%progbits
+ 272              		.align	2
+ 273              		.global	_kill_r
+ 274              		.thumb
+ 275              		.thumb_func
+ 277              	_kill_r:
+ 278              	.LFB118:
   88:src/syscalls.c **** 
   89:src/syscalls.c **** 
   90:src/syscalls.c **** int _kill_r(struct _reent *r, int pid, int signal)
   91:src/syscalls.c **** {
- 434              		.loc 1 91 0
- 435              		.cfi_startproc
- 436              		@ args = 0, pretend = 0, frame = 16
- 437              		@ frame_needed = 1, uses_anonymous_args = 0
- 438              		@ link register save eliminated.
- 439 0000 80B4     		push	{r7}
- 440              	.LCFI24:
- 441              		.cfi_def_cfa_offset 4
- 442              		.cfi_offset 7, -4
- 443 0002 85B0     		sub	sp, sp, #20
- 444              	.LCFI25:
- 445              		.cfi_def_cfa_offset 24
- 446 0004 00AF     		add	r7, sp, #0
- 447              	.LCFI26:
- 448              		.cfi_def_cfa_register 7
- 449 0006 F860     		str	r0, [r7, #12]
- 450 0008 B960     		str	r1, [r7, #8]
- 451 000a 7A60     		str	r2, [r7, #4]
+ 279              		.loc 1 91 0
+ 280              		.cfi_startproc
+ 281              		@ args = 0, pretend = 0, frame = 0
+ 282              		@ frame_needed = 0, uses_anonymous_args = 0
+ 283              		@ link register save eliminated.
+ 284              	.LVL17:
   92:src/syscalls.c ****     r->_errno = ENOSYS;
- 452              		.loc 1 92 0
- 453 000c FB68     		ldr	r3, [r7, #12]
- 454 000e 5822     		movs	r2, #88
- 455 0010 1A60     		str	r2, [r3]
+ 285              		.loc 1 92 0
+ 286 0000 5823     		movs	r3, #88
+ 287 0002 0360     		str	r3, [r0]
   93:src/syscalls.c ****     return -1;
- 456              		.loc 1 93 0
- 457 0012 4FF0FF33 		mov	r3, #-1
   94:src/syscalls.c **** }
- 458              		.loc 1 94 0
- 459 0016 1846     		mov	r0, r3
- 460 0018 1437     		adds	r7, r7, #20
- 461 001a BD46     		mov	sp, r7
- 462              		@ sp needed
- 463 001c 5DF8047B 		ldr	r7, [sp], #4
- 464 0020 7047     		bx	lr
- 465              		.cfi_endproc
- 466              	.LFE118:
- 468 0022 00BF     		.section	.text._getpid_r,"ax",%progbits
- 469              		.align	2
- 470              		.global	_getpid_r
- 471              		.thumb
- 472              		.thumb_func
- 474              	_getpid_r:
- 475              	.LFB119:
+ 288              		.loc 1 94 0
+ 289 0004 4FF0FF30 		mov	r0, #-1
+ 290              	.LVL18:
+ 291 0008 7047     		bx	lr
+ 292              		.cfi_endproc
+ 293              	.LFE118:
+ 295 000a 00BF     		.section	.text._getpid_r,"ax",%progbits
+ 296              		.align	2
+ 297              		.global	_getpid_r
+ 298              		.thumb
+ 299              		.thumb_func
+ 301              	_getpid_r:
+ 302              	.LFB119:
   95:src/syscalls.c **** 
   96:src/syscalls.c **** 
   97:src/syscalls.c **** int _getpid_r(struct _reent *r)
   98:src/syscalls.c **** {
- 476              		.loc 1 98 0
- 477              		.cfi_startproc
- 478              		@ args = 0, pretend = 0, frame = 8
- 479              		@ frame_needed = 1, uses_anonymous_args = 0
- 480              		@ link register save eliminated.
- 481 0000 80B4     		push	{r7}
- 482              	.LCFI27:
- 483              		.cfi_def_cfa_offset 4
- 484              		.cfi_offset 7, -4
- 485 0002 83B0     		sub	sp, sp, #12
- 486              	.LCFI28:
- 487              		.cfi_def_cfa_offset 16
- 488 0004 00AF     		add	r7, sp, #0
- 489              	.LCFI29:
- 490              		.cfi_def_cfa_register 7
- 491 0006 7860     		str	r0, [r7, #4]
+ 303              		.loc 1 98 0
+ 304              		.cfi_startproc
+ 305              		@ args = 0, pretend = 0, frame = 0
+ 306              		@ frame_needed = 0, uses_anonymous_args = 0
+ 307              		@ link register save eliminated.
+ 308              	.LVL19:
   99:src/syscalls.c ****     r->_errno = ENOSYS;
- 492              		.loc 1 99 0
- 493 0008 7B68     		ldr	r3, [r7, #4]
- 494 000a 5822     		movs	r2, #88
- 495 000c 1A60     		str	r2, [r3]
+ 309              		.loc 1 99 0
+ 310 0000 5823     		movs	r3, #88
+ 311 0002 0360     		str	r3, [r0]
  100:src/syscalls.c ****     return -1;
- 496              		.loc 1 100 0
- 497 000e 4FF0FF33 		mov	r3, #-1
  101:src/syscalls.c **** }
- 498              		.loc 1 101 0
- 499 0012 1846     		mov	r0, r3
- 500 0014 0C37     		adds	r7, r7, #12
- 501 0016 BD46     		mov	sp, r7
- 502              		@ sp needed
- 503 0018 5DF8047B 		ldr	r7, [sp], #4
- 504 001c 7047     		bx	lr
- 505              		.cfi_endproc
- 506              	.LFE119:
- 508 001e 00BF     		.section	.text.__malloc_lock,"ax",%progbits
- 509              		.align	2
- 510              		.global	__malloc_lock
- 511              		.thumb
- 512              		.thumb_func
- 514              	__malloc_lock:
- 515              	.LFB120:
+ 312              		.loc 1 101 0
+ 313 0004 4FF0FF30 		mov	r0, #-1
+ 314              	.LVL20:
+ 315 0008 7047     		bx	lr
+ 316              		.cfi_endproc
+ 317              	.LFE119:
+ 319 000a 00BF     		.section	.text.__malloc_lock,"ax",%progbits
+ 320              		.align	2
+ 321              		.global	__malloc_lock
+ 322              		.thumb
+ 323              		.thumb_func
+ 325              	__malloc_lock:
+ 326              	.LFB120:
  102:src/syscalls.c **** 
  103:src/syscalls.c **** 
  104:src/syscalls.c **** void __malloc_lock(struct _reent *r)
  105:src/syscalls.c **** {
- 516              		.loc 1 105 0
- 517              		.cfi_startproc
- 518              		@ args = 0, pretend = 0, frame = 8
- 519              		@ frame_needed = 1, uses_anonymous_args = 0
- 520 0000 80B5     		push	{r7, lr}
- 521              	.LCFI30:
- 522              		.cfi_def_cfa_offset 8
- 523              		.cfi_offset 7, -8
- 524              		.cfi_offset 14, -4
- 525 0002 82B0     		sub	sp, sp, #8
- 526              	.LCFI31:
- 527              		.cfi_def_cfa_offset 16
- 528 0004 00AF     		add	r7, sp, #0
- 529              	.LCFI32:
- 530              		.cfi_def_cfa_register 7
- 531 0006 7860     		str	r0, [r7, #4]
+ 327              		.loc 1 105 0
+ 328              		.cfi_startproc
+ 329              		@ args = 0, pretend = 0, frame = 0
+ 330              		@ frame_needed = 0, uses_anonymous_args = 0
+ 331              	.LVL21:
+ 332 0000 08B5     		push	{r3, lr}
+ 333              	.LCFI3:
+ 334              		.cfi_def_cfa_offset 8
+ 335              		.cfi_offset 3, -8
+ 336              		.cfi_offset 14, -4
  106:src/syscalls.c ****     vPortEnterCritical();
- 532              		.loc 1 106 0
- 533 0008 FFF7FEFF 		bl	vPortEnterCritical
+ 337              		.loc 1 106 0
+ 338 0002 FFF7FEFF 		bl	vPortEnterCritical
+ 339              	.LVL22:
+ 340 0006 08BD     		pop	{r3, pc}
+ 341              		.cfi_endproc
+ 342              	.LFE120:
+ 344              		.section	.text.__malloc_unlock,"ax",%progbits
+ 345              		.align	2
+ 346              		.global	__malloc_unlock
+ 347              		.thumb
+ 348              		.thumb_func
+ 350              	__malloc_unlock:
+ 351              	.LFB121:
  107:src/syscalls.c **** }
- 534              		.loc 1 107 0
- 535 000c 0837     		adds	r7, r7, #8
- 536 000e BD46     		mov	sp, r7
- 537              		@ sp needed
- 538 0010 80BD     		pop	{r7, pc}
- 539              		.cfi_endproc
- 540              	.LFE120:
- 542 0012 00BF     		.section	.text.__malloc_unlock,"ax",%progbits
- 543              		.align	2
- 544              		.global	__malloc_unlock
- 545              		.thumb
- 546              		.thumb_func
- 548              	__malloc_unlock:
- 549              	.LFB121:
  108:src/syscalls.c **** 
  109:src/syscalls.c **** 
  110:src/syscalls.c **** void __malloc_unlock(struct _reent *r)
  111:src/syscalls.c **** {
- 550              		.loc 1 111 0
- 551              		.cfi_startproc
- 552              		@ args = 0, pretend = 0, frame = 8
- 553              		@ frame_needed = 1, uses_anonymous_args = 0
- 554 0000 80B5     		push	{r7, lr}
- 555              	.LCFI33:
- 556              		.cfi_def_cfa_offset 8
- 557              		.cfi_offset 7, -8
- 558              		.cfi_offset 14, -4
- 559 0002 82B0     		sub	sp, sp, #8
- 560              	.LCFI34:
- 561              		.cfi_def_cfa_offset 16
- 562 0004 00AF     		add	r7, sp, #0
- 563              	.LCFI35:
- 564              		.cfi_def_cfa_register 7
- 565 0006 7860     		str	r0, [r7, #4]
+ 352              		.loc 1 111 0
+ 353              		.cfi_startproc
+ 354              		@ args = 0, pretend = 0, frame = 0
+ 355              		@ frame_needed = 0, uses_anonymous_args = 0
+ 356              	.LVL23:
+ 357 0000 08B5     		push	{r3, lr}
+ 358              	.LCFI4:
+ 359              		.cfi_def_cfa_offset 8
+ 360              		.cfi_offset 3, -8
+ 361              		.cfi_offset 14, -4
  112:src/syscalls.c ****     vPortExitCritical();
- 566              		.loc 1 112 0
- 567 0008 FFF7FEFF 		bl	vPortExitCritical
- 113:src/syscalls.c **** }
- 568              		.loc 1 113 0
- 569 000c 0837     		adds	r7, r7, #8
- 570 000e BD46     		mov	sp, r7
- 571              		@ sp needed
- 572 0010 80BD     		pop	{r7, pc}
- 573              		.cfi_endproc
- 574              	.LFE121:
- 576 0012 00BF     		.text
- 577              	.Letext0:
- 578              		.file 3 "/usr/lib/gcc/arm-none-eabi/4.8.2/include/stddef.h"
- 579              		.file 4 "/usr/include/newlib/machine/_default_types.h"
- 580              		.file 5 "/usr/include/newlib/sys/lock.h"
- 581              		.file 6 "/usr/include/newlib/sys/_types.h"
- 582              		.file 7 "/usr/include/newlib/sys/reent.h"
- 583              		.file 8 "/usr/include/newlib/sys/types.h"
- 584              		.file 9 "/usr/include/newlib/stdint.h"
- 585              		.file 10 "/usr/include/newlib/sys/stat.h"
- 586              		.file 11 "/usr/include/newlib/reent.h"
- 587              		.file 12 "/usr/include/newlib/sys/unistd.h"
- 588              		.file 13 "libs/CMSIS/Include/core_cm4.h"
+ 362              		.loc 1 112 0
+ 363 0002 FFF7FEFF 		bl	vPortExitCritical
+ 364              	.LVL24:
+ 365 0006 08BD     		pop	{r3, pc}
+ 366              		.cfi_endproc
+ 367              	.LFE121:
+ 369              		.comm	__brkval,4,4
+ 370              		.global	__malloc_margin
+ 371              		.section	.data.__malloc_margin,"aw",%progbits
+ 372              		.align	2
+ 373              		.set	.LANCHOR0,. + 0
+ 376              	__malloc_margin:
+ 377 0000 00010000 		.word	256
+ 378              		.text
+ 379              	.Letext0:
+ 380              		.file 3 "/usr/lib/gcc/arm-none-eabi/4.8.2/include/stddef.h"
+ 381              		.file 4 "/usr/include/newlib/machine/_default_types.h"
+ 382              		.file 5 "/usr/include/newlib/sys/lock.h"
+ 383              		.file 6 "/usr/include/newlib/sys/_types.h"
+ 384              		.file 7 "/usr/include/newlib/sys/reent.h"
+ 385              		.file 8 "/usr/include/newlib/sys/types.h"
+ 386              		.file 9 "/usr/include/newlib/stdint.h"
+ 387              		.file 10 "/usr/include/newlib/sys/stat.h"
+ 388              		.file 11 "/usr/include/newlib/reent.h"
+ 389              		.file 12 "/usr/include/newlib/sys/unistd.h"
+ 390              		.file 13 "libs/CMSIS/Include/core_cm4.h"
+ 391              		.file 14 "src/uart.h"
+ 392              		.file 15 "FreeRTOS/Source/include/../../Source/portable/GCC/ARM_CM4F/portmacro.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 syscalls.c
-     /tmp/ccD2k3Q7.s:24     .data.__malloc_margin:0000000000000000 __malloc_margin
-     /tmp/ccD2k3Q7.s:21     .data.__malloc_margin:0000000000000000 $d
+     /tmp/ccMN7cO7.s:20     .text._exit:0000000000000000 $t
+     /tmp/ccMN7cO7.s:25     .text._exit:0000000000000000 _exit
+     /tmp/ccMN7cO7.s:41     .text._read_r:0000000000000000 $t
+     /tmp/ccMN7cO7.s:46     .text._read_r:0000000000000000 _read_r
+     /tmp/ccMN7cO7.s:68     .text._write_r:0000000000000000 $t
+     /tmp/ccMN7cO7.s:73     .text._write_r:0000000000000000 _write_r
+     /tmp/ccMN7cO7.s:94     .text._lseek_r:0000000000000000 $t
+     /tmp/ccMN7cO7.s:99     .text._lseek_r:0000000000000000 _lseek_r
+     /tmp/ccMN7cO7.s:119    .text._close_r:0000000000000000 $t
+     /tmp/ccMN7cO7.s:124    .text._close_r:0000000000000000 _close_r
+     /tmp/ccMN7cO7.s:143    .text._fstat_r:0000000000000000 $t
+     /tmp/ccMN7cO7.s:148    .text._fstat_r:0000000000000000 _fstat_r
+     /tmp/ccMN7cO7.s:177    .text._isatty_r:0000000000000000 $t
+     /tmp/ccMN7cO7.s:182    .text._isatty_r:0000000000000000 _isatty_r
+     /tmp/ccMN7cO7.s:198    .text._sbrk_r:0000000000000000 $t
+     /tmp/ccMN7cO7.s:203    .text._sbrk_r:0000000000000000 _sbrk_r
                             *COM*:0000000000000004 __brkval
-     /tmp/ccD2k3Q7.s:28     .text._exit:0000000000000000 $t
-     /tmp/ccD2k3Q7.s:33     .text._exit:0000000000000000 _exit
-     /tmp/ccD2k3Q7.s:59     .text._read_r:0000000000000000 $t
-     /tmp/ccD2k3Q7.s:64     .text._read_r:0000000000000000 _read_r
-     /tmp/ccD2k3Q7.s:102    .text._write_r:0000000000000000 $t
-     /tmp/ccD2k3Q7.s:107    .text._write_r:0000000000000000 _write_r
-     /tmp/ccD2k3Q7.s:145    .text._lseek_r:0000000000000000 $t
-     /tmp/ccD2k3Q7.s:150    .text._lseek_r:0000000000000000 _lseek_r
-     /tmp/ccD2k3Q7.s:188    .text._close_r:0000000000000000 $t
-     /tmp/ccD2k3Q7.s:193    .text._close_r:0000000000000000 _close_r
-     /tmp/ccD2k3Q7.s:229    .text._fstat_r:0000000000000000 $t
-     /tmp/ccD2k3Q7.s:234    .text._fstat_r:0000000000000000 _fstat_r
-     /tmp/ccD2k3Q7.s:288    .text._isatty_r:0000000000000000 $t
-     /tmp/ccD2k3Q7.s:293    .text._isatty_r:0000000000000000 _isatty_r
-     /tmp/ccD2k3Q7.s:325    .text._sbrk_r:0000000000000000 $t
-     /tmp/ccD2k3Q7.s:330    .text._sbrk_r:0000000000000000 _sbrk_r
-     /tmp/ccD2k3Q7.s:427    .text._kill_r:0000000000000000 $t
-     /tmp/ccD2k3Q7.s:432    .text._kill_r:0000000000000000 _kill_r
-     /tmp/ccD2k3Q7.s:469    .text._getpid_r:0000000000000000 $t
-     /tmp/ccD2k3Q7.s:474    .text._getpid_r:0000000000000000 _getpid_r
-     /tmp/ccD2k3Q7.s:509    .text.__malloc_lock:0000000000000000 $t
-     /tmp/ccD2k3Q7.s:514    .text.__malloc_lock:0000000000000000 __malloc_lock
-     /tmp/ccD2k3Q7.s:543    .text.__malloc_unlock:0000000000000000 $t
-     /tmp/ccD2k3Q7.s:548    .text.__malloc_unlock:0000000000000000 __malloc_unlock
+     /tmp/ccMN7cO7.s:373    .data.__malloc_margin:0000000000000000 .LANCHOR0
+     /tmp/ccMN7cO7.s:272    .text._kill_r:0000000000000000 $t
+     /tmp/ccMN7cO7.s:277    .text._kill_r:0000000000000000 _kill_r
+     /tmp/ccMN7cO7.s:296    .text._getpid_r:0000000000000000 $t
+     /tmp/ccMN7cO7.s:301    .text._getpid_r:0000000000000000 _getpid_r
+     /tmp/ccMN7cO7.s:320    .text.__malloc_lock:0000000000000000 $t
+     /tmp/ccMN7cO7.s:325    .text.__malloc_lock:0000000000000000 __malloc_lock
+     /tmp/ccMN7cO7.s:345    .text.__malloc_unlock:0000000000000000 $t
+     /tmp/ccMN7cO7.s:350    .text.__malloc_unlock:0000000000000000 __malloc_unlock
+     /tmp/ccMN7cO7.s:376    .data.__malloc_margin:0000000000000000 __malloc_margin
+     /tmp/ccMN7cO7.s:372    .data.__malloc_margin:0000000000000000 $d
                      .debug_frame:0000000000000010 $d
+                           .group:0000000000000000 wm4.1.7402b5479d3fa4780665141f585fc0ee
+                           .group:0000000000000000 wm4.newlib.h.8.fec018e441fee7bfa1923812ad010f97
+                           .group:0000000000000000 wm4.features.h.22.6a4ca7cd053637cc1d0db6c16f39b2d7
+                           .group:0000000000000000 wm4.config.h.212.4163ef2871a828c674038d036b081cfd
+                           .group:0000000000000000 wm4._ansi.h.23.2147fde150631f5584b9dc29b914d1b8
+                           .group:0000000000000000 wm4.stddef.h.39.daafd3d79fe2f3a84d2d73d7d4e706f8
+                           .group:0000000000000000 wm4._default_types.h.6.9e4229723f5523536bc8f574589d6a99
+                           .group:0000000000000000 wm4.lock.h.2.9bc98482741e5e2a9450b12934a684ea
+                           .group:0000000000000000 wm4._types.h.54.d3d34a3b7f3cc230cd159baf022b4b08
+                           .group:0000000000000000 wm4.stddef.h.158.61317cdbfb4026324507d123a50b0fd6
+                           .group:0000000000000000 wm4.reent.h.17.8bd9e4098e0428508c282cad794fae43
+                           .group:0000000000000000 wm4.types.h.2.e9cec8c90ab35f77d9f499e06ae02400
+                           .group:0000000000000000 wm4.reent.h.97.2ae38345dababbc3acb159bb773d0e93
+                           .group:0000000000000000 wm4.stddef.h.158.a7efb00f6cbc6f43213b50e183c9830c
+                           .group:0000000000000000 wm4.types.h.23.0d949686bbcadd1621462d4fa1f884f9
+                           .group:0000000000000000 wm4.types.h.80.56707660962b21991903f1fee7c13bb3
+                           .group:0000000000000000 wm4.stm32f4xx.h.48.a3308e16720c7afc3eb28e585e628ce6
+                           .group:0000000000000000 wm4.core_cm4.h.32.5f62939b60122629d60d85d0c4a14709
+                           .group:0000000000000000 wm4.stdint.h.10.d0f8e374834fcfc2e296d5d5fe82f02a
+                           .group:0000000000000000 wm4.core_cmInstr.h.25.f50f886f2edf670cf199b35fd96f5c91
+                           .group:0000000000000000 wm4.core_cm4_simd.h.29.b4a3fdfb606cb3b26119424324d4b963
+                           .group:0000000000000000 wm4.core_cm4.h.153.5393ef7e6cebf34dd51ca528f9218ab3
+                           .group:0000000000000000 wm4.stm32f4xx.h.282.95bae448a91bccfbf24a6f9d95904bb8
+                           .group:0000000000000000 wm4.stm32f4xx_adc.h.102.2061aa73008746f3c2cc6ce8f635cad3
+                           .group:0000000000000000 wm4.stm32f4xx_can.h.25.87f18ca48b2692d39f76e87b1f07c953
+                           .group:0000000000000000 wm4.stm32f4xx_cryp.h.25.db1951c06ee684df97ea3a11aba6cb51
+                           .group:0000000000000000 wm4.stm32f4xx_dac.h.25.c43557a6416ea4dfa986c1209c2558d6
+                           .group:0000000000000000 wm4.stm32f4xx_dbgmcu.h.24.7aedfdcf091890b5cb96019bd29a2bfc
+                           .group:0000000000000000 wm4.stm32f4xx_dcmi.h.24.64883d9be802a535b1d7770d14da73e0
+                           .group:0000000000000000 wm4.stm32f4xx_dma.h.25.c1fa1d44ae0bc9c2b3a0d1d355d8c1e6
+                           .group:0000000000000000 wm4.stm32f4xx_exti.h.25.620998268d5d3d9042a8297fbe07d507
+                           .group:0000000000000000 wm4.stm32f4xx_flash.h.25.65d4f351b72ee41355279f70305f361a
+                           .group:0000000000000000 wm4.stm32f4xx_fsmc.h.25.b907ac7bd9bec46e02d06b137d53cfd8
+                           .group:0000000000000000 wm4.stm32f4xx_hash.h.25.633fb84f031cf2ab1bd834e536716dfa
+                           .group:0000000000000000 wm4.stm32f4xx_gpio.h.25.5bd1d790d742a307b55aea5fa8fcdae8
+                           .group:0000000000000000 wm4.stm32f4xx_i2c.h.25.8fcdb817a00a67d4624d79bab0d9275f
+                           .group:0000000000000000 wm4.stm32f4xx_iwdg.h.25.3013e8d2058415cb9d51af77f748a146
+                           .group:0000000000000000 wm4.stm32f4xx_pwr.h.25.48b68c1f3a894ab012f9c2a2c222f159
+                           .group:0000000000000000 wm4.stm32f4xx_rcc.h.24.c15e7c8dc065bb29146f29591b195c87
+                           .group:0000000000000000 wm4.stm32f4xx_rng.h.25.cdb5c5c07de6a48aedfde608da3f447e
+                           .group:0000000000000000 wm4.stm32f4xx_rtc.h.25.4809a79ad46ad97b4a01e735a96738eb
+                           .group:0000000000000000 wm4.stm32f4xx_sdio.h.25.406302aabae34eada94e5f2cde635a3e
+                           .group:0000000000000000 wm4.stm32f4xx_spi.h.25.46c61b79ff8408da93e2e90cf9b717d6
+                           .group:0000000000000000 wm4.stm32f4xx_syscfg.h.25.9d5caab5677661b69e959531364e23d7
+                           .group:0000000000000000 wm4.stm32f4xx_tim.h.25.948f7fc943f34bd206e29758e77ee0a2
+                           .group:0000000000000000 wm4.stm32f4xx_usart.h.25.b64697dad017ba547dd272c2cdb5846a
+                           .group:0000000000000000 wm4.stm32f4xx_wwdg.h.25.09d70b7849c6894ddf1e83c8e86b70e1
+                           .group:0000000000000000 wm4.misc.h.25.a0cb758c1f091b46f201b19cec9e63a1
+                           .group:0000000000000000 wm4.stm32f4xx.h.6913.da011404ccb203790556c86f10c46b18
+                           .group:0000000000000000 wm4.projdefs.h.55.cdae9ead80b5a2ac004f41bb277aad45
+                           .group:0000000000000000 wm4.FreeRTOSConfig.h.55.a343614a17c4367a6359a1f530d6d32b
+                           .group:0000000000000000 wm4.FreeRTOSConfig.h.74.fc794e36cd6c91c3b4695c74d78d9ccd
+                           .group:0000000000000000 wm4.portmacro.h.69.a7e264ae32accd81a6ffb6f75a8356fe
+                           .group:0000000000000000 wm4.portable.h.315.489c085dbd13c768c8594a7d23ef5545
+                           .group:0000000000000000 wm4.mpu_wrappers.h.55.46a4a008a193040c38098e9a5f07ff9d
+                           .group:0000000000000000 wm4.FreeRTOS.h.136.a1d4f27d190f434afd0502fdd510d30a
+                           .group:0000000000000000 wm4.unistd.h.2.6ce1b91c4223f6078c1b210c7538c1d2
+                           .group:0000000000000000 wm4.unistd.h.259.3e3d3a4e9d73b9fe8a562fa63b167224
+                           .group:0000000000000000 wm4.stdlib.h.13.4ed386f5c1a80d71e72172885d946ef2
+                           .group:0000000000000000 wm4.alloca.h.8.dfc0c703c47ec3e69746825b17d9e66d
+                           .group:0000000000000000 wm4.stdlib.h.53.1a82a3cc35cb0a04319c41bcf41d2a02
+                           .group:0000000000000000 wm4.errno.h.2.ba016d646105af6cad23be83630b6a3f
+                           .group:0000000000000000 wm4.errno.h.9.1ecd7b1049497a0ab61da0f6cbd4b0c6
+                           .group:0000000000000000 wm4.cdefs.h.47.62f534e9f325912d9007cf852ba0bf0d
+                           .group:0000000000000000 wm4.string.h.15.dab3980bf35408a4c507182805e2de3a
+                           .group:0000000000000000 wm4.string.h.126.6ff3aa59129e7f66b2c273baf353e066
+                           .group:0000000000000000 wm4.time.h.8.2930fe070f4a8096b07db9159698c8e3
+                           .group:0000000000000000 wm4.time.h.2.9857e62ad6ac99431e29d58067232314
+                           .group:0000000000000000 wm4.time.h.24.b2ed57ecf2f83bfb269ea55d03cd4600
+                           .group:0000000000000000 wm4.stat.h.69.169a67369ef31f6ea38a12bc9ba4e5dd
+                           .group:0000000000000000 wm4.time.h.6.45883bffa9c9968c5b4b5ace5f5b1c66
 
 UNDEFINED SYMBOLS
 uart_read_r

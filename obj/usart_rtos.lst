@@ -1,0 +1,1778 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m4
+   3              		.eabi_attribute 27, 3
+   4              		.fpu fpv4-sp-d16
+   5              		.eabi_attribute 20, 1
+   6              		.eabi_attribute 21, 1
+   7              		.eabi_attribute 23, 3
+   8              		.eabi_attribute 24, 1
+   9              		.eabi_attribute 25, 1
+  10              		.eabi_attribute 26, 1
+  11              		.eabi_attribute 30, 1
+  12              		.eabi_attribute 34, 1
+  13              		.eabi_attribute 18, 4
+  14              		.thumb
+  15              		.file	"usart_rtos.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.USART_rtos_wait_send,"ax",%progbits
+  20              		.align	2
+  21              		.global	USART_rtos_wait_send
+  22              		.thumb
+  23              		.thumb_func
+  25              	USART_rtos_wait_send:
+  26              	.LFB110:
+  27              		.file 1 "src/usart_rtos.c"
+   1:src/usart_rtos.c **** #include "usart_rtos.h"
+   2:src/usart_rtos.c **** #include <stdlib.h>
+   3:src/usart_rtos.c **** #include <stdarg.h>
+   4:src/usart_rtos.c **** 
+   5:src/usart_rtos.c **** 
+   6:src/usart_rtos.c **** int USART_rtos_wait_send(USART_rtos_packet *packet) {
+  28              		.loc 1 6 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              	.LVL0:
+  33 0000 08B5     		push	{r3, lr}
+  34              	.LCFI0:
+  35              		.cfi_def_cfa_offset 8
+  36              		.cfi_offset 3, -8
+  37              		.cfi_offset 14, -4
+  38 0002 0346     		mov	r3, r0
+   7:src/usart_rtos.c ****     
+   8:src/usart_rtos.c ****     return (xSemaphoreTake(packet->sent_mutex, packet->max_block) == pdTRUE);
+  39              		.loc 1 8 0
+  40 0004 8068     		ldr	r0, [r0, #8]
+  41              	.LVL1:
+  42 0006 0021     		movs	r1, #0
+  43 0008 DA68     		ldr	r2, [r3, #12]
+  44 000a 0B46     		mov	r3, r1
+  45              	.LVL2:
+  46 000c FFF7FEFF 		bl	xQueueGenericReceive
+  47              	.LVL3:
+   9:src/usart_rtos.c **** }
+  48              		.loc 1 9 0
+  49 0010 0128     		cmp	r0, #1
+  50 0012 14BF     		ite	ne
+  51 0014 0020     		movne	r0, #0
+  52 0016 0120     		moveq	r0, #1
+  53 0018 08BD     		pop	{r3, pc}
+  54              		.cfi_endproc
+  55              	.LFE110:
+  57 001a 00BF     		.section	.text.USART_rtos_init,"ax",%progbits
+  58              		.align	2
+  59              		.global	USART_rtos_init
+  60              		.thumb
+  61              		.thumb_func
+  63              	USART_rtos_init:
+  64              	.LFB114:
+  10:src/usart_rtos.c **** 
+  11:src/usart_rtos.c **** void vUSART_puts(USART_rtos_packet *packet) {
+  12:src/usart_rtos.c **** 
+  13:src/usart_rtos.c ****     if (xSemaphoreTake(packet->USARTx_rtos->transmit_mutex, portMAX_DELAY) == pdTRUE) {
+  14:src/usart_rtos.c ****         taskENTER_CRITICAL();
+  15:src/usart_rtos.c ****         USART_puts(packet->USARTx_rtos->id, packet->msg);
+  16:src/usart_rtos.c **** 
+  17:src/usart_rtos.c ****         xSemaphoreGive(packet->USARTx_rtos->transmit_event_mutex);
+  18:src/usart_rtos.c ****         xSemaphoreGive(packet->USARTx_rtos->transmit_mutex);
+  19:src/usart_rtos.c **** 
+  20:src/usart_rtos.c ****         xSemaphoreGive(packet->sent_mutex); 
+  21:src/usart_rtos.c ****         taskEXIT_CRITICAL();
+  22:src/usart_rtos.c **** 
+  23:src/usart_rtos.c ****     }
+  24:src/usart_rtos.c ****     vTaskDelete(NULL);
+  25:src/usart_rtos.c **** }
+  26:src/usart_rtos.c **** 
+  27:src/usart_rtos.c **** void USART_rtos_puts(USART_rtos_packet *packet, char *msg) {
+  28:src/usart_rtos.c **** 
+  29:src/usart_rtos.c ****     packet->msg = msg;
+  30:src/usart_rtos.c ****     packet->sent_mutex = xSemaphoreCreateMutex();
+  31:src/usart_rtos.c **** 
+  32:src/usart_rtos.c **** 
+  33:src/usart_rtos.c ****     if (xSemaphoreTake(packet->sent_mutex, portMAX_DELAY) == pdTRUE) { //change this from max_delay
+  34:src/usart_rtos.c **** 
+  35:src/usart_rtos.c ****         //if (packet->task_handle == NULL) //allow to assign different tasks wont work now tho
+  36:src/usart_rtos.c ****         //if (packet->max_block == NULL) packet->max_block = 
+  37:src/usart_rtos.c ****         packet->max_block = portMAX_DELAY;
+  38:src/usart_rtos.c **** 
+  39:src/usart_rtos.c ****         xTaskCreate(vUSART_puts, (signed char*)"vUSART_puts", 128, packet, tskIDLE_PRIORITY+8, NULL
+  40:src/usart_rtos.c **** 
+  41:src/usart_rtos.c ****     }
+  42:src/usart_rtos.c ****     else {
+  43:src/usart_rtos.c ****         USART_puts(USART1, "ERROR483\r\n");
+  44:src/usart_rtos.c ****         USART_puts(USART2, "ERROR483\r\n");
+  45:src/usart_rtos.c **** 
+  46:src/usart_rtos.c ****     }
+  47:src/usart_rtos.c **** 
+  48:src/usart_rtos.c **** };
+  49:src/usart_rtos.c **** 
+  50:src/usart_rtos.c **** int USART_rtos_sputs(USART_rtos_packet *packet, const char *format, ...) {
+  51:src/usart_rtos.c ****     if (packet->msg){
+  52:src/usart_rtos.c **** 
+  53:src/usart_rtos.c ****         va_list ap;
+  54:src/usart_rtos.c ****         int rv;
+  55:src/usart_rtos.c **** 
+  56:src/usart_rtos.c ****         va_start(ap, format);
+  57:src/usart_rtos.c **** 
+  58:src/usart_rtos.c ****         rv = vsprintf(packet->msg, format, ap);
+  59:src/usart_rtos.c **** 
+  60:src/usart_rtos.c ****         va_end(ap);
+  61:src/usart_rtos.c **** 
+  62:src/usart_rtos.c **** 
+  63:src/usart_rtos.c ****         USART_rtos_puts(packet, packet->msg);
+  64:src/usart_rtos.c **** 
+  65:src/usart_rtos.c **** 
+  66:src/usart_rtos.c ****         return rv;
+  67:src/usart_rtos.c ****     }
+  68:src/usart_rtos.c ****     return -1;
+  69:src/usart_rtos.c **** }
+  70:src/usart_rtos.c **** 
+  71:src/usart_rtos.c **** 
+  72:src/usart_rtos.c **** void USART_rtos_init(USART_rtos *USARTx_rtos,USART_TypeDef *USARTx) { //pass usart_Rtos and usartx
+  65              		.loc 1 72 0
+  66              		.cfi_startproc
+  67              		@ args = 0, pretend = 0, frame = 0
+  68              		@ frame_needed = 0, uses_anonymous_args = 0
+  69              	.LVL4:
+  70 0000 10B5     		push	{r4, lr}
+  71              	.LCFI1:
+  72              		.cfi_def_cfa_offset 8
+  73              		.cfi_offset 4, -8
+  74              		.cfi_offset 14, -4
+  75 0002 0446     		mov	r4, r0
+  73:src/usart_rtos.c ****     USARTx_rtos->id = USARTx;
+  76              		.loc 1 73 0
+  77 0004 8160     		str	r1, [r0, #8]
+  74:src/usart_rtos.c ****     USARTx_rtos->write_pos = 0;
+  78              		.loc 1 74 0
+  79 0006 0023     		movs	r3, #0
+  80 0008 0360     		str	r3, [r0]
+  75:src/usart_rtos.c ****     USARTx_rtos->read_pos = 0;
+  81              		.loc 1 75 0
+  82 000a 4360     		str	r3, [r0, #4]
+  76:src/usart_rtos.c **** 
+  77:src/usart_rtos.c ****     USARTx_rtos->transmit_mutex = xSemaphoreCreateMutex(); 
+  83              		.loc 1 77 0
+  84 000c FFF7FEFF 		bl	xQueueCreateMutex
+  85              	.LVL5:
+  86 0010 E060     		str	r0, [r4, #12]
+  78:src/usart_rtos.c ****     USARTx_rtos->receive_mutex = xSemaphoreCreateMutex(); 
+  87              		.loc 1 78 0
+  88 0012 FFF7FEFF 		bl	xQueueCreateMutex
+  89              	.LVL6:
+  90 0016 2061     		str	r0, [r4, #16]
+  79:src/usart_rtos.c **** 
+  80:src/usart_rtos.c ****     USARTx_rtos->transmit_event_mutex = xSemaphoreCreateMutex(); 
+  91              		.loc 1 80 0
+  92 0018 FFF7FEFF 		bl	xQueueCreateMutex
+  93              	.LVL7:
+  94 001c A061     		str	r0, [r4, #24]
+  81:src/usart_rtos.c ****     USARTx_rtos->receive_event_mutex = xSemaphoreCreateMutex(); 
+  95              		.loc 1 81 0
+  96 001e FFF7FEFF 		bl	xQueueCreateMutex
+  97              	.LVL8:
+  98 0022 6061     		str	r0, [r4, #20]
+  99 0024 10BD     		pop	{r4, pc}
+ 100              		.cfi_endproc
+ 101              	.LFE114:
+ 103 0026 00BF     		.section	.text.USART_put,"ax",%progbits
+ 104              		.align	2
+ 105              		.global	USART_put
+ 106              		.thumb
+ 107              		.thumb_func
+ 109              	USART_put:
+ 110              	.LFB115:
+  82:src/usart_rtos.c **** } 
+  83:src/usart_rtos.c **** 
+  84:src/usart_rtos.c **** void USART_put(USART_TypeDef* USARTx, volatile char c) {
+ 111              		.loc 1 84 0
+ 112              		.cfi_startproc
+ 113              		@ args = 0, pretend = 0, frame = 8
+ 114              		@ frame_needed = 0, uses_anonymous_args = 0
+ 115              	.LVL9:
+ 116 0000 00B5     		push	{lr}
+ 117              	.LCFI2:
+ 118              		.cfi_def_cfa_offset 4
+ 119              		.cfi_offset 14, -4
+ 120 0002 83B0     		sub	sp, sp, #12
+ 121              	.LCFI3:
+ 122              		.cfi_def_cfa_offset 16
+ 123 0004 8DF80710 		strb	r1, [sp, #7]
+ 124              	.L4:
+  85:src/usart_rtos.c ****     // wait until data register is empty
+  86:src/usart_rtos.c ****     while(!(USARTx->SR & 0x00000040) );
+ 125              		.loc 1 86 0 discriminator 1
+ 126 0008 0388     		ldrh	r3, [r0]
+ 127 000a 03F04003 		and	r3, r3, #64
+ 128 000e 9BB2     		uxth	r3, r3
+ 129 0010 002B     		cmp	r3, #0
+ 130 0012 F9D0     		beq	.L4
+  87:src/usart_rtos.c ****     USART_SendData(USARTx, c);
+ 131              		.loc 1 87 0
+ 132 0014 9DF80710 		ldrb	r1, [sp, #7]	@ zero_extendqisi2
+ 133              	.LVL10:
+ 134 0018 FFF7FEFF 		bl	USART_SendData
+ 135              	.LVL11:
+  88:src/usart_rtos.c **** }
+ 136              		.loc 1 88 0
+ 137 001c 03B0     		add	sp, sp, #12
+ 138              		@ sp needed
+ 139 001e 5DF804FB 		ldr	pc, [sp], #4
+ 140              		.cfi_endproc
+ 141              	.LFE115:
+ 143 0022 00BF     		.section	.text.USART_puts,"ax",%progbits
+ 144              		.align	2
+ 145              		.global	USART_puts
+ 146              		.thumb
+ 147              		.thumb_func
+ 149              	USART_puts:
+ 150              	.LFB116:
+  89:src/usart_rtos.c **** 
+  90:src/usart_rtos.c **** void USART_puts(USART_TypeDef* USARTx, volatile char *s){
+ 151              		.loc 1 90 0
+ 152              		.cfi_startproc
+ 153              		@ args = 0, pretend = 0, frame = 0
+ 154              		@ frame_needed = 0, uses_anonymous_args = 0
+ 155              	.LVL12:
+ 156 0000 70B5     		push	{r4, r5, r6, lr}
+ 157              	.LCFI4:
+ 158              		.cfi_def_cfa_offset 16
+ 159              		.cfi_offset 4, -16
+ 160              		.cfi_offset 5, -12
+ 161              		.cfi_offset 6, -8
+ 162              		.cfi_offset 14, -4
+ 163 0002 0646     		mov	r6, r0
+ 164 0004 0C46     		mov	r4, r1
+  91:src/usart_rtos.c **** 	while(*s){
+ 165              		.loc 1 91 0
+ 166 0006 07E0     		b	.L7
+ 167              	.LVL13:
+ 168              	.L8:
+  92:src/usart_rtos.c ****         USART_put(USARTx, *s);
+ 169              		.loc 1 92 0
+ 170 0008 2546     		mov	r5, r4
+ 171 000a 15F8011B 		ldrb	r1, [r5], #1	@ zero_extendqisi2
+ 172 000e 3046     		mov	r0, r6
+ 173 0010 FFF7FEFF 		bl	USART_put
+ 174              	.LVL14:
+  93:src/usart_rtos.c **** 		*s++;
+ 175              		.loc 1 93 0
+ 176 0014 2378     		ldrb	r3, [r4]	@ zero_extendqisi2
+ 177 0016 2C46     		mov	r4, r5
+ 178              	.LVL15:
+ 179              	.L7:
+  91:src/usart_rtos.c **** 	while(*s){
+ 180              		.loc 1 91 0 discriminator 1
+ 181 0018 2378     		ldrb	r3, [r4]	@ zero_extendqisi2
+ 182 001a 13F0FF0F 		tst	r3, #255
+ 183 001e F3D1     		bne	.L8
+  94:src/usart_rtos.c **** 	}
+  95:src/usart_rtos.c **** }
+ 184              		.loc 1 95 0
+ 185 0020 70BD     		pop	{r4, r5, r6, pc}
+ 186              		.cfi_endproc
+ 187              	.LFE116:
+ 189 0022 00BF     		.section	.text.vUSART_puts,"ax",%progbits
+ 190              		.align	2
+ 191              		.global	vUSART_puts
+ 192              		.thumb
+ 193              		.thumb_func
+ 195              	vUSART_puts:
+ 196              	.LFB111:
+  11:src/usart_rtos.c **** 
+ 197              		.loc 1 11 0
+ 198              		.cfi_startproc
+ 199              		@ args = 0, pretend = 0, frame = 0
+ 200              		@ frame_needed = 0, uses_anonymous_args = 0
+ 201              	.LVL16:
+ 202 0000 10B5     		push	{r4, lr}
+ 203              	.LCFI5:
+ 204              		.cfi_def_cfa_offset 8
+ 205              		.cfi_offset 4, -8
+ 206              		.cfi_offset 14, -4
+ 207 0002 0446     		mov	r4, r0
+  13:src/usart_rtos.c ****         taskENTER_CRITICAL();
+ 208              		.loc 1 13 0
+ 209 0004 0368     		ldr	r3, [r0]
+ 210 0006 D868     		ldr	r0, [r3, #12]
+ 211              	.LVL17:
+ 212 0008 0021     		movs	r1, #0
+ 213 000a 4FF0FF32 		mov	r2, #-1
+ 214 000e 0B46     		mov	r3, r1
+ 215 0010 FFF7FEFF 		bl	xQueueGenericReceive
+ 216              	.LVL18:
+ 217 0014 0128     		cmp	r0, #1
+ 218 0016 1CD1     		bne	.L10
+  14:src/usart_rtos.c ****         USART_puts(packet->USARTx_rtos->id, packet->msg);
+ 219              		.loc 1 14 0
+ 220 0018 FFF7FEFF 		bl	vPortEnterCritical
+ 221              	.LVL19:
+  15:src/usart_rtos.c **** 
+ 222              		.loc 1 15 0
+ 223 001c 2368     		ldr	r3, [r4]
+ 224 001e 9868     		ldr	r0, [r3, #8]
+ 225 0020 6168     		ldr	r1, [r4, #4]
+ 226 0022 FFF7FEFF 		bl	USART_puts
+ 227              	.LVL20:
+  17:src/usart_rtos.c ****         xSemaphoreGive(packet->USARTx_rtos->transmit_mutex);
+ 228              		.loc 1 17 0
+ 229 0026 2368     		ldr	r3, [r4]
+ 230 0028 9869     		ldr	r0, [r3, #24]
+ 231 002a 0021     		movs	r1, #0
+ 232 002c 0A46     		mov	r2, r1
+ 233 002e 0B46     		mov	r3, r1
+ 234 0030 FFF7FEFF 		bl	xQueueGenericSend
+ 235              	.LVL21:
+  18:src/usart_rtos.c **** 
+ 236              		.loc 1 18 0
+ 237 0034 2368     		ldr	r3, [r4]
+ 238 0036 D868     		ldr	r0, [r3, #12]
+ 239 0038 0021     		movs	r1, #0
+ 240 003a 0A46     		mov	r2, r1
+ 241 003c 0B46     		mov	r3, r1
+ 242 003e FFF7FEFF 		bl	xQueueGenericSend
+ 243              	.LVL22:
+  20:src/usart_rtos.c ****         taskEXIT_CRITICAL();
+ 244              		.loc 1 20 0
+ 245 0042 A068     		ldr	r0, [r4, #8]
+ 246 0044 0021     		movs	r1, #0
+ 247 0046 0A46     		mov	r2, r1
+ 248 0048 0B46     		mov	r3, r1
+ 249 004a FFF7FEFF 		bl	xQueueGenericSend
+ 250              	.LVL23:
+  21:src/usart_rtos.c **** 
+ 251              		.loc 1 21 0
+ 252 004e FFF7FEFF 		bl	vPortExitCritical
+ 253              	.LVL24:
+ 254              	.L10:
+  24:src/usart_rtos.c **** }
+ 255              		.loc 1 24 0
+ 256 0052 0020     		movs	r0, #0
+ 257 0054 FFF7FEFF 		bl	vTaskDelete
+ 258              	.LVL25:
+ 259 0058 10BD     		pop	{r4, pc}
+ 260              		.cfi_endproc
+ 261              	.LFE111:
+ 263 005a 00BF     		.section	.text.USART_rtos_puts,"ax",%progbits
+ 264              		.align	2
+ 265              		.global	USART_rtos_puts
+ 266              		.thumb
+ 267              		.thumb_func
+ 269              	USART_rtos_puts:
+ 270              	.LFB112:
+  27:src/usart_rtos.c **** 
+ 271              		.loc 1 27 0
+ 272              		.cfi_startproc
+ 273              		@ args = 0, pretend = 0, frame = 0
+ 274              		@ frame_needed = 0, uses_anonymous_args = 0
+ 275              	.LVL26:
+ 276 0000 10B5     		push	{r4, lr}
+ 277              	.LCFI6:
+ 278              		.cfi_def_cfa_offset 8
+ 279              		.cfi_offset 4, -8
+ 280              		.cfi_offset 14, -4
+ 281 0002 84B0     		sub	sp, sp, #16
+ 282              	.LCFI7:
+ 283              		.cfi_def_cfa_offset 24
+ 284 0004 0446     		mov	r4, r0
+  29:src/usart_rtos.c ****     packet->sent_mutex = xSemaphoreCreateMutex();
+ 285              		.loc 1 29 0
+ 286 0006 4160     		str	r1, [r0, #4]
+  30:src/usart_rtos.c **** 
+ 287              		.loc 1 30 0
+ 288 0008 FFF7FEFF 		bl	xQueueCreateMutex
+ 289              	.LVL27:
+ 290 000c A060     		str	r0, [r4, #8]
+  33:src/usart_rtos.c **** 
+ 291              		.loc 1 33 0
+ 292 000e 0021     		movs	r1, #0
+ 293 0010 4FF0FF32 		mov	r2, #-1
+ 294 0014 0B46     		mov	r3, r1
+ 295 0016 FFF7FEFF 		bl	xQueueGenericReceive
+ 296              	.LVL28:
+ 297 001a 0128     		cmp	r0, #1
+ 298 001c 15D1     		bne	.L12
+  37:src/usart_rtos.c **** 
+ 299              		.loc 1 37 0
+ 300 001e 4FF0FF33 		mov	r3, #-1
+ 301 0022 E360     		str	r3, [r4, #12]
+  39:src/usart_rtos.c **** 
+ 302              		.loc 1 39 0
+ 303 0024 0823     		movs	r3, #8
+ 304 0026 0093     		str	r3, [sp]
+ 305 0028 0023     		movs	r3, #0
+ 306 002a 0193     		str	r3, [sp, #4]
+ 307 002c 0293     		str	r3, [sp, #8]
+ 308 002e 0393     		str	r3, [sp, #12]
+ 309 0030 40F20000 		movw	r0, #:lower16:vUSART_puts
+ 310 0034 C0F20000 		movt	r0, #:upper16:vUSART_puts
+ 311 0038 40F20001 		movw	r1, #:lower16:.LC0
+ 312 003c C0F20001 		movt	r1, #:upper16:.LC0
+ 313 0040 8022     		movs	r2, #128
+ 314 0042 2346     		mov	r3, r4
+ 315 0044 FFF7FEFF 		bl	xTaskGenericCreate
+ 316              	.LVL29:
+ 317 0048 11E0     		b	.L11
+ 318              	.L12:
+  43:src/usart_rtos.c ****         USART_puts(USART2, "ERROR483\r\n");
+ 319              		.loc 1 43 0
+ 320 004a 40F20004 		movw	r4, #:lower16:.LC1
+ 321              	.LVL30:
+ 322 004e C0F20004 		movt	r4, #:upper16:.LC1
+ 323 0052 4FF48050 		mov	r0, #4096
+ 324 0056 C4F20100 		movt	r0, 16385
+ 325 005a 2146     		mov	r1, r4
+ 326 005c FFF7FEFF 		bl	USART_puts
+ 327              	.LVL31:
+  44:src/usart_rtos.c **** 
+ 328              		.loc 1 44 0
+ 329 0060 4FF48840 		mov	r0, #17408
+ 330 0064 C4F20000 		movt	r0, 16384
+ 331 0068 2146     		mov	r1, r4
+ 332 006a FFF7FEFF 		bl	USART_puts
+ 333              	.LVL32:
+ 334              	.L11:
+  48:src/usart_rtos.c **** 
+ 335              		.loc 1 48 0
+ 336 006e 04B0     		add	sp, sp, #16
+ 337              		@ sp needed
+ 338 0070 10BD     		pop	{r4, pc}
+ 339              		.cfi_endproc
+ 340              	.LFE112:
+ 342 0072 00BF     		.section	.text.USART_rtos_sputs,"ax",%progbits
+ 343              		.align	2
+ 344              		.global	USART_rtos_sputs
+ 345              		.thumb
+ 346              		.thumb_func
+ 348              	USART_rtos_sputs:
+ 349              	.LFB113:
+  50:src/usart_rtos.c ****     if (packet->msg){
+ 350              		.loc 1 50 0
+ 351              		.cfi_startproc
+ 352              		@ args = 4, pretend = 12, frame = 8
+ 353              		@ frame_needed = 0, uses_anonymous_args = 1
+ 354              	.LVL33:
+ 355 0000 0EB4     		push	{r1, r2, r3}
+ 356              	.LCFI8:
+ 357              		.cfi_def_cfa_offset 12
+ 358              		.cfi_offset 1, -12
+ 359              		.cfi_offset 2, -8
+ 360              		.cfi_offset 3, -4
+ 361 0002 30B5     		push	{r4, r5, lr}
+ 362              	.LCFI9:
+ 363              		.cfi_def_cfa_offset 24
+ 364              		.cfi_offset 4, -24
+ 365              		.cfi_offset 5, -20
+ 366              		.cfi_offset 14, -16
+ 367 0004 82B0     		sub	sp, sp, #8
+ 368              	.LCFI10:
+ 369              		.cfi_def_cfa_offset 32
+ 370 0006 0446     		mov	r4, r0
+  51:src/usart_rtos.c **** 
+ 371              		.loc 1 51 0
+ 372 0008 4368     		ldr	r3, [r0, #4]
+ 373 000a 63B1     		cbz	r3, .L16
+ 374              	.LBB9:
+  56:src/usart_rtos.c **** 
+ 375              		.loc 1 56 0
+ 376 000c 06AA     		add	r2, sp, #24
+ 377 000e 0192     		str	r2, [sp, #4]
+  58:src/usart_rtos.c **** 
+ 378              		.loc 1 58 0
+ 379 0010 1846     		mov	r0, r3
+ 380              	.LVL34:
+ 381 0012 0599     		ldr	r1, [sp, #20]
+ 382 0014 FFF7FEFF 		bl	vsprintf
+ 383              	.LVL35:
+ 384 0018 0546     		mov	r5, r0
+ 385              	.LVL36:
+  63:src/usart_rtos.c **** 
+ 386              		.loc 1 63 0
+ 387 001a 2046     		mov	r0, r4
+ 388              	.LVL37:
+ 389 001c 6168     		ldr	r1, [r4, #4]
+ 390 001e FFF7FEFF 		bl	USART_rtos_puts
+ 391              	.LVL38:
+  66:src/usart_rtos.c ****     }
+ 392              		.loc 1 66 0
+ 393 0022 2846     		mov	r0, r5
+ 394 0024 01E0     		b	.L15
+ 395              	.LVL39:
+ 396              	.L16:
+ 397              	.LBE9:
+  68:src/usart_rtos.c **** }
+ 398              		.loc 1 68 0
+ 399 0026 4FF0FF30 		mov	r0, #-1
+ 400              	.LVL40:
+ 401              	.L15:
+  69:src/usart_rtos.c **** 
+ 402              		.loc 1 69 0
+ 403 002a 02B0     		add	sp, sp, #8
+ 404              		@ sp needed
+ 405 002c BDE83040 		pop	{r4, r5, lr}
+ 406              	.LVL41:
+ 407 0030 03B0     		add	sp, sp, #12
+ 408 0032 7047     		bx	lr
+ 409              		.cfi_endproc
+ 410              	.LFE113:
+ 412              		.section	.text.USART_put_int,"ax",%progbits
+ 413              		.align	2
+ 414              		.global	USART_put_int
+ 415              		.thumb
+ 416              		.thumb_func
+ 418              	USART_put_int:
+ 419              	.LFB117:
+  96:src/usart_rtos.c **** 
+  97:src/usart_rtos.c **** void USART_put_int(USART_TypeDef* USARTx, int number) {
+ 420              		.loc 1 97 0
+ 421              		.cfi_startproc
+ 422              		@ args = 0, pretend = 0, frame = 16
+ 423              		@ frame_needed = 0, uses_anonymous_args = 0
+ 424              	.LVL42:
+ 425 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+ 426              	.LCFI11:
+ 427              		.cfi_def_cfa_offset 20
+ 428              		.cfi_offset 4, -20
+ 429              		.cfi_offset 5, -16
+ 430              		.cfi_offset 6, -12
+ 431              		.cfi_offset 7, -8
+ 432              		.cfi_offset 14, -4
+ 433 0002 85B0     		sub	sp, sp, #20
+ 434              	.LCFI12:
+ 435              		.cfi_def_cfa_offset 40
+ 436 0004 0646     		mov	r6, r0
+ 437              	.LVL43:
+  98:src/usart_rtos.c ****     uint8_t neg = 0;
+  99:src/usart_rtos.c **** 
+ 100:src/usart_rtos.c ****     if (number < 0) {
+ 438              		.loc 1 100 0
+ 439 0006 0029     		cmp	r1, #0
+ 101:src/usart_rtos.c ****         number*=-1;
+ 440              		.loc 1 101 0
+ 441 0008 BABF     		itte	lt
+ 442 000a 4942     		rsblt	r1, r1, #0
+ 443              	.LVL44:
+ 102:src/usart_rtos.c ****         neg = 1;
+ 444              		.loc 1 102 0
+ 445 000c 0127     		movlt	r7, #1
+  98:src/usart_rtos.c ****     uint8_t neg = 0;
+ 446              		.loc 1 98 0
+ 447 000e 0027     		movge	r7, #0
+ 448              	.LVL45:
+ 103:src/usart_rtos.c ****     }
+ 104:src/usart_rtos.c ****     char value[10];
+ 105:src/usart_rtos.c ****     int i=0;
+ 449              		.loc 1 105 0
+ 450 0010 0022     		movs	r2, #0
+ 106:src/usart_rtos.c ****     do {
+ 107:src/usart_rtos.c ****         value[i++] = (char)(number % 10) + '0';
+ 451              		.loc 1 107 0
+ 452 0012 46F26760 		movw	r0, #26215
+ 453              	.LVL46:
+ 454 0016 C6F26660 		movt	r0, 26214
+ 455              	.LVL47:
+ 456              	.L19:
+ 457              		.loc 1 107 0 is_stmt 0 discriminator 1
+ 458 001a 541C     		adds	r4, r2, #1
+ 459              	.LVL48:
+ 460 001c 80FB0135 		smull	r3, r5, r0, r1
+ 461 0020 CB17     		asrs	r3, r1, #31
+ 462 0022 C3EBA503 		rsb	r3, r3, r5, asr #2
+ 463 0026 1D46     		mov	r5, r3
+ 464 0028 03EB8303 		add	r3, r3, r3, lsl #2
+ 465 002c A1EB4303 		sub	r3, r1, r3, lsl #1
+ 466 0030 DBB2     		uxtb	r3, r3
+ 467 0032 04A9     		add	r1, sp, #16
+ 468              	.LVL49:
+ 469 0034 0A44     		add	r2, r2, r1
+ 470 0036 3033     		adds	r3, r3, #48
+ 471 0038 02F80C3C 		strb	r3, [r2, #-12]
+ 108:src/usart_rtos.c ****         number /= 10;
+ 472              		.loc 1 108 0 is_stmt 1 discriminator 1
+ 473 003c 2946     		mov	r1, r5
+ 474              	.LVL50:
+ 107:src/usart_rtos.c ****         number /= 10;
+ 475              		.loc 1 107 0 discriminator 1
+ 476 003e 2246     		mov	r2, r4
+ 109:src/usart_rtos.c ****     } while (number);
+ 477              		.loc 1 109 0 discriminator 1
+ 478 0040 002D     		cmp	r5, #0
+ 479 0042 EAD1     		bne	.L19
+ 110:src/usart_rtos.c **** 
+ 111:src/usart_rtos.c ****     if (neg) USART_put(USARTx, '-');    
+ 480              		.loc 1 111 0
+ 481 0044 67B1     		cbz	r7, .L25
+ 482              		.loc 1 111 0 is_stmt 0 discriminator 1
+ 483 0046 3046     		mov	r0, r6
+ 484 0048 2D21     		movs	r1, #45
+ 485              	.LVL51:
+ 486 004a FFF7FEFF 		bl	USART_put
+ 487              	.LVL52:
+ 488 004e 07E0     		b	.L25
+ 489              	.L22:
+ 112:src/usart_rtos.c ****     while(i) {
+ 113:src/usart_rtos.c ****         USART_put(USARTx, value[--i]);
+ 490              		.loc 1 113 0 is_stmt 1
+ 491 0050 013C     		subs	r4, r4, #1
+ 492              	.LVL53:
+ 493 0052 04AB     		add	r3, sp, #16
+ 494 0054 2344     		add	r3, r3, r4
+ 495 0056 3046     		mov	r0, r6
+ 496 0058 13F80C1C 		ldrb	r1, [r3, #-12]	@ zero_extendqisi2
+ 497 005c FFF7FEFF 		bl	USART_put
+ 498              	.LVL54:
+ 499              	.L25:
+ 112:src/usart_rtos.c ****     while(i) {
+ 500              		.loc 1 112 0 discriminator 1
+ 501 0060 002C     		cmp	r4, #0
+ 502 0062 F5D1     		bne	.L22
+ 114:src/usart_rtos.c ****     }
+ 115:src/usart_rtos.c **** }
+ 503              		.loc 1 115 0
+ 504 0064 05B0     		add	sp, sp, #20
+ 505              		@ sp needed
+ 506 0066 F0BD     		pop	{r4, r5, r6, r7, pc}
+ 507              		.cfi_endproc
+ 508              	.LFE117:
+ 510              		.section	.text.USART_getline,"ax",%progbits
+ 511              		.align	2
+ 512              		.global	USART_getline
+ 513              		.thumb
+ 514              		.thumb_func
+ 516              	USART_getline:
+ 517              	.LFB118:
+ 116:src/usart_rtos.c **** 
+ 117:src/usart_rtos.c **** void USART_getline(USART_rtos *USARTx_rtos, int timeout) {
+ 518              		.loc 1 117 0
+ 519              		.cfi_startproc
+ 520              		@ args = 0, pretend = 0, frame = 0
+ 521              		@ frame_needed = 0, uses_anonymous_args = 0
+ 522              	.LVL55:
+ 523 0000 38B5     		push	{r3, r4, r5, lr}
+ 524              	.LCFI13:
+ 525              		.cfi_def_cfa_offset 16
+ 526              		.cfi_offset 3, -16
+ 527              		.cfi_offset 4, -12
+ 528              		.cfi_offset 5, -8
+ 529              		.cfi_offset 14, -4
+ 530 0002 0446     		mov	r4, r0
+ 531 0004 0D46     		mov	r5, r1
+ 118:src/usart_rtos.c **** 
+ 119:src/usart_rtos.c ****     if (xSemaphoreTake(USARTx_rtos->receive_event_mutex, (portTickType)(timeout) / portTICK_RATE_MS
+ 532              		.loc 1 119 0
+ 533 0006 4069     		ldr	r0, [r0, #20]
+ 534              	.LVL56:
+ 535 0008 0021     		movs	r1, #0
+ 536              	.LVL57:
+ 537 000a 012D     		cmp	r5, #1
+ 538 000c 14BF     		ite	ne
+ 539 000e 0022     		movne	r2, #0
+ 540 0010 0122     		moveq	r2, #1
+ 541 0012 0B46     		mov	r3, r1
+ 542 0014 FFF7FEFF 		bl	xQueueGenericReceive
+ 543              	.LVL58:
+ 544 0018 58B1     		cbz	r0, .L26
+ 120:src/usart_rtos.c ****         //Takes the mutex.
+ 121:src/usart_rtos.c ****         //Next time USART_IRQ executes it releases mutex 
+ 122:src/usart_rtos.c ****         if (xSemaphoreTake(USARTx_rtos->receive_event_mutex, (portTickType)(timeout) / portTICK_RAT
+ 545              		.loc 1 122 0
+ 546 001a 6069     		ldr	r0, [r4, #20]
+ 547 001c 0021     		movs	r1, #0
+ 548 001e 2A46     		mov	r2, r5
+ 549 0020 0B46     		mov	r3, r1
+ 550 0022 FFF7FEFF 		bl	xQueueGenericReceive
+ 551              	.LVL59:
+ 123:src/usart_rtos.c ****             //USART_IRQ exexcuted and relased mutex
+ 124:src/usart_rtos.c ****         }
+ 125:src/usart_rtos.c ****         xSemaphoreGive(USARTx_rtos->receive_event_mutex);
+ 552              		.loc 1 125 0
+ 553 0026 6069     		ldr	r0, [r4, #20]
+ 554 0028 0021     		movs	r1, #0
+ 555 002a 0A46     		mov	r2, r1
+ 556 002c 0B46     		mov	r3, r1
+ 557 002e FFF7FEFF 		bl	xQueueGenericSend
+ 558              	.LVL60:
+ 559              	.L26:
+ 560 0032 38BD     		pop	{r3, r4, r5, pc}
+ 561              		.cfi_endproc
+ 562              	.LFE118:
+ 564              		.section	.text.USART_nextline_length,"ax",%progbits
+ 565              		.align	2
+ 566              		.global	USART_nextline_length
+ 567              		.thumb
+ 568              		.thumb_func
+ 570              	USART_nextline_length:
+ 571              	.LFB119:
+ 126:src/usart_rtos.c ****     }
+ 127:src/usart_rtos.c **** 
+ 128:src/usart_rtos.c **** }
+ 129:src/usart_rtos.c **** 
+ 130:src/usart_rtos.c **** int USART_nextline_length(USART_rtos *USARTx_rtos) {
+ 572              		.loc 1 130 0
+ 573              		.cfi_startproc
+ 574              		@ args = 0, pretend = 0, frame = 0
+ 575              		@ frame_needed = 0, uses_anonymous_args = 0
+ 576              	.LVL61:
+ 577 0000 38B5     		push	{r3, r4, r5, lr}
+ 578              	.LCFI14:
+ 579              		.cfi_def_cfa_offset 16
+ 580              		.cfi_offset 3, -16
+ 581              		.cfi_offset 4, -12
+ 582              		.cfi_offset 5, -8
+ 583              		.cfi_offset 14, -4
+ 131:src/usart_rtos.c ****     if (!USARTx_rtos) return -1;
+ 584              		.loc 1 131 0
+ 585 0002 0546     		mov	r5, r0
+ 586 0004 F8B1     		cbz	r0, .L32
+ 132:src/usart_rtos.c **** 
+ 133:src/usart_rtos.c ****     //add some mutex on read_pos;
+ 134:src/usart_rtos.c ****     USART_put_int(USARTx_rtos->id, USARTx_rtos->read_pos);
+ 587              		.loc 1 134 0
+ 588 0006 8068     		ldr	r0, [r0, #8]
+ 589              	.LVL62:
+ 590 0008 6968     		ldr	r1, [r5, #4]
+ 591 000a FFF7FEFF 		bl	USART_put_int
+ 592              	.LVL63:
+ 135:src/usart_rtos.c ****     USART_puts(USARTx_rtos->id, "PRINTING NEXT LINE: ");
+ 593              		.loc 1 135 0
+ 594 000e A868     		ldr	r0, [r5, #8]
+ 595 0010 40F20001 		movw	r1, #:lower16:.LC2
+ 596 0014 C0F20001 		movt	r1, #:upper16:.LC2
+ 597 0018 FFF7FEFF 		bl	USART_puts
+ 598              	.LVL64:
+ 136:src/usart_rtos.c **** 
+ 137:src/usart_rtos.c ****     int pos = USARTx_rtos->read_pos;
+ 599              		.loc 1 137 0
+ 600 001c 6C68     		ldr	r4, [r5, #4]
+ 601              	.LVL65:
+ 138:src/usart_rtos.c ****     for(pos; USARTx_rtos->buffer[pos]!='\r'; pos++) {
+ 602              		.loc 1 138 0
+ 603 001e 03E0     		b	.L30
+ 604              	.L31:
+ 139:src/usart_rtos.c ****         USART_put(USARTx_rtos->id, USARTx_rtos->buffer[pos]);
+ 605              		.loc 1 139 0 discriminator 2
+ 606 0020 A868     		ldr	r0, [r5, #8]
+ 607 0022 FFF7FEFF 		bl	USART_put
+ 608              	.LVL66:
+ 138:src/usart_rtos.c ****     for(pos; USARTx_rtos->buffer[pos]!='\r'; pos++) {
+ 609              		.loc 1 138 0 discriminator 2
+ 610 0026 0134     		adds	r4, r4, #1
+ 611              	.LVL67:
+ 612              	.L30:
+ 138:src/usart_rtos.c ****     for(pos; USARTx_rtos->buffer[pos]!='\r'; pos++) {
+ 613              		.loc 1 138 0 is_stmt 0 discriminator 1
+ 614 0028 2B19     		adds	r3, r5, r4
+ 615 002a 197F     		ldrb	r1, [r3, #28]	@ zero_extendqisi2
+ 616 002c 0D29     		cmp	r1, #13
+ 617 002e F7D1     		bne	.L31
+ 140:src/usart_rtos.c **** 
+ 141:src/usart_rtos.c ****     }
+ 142:src/usart_rtos.c ****     USART_puts(USARTx_rtos->id, "\r\n");
+ 618              		.loc 1 142 0 is_stmt 1
+ 619 0030 A868     		ldr	r0, [r5, #8]
+ 620 0032 40F20001 		movw	r1, #:lower16:.LC3
+ 621 0036 C0F20001 		movt	r1, #:upper16:.LC3
+ 622 003a FFF7FEFF 		bl	USART_puts
+ 623              	.LVL68:
+ 143:src/usart_rtos.c ****     /*
+ 144:src/usart_rtos.c ****     USART_puts(USART1, buffer[*read_pos-1]);
+ 145:src/usart_rtos.c ****     USART_puts(USART1, buffer[*read_pos+1]);
+ 146:src/usart_rtos.c **** 
+ 147:src/usart_rtos.c **** 
+ 148:src/usart_rtos.c ****     USART_puts(USART1, "-\r\n");
+ 149:src/usart_rtos.c ****     */
+ 150:src/usart_rtos.c **** 
+ 151:src/usart_rtos.c ****     return (pos - USARTx_rtos->read_pos)+1;
+ 624              		.loc 1 151 0
+ 625 003e 6868     		ldr	r0, [r5, #4]
+ 626 0040 201A     		subs	r0, r4, r0
+ 627 0042 0130     		adds	r0, r0, #1
+ 628 0044 38BD     		pop	{r3, r4, r5, pc}
+ 629              	.LVL69:
+ 630              	.L32:
+ 131:src/usart_rtos.c **** 
+ 631              		.loc 1 131 0
+ 632 0046 4FF0FF30 		mov	r0, #-1
+ 633              	.LVL70:
+ 152:src/usart_rtos.c **** }
+ 634              		.loc 1 152 0
+ 635 004a 38BD     		pop	{r3, r4, r5, pc}
+ 636              		.cfi_endproc
+ 637              	.LFE119:
+ 639              		.section	.text.handle_usart_command,"ax",%progbits
+ 640              		.align	2
+ 641              		.global	handle_usart_command
+ 642              		.thumb
+ 643              		.thumb_func
+ 645              	handle_usart_command:
+ 646              	.LFB120:
+ 153:src/usart_rtos.c **** 
+ 154:src/usart_rtos.c **** void handle_usart_command(char *command) {
+ 647              		.loc 1 154 0
+ 648              		.cfi_startproc
+ 649              		@ args = 0, pretend = 0, frame = 0
+ 650              		@ frame_needed = 0, uses_anonymous_args = 0
+ 651              	.LVL71:
+ 652 0000 38B5     		push	{r3, r4, r5, lr}
+ 653              	.LCFI15:
+ 654              		.cfi_def_cfa_offset 16
+ 655              		.cfi_offset 3, -16
+ 656              		.cfi_offset 4, -12
+ 657              		.cfi_offset 5, -8
+ 658              		.cfi_offset 14, -4
+ 659 0002 0546     		mov	r5, r0
+ 155:src/usart_rtos.c ****     USART_puts(USART2, "Command: ");
+ 660              		.loc 1 155 0
+ 661 0004 4FF48844 		mov	r4, #17408
+ 662 0008 C4F20004 		movt	r4, 16384
+ 663 000c 2046     		mov	r0, r4
+ 664              	.LVL72:
+ 665 000e 40F20001 		movw	r1, #:lower16:.LC4
+ 666 0012 C0F20001 		movt	r1, #:upper16:.LC4
+ 667 0016 FFF7FEFF 		bl	USART_puts
+ 668              	.LVL73:
+ 669              	.LBB10:
+ 156:src/usart_rtos.c ****     if (str_compare(command, "overview\r", '\r')) {}
+ 670              		.loc 1 156 0
+ 671 001a 2846     		mov	r0, r5
+ 672 001c 40F20001 		movw	r1, #:lower16:.LC5
+ 673 0020 C0F20001 		movt	r1, #:upper16:.LC5
+ 674 0024 0D22     		movs	r2, #13
+ 675 0026 FFF7FEFF 		bl	str_compare
+ 676              	.LVL74:
+ 677              	.LBE10:
+ 157:src/usart_rtos.c **** 
+ 158:src/usart_rtos.c ****     //if (str_compare)
+ 159:src/usart_rtos.c **** 
+ 160:src/usart_rtos.c ****     //char *pos = command;
+ 161:src/usart_rtos.c **** /*
+ 162:src/usart_rtos.c ****     while(*command != '\r') {
+ 163:src/usart_rtos.c ****         if (*command == ' ') {
+ 164:src/usart_rtos.c ****             while (pos != command) {
+ 165:src/usart_rtos.c ****                 if (pos == )
+ 166:src/usart_rtos.c ****                 //something like this in python command[pos1:pos2] == "command1"
+ 167:src/usart_rtos.c ****                 pos++;
+ 168:src/usart_rtos.c ****             }
+ 169:src/usart_rtos.c ****         }
+ 170:src/usart_rtos.c ****         USART_put(USART2, *command);
+ 171:src/usart_rtos.c ****         command++;
+ 172:src/usart_rtos.c ****     }
+ 173:src/usart_rtos.c ****     */
+ 174:src/usart_rtos.c **** 
+ 175:src/usart_rtos.c ****     USART_puts(USART2, "\r\n");
+ 678              		.loc 1 175 0
+ 679 002a 2046     		mov	r0, r4
+ 680 002c 40F20001 		movw	r1, #:lower16:.LC3
+ 681 0030 C0F20001 		movt	r1, #:upper16:.LC3
+ 682 0034 FFF7FEFF 		bl	USART_puts
+ 683              	.LVL75:
+ 176:src/usart_rtos.c ****     vTaskDelete(NULL);
+ 684              		.loc 1 176 0
+ 685 0038 0020     		movs	r0, #0
+ 686 003a FFF7FEFF 		bl	vTaskDelete
+ 687              	.LVL76:
+ 688 003e 38BD     		pop	{r3, r4, r5, pc}
+ 689              		.cfi_endproc
+ 690              	.LFE120:
+ 692              		.section	.text.USART_readline,"ax",%progbits
+ 693              		.align	2
+ 694              		.global	USART_readline
+ 695              		.thumb
+ 696              		.thumb_func
+ 698              	USART_readline:
+ 699              	.LFB121:
+ 177:src/usart_rtos.c **** }
+ 178:src/usart_rtos.c **** 
+ 179:src/usart_rtos.c **** void USART_readline(USART_rtos *USARTx_rtos, char *buffer, uint8_t length) {
+ 700              		.loc 1 179 0
+ 701              		.cfi_startproc
+ 702              		@ args = 0, pretend = 0, frame = 0
+ 703              		@ frame_needed = 0, uses_anonymous_args = 0
+ 704              	.LVL77:
+ 705 0000 2DE9F843 		push	{r3, r4, r5, r6, r7, r8, r9, lr}
+ 706              	.LCFI16:
+ 707              		.cfi_def_cfa_offset 32
+ 708              		.cfi_offset 3, -32
+ 709              		.cfi_offset 4, -28
+ 710              		.cfi_offset 5, -24
+ 711              		.cfi_offset 6, -20
+ 712              		.cfi_offset 7, -16
+ 713              		.cfi_offset 8, -12
+ 714              		.cfi_offset 9, -8
+ 715              		.cfi_offset 14, -4
+ 716 0004 0446     		mov	r4, r0
+ 717 0006 8846     		mov	r8, r1
+ 180:src/usart_rtos.c ****  //   static uint8_t first=1;
+ 181:src/usart_rtos.c **** 
+ 182:src/usart_rtos.c ****     buffer[length-1] = '\0';
+ 718              		.loc 1 182 0
+ 719 0008 531E     		subs	r3, r2, #1
+ 720 000a 0021     		movs	r1, #0
+ 721              	.LVL78:
+ 722 000c 08F80310 		strb	r1, [r8, r3]
+ 183:src/usart_rtos.c **** 
+ 184:src/usart_rtos.c ****     for(USARTx_rtos->read_pos; USARTx_rtos->read_pos<length-2; USARTx_rtos->read_pos++){
+ 723              		.loc 1 184 0
+ 724 0010 961E     		subs	r6, r2, #2
+ 725              	.LBB11:
+ 185:src/usart_rtos.c ****         uint32_t prim;
+ 186:src/usart_rtos.c **** 
+ 187:src/usart_rtos.c ****         if (xSemaphoreTake(USARTx_rtos->receive_mutex, portMAX_DELAY) == pdTRUE) {
+ 726              		.loc 1 187 0
+ 727 0012 0D46     		mov	r5, r1
+ 728 0014 4FF0FF37 		mov	r7, #-1
+ 188:src/usart_rtos.c **** 
+ 189:src/usart_rtos.c ****             prim = __get_PRIMASK(); //returns if irq were disable already
+ 190:src/usart_rtos.c ****             __disable_irq(); 
+ 191:src/usart_rtos.c ****             if (!prim) __enable_irq(); //only enables irq if it recieved it in a disabled state
+ 192:src/usart_rtos.c **** 
+ 193:src/usart_rtos.c ****             if (USARTx_rtos->read_pos == USART_BUFFER_LEN-1) USARTx_rtos->read_pos=0;
+ 729              		.loc 1 193 0
+ 730 0018 40F22B19 		movw	r9, #299
+ 731              	.LBE11:
+ 184:src/usart_rtos.c ****         uint32_t prim;
+ 732              		.loc 1 184 0
+ 733 001c 1EE0     		b	.L35
+ 734              	.LVL79:
+ 735              	.L39:
+ 736              	.LBB18:
+ 187:src/usart_rtos.c **** 
+ 737              		.loc 1 187 0
+ 738 001e 2069     		ldr	r0, [r4, #16]
+ 739 0020 2946     		mov	r1, r5
+ 740 0022 3A46     		mov	r2, r7
+ 741 0024 2B46     		mov	r3, r5
+ 742 0026 FFF7FEFF 		bl	xQueueGenericReceive
+ 743              	.LVL80:
+ 744 002a 0128     		cmp	r0, #1
+ 745 002c 13D1     		bne	.L36
+ 746              	.LBB12:
+ 747              	.LBB13:
+ 748              		.file 2 "libs/CMSIS/Include/core_cmFunc.h"
+   1:libs/CMSIS/Include/core_cmFunc.h **** /**************************************************************************//**
+   2:libs/CMSIS/Include/core_cmFunc.h ****  * @file     core_cmFunc.h
+   3:libs/CMSIS/Include/core_cmFunc.h ****  * @brief    CMSIS Cortex-M Core Function Access Header File
+   4:libs/CMSIS/Include/core_cmFunc.h ****  * @version  V2.10
+   5:libs/CMSIS/Include/core_cmFunc.h ****  * @date     26. July 2011
+   6:libs/CMSIS/Include/core_cmFunc.h ****  *
+   7:libs/CMSIS/Include/core_cmFunc.h ****  * @note
+   8:libs/CMSIS/Include/core_cmFunc.h ****  * Copyright (C) 2009-2011 ARM Limited. All rights reserved.
+   9:libs/CMSIS/Include/core_cmFunc.h ****  *
+  10:libs/CMSIS/Include/core_cmFunc.h ****  * @par
+  11:libs/CMSIS/Include/core_cmFunc.h ****  * ARM Limited (ARM) is supplying this software for use with Cortex-M 
+  12:libs/CMSIS/Include/core_cmFunc.h ****  * processor based microcontrollers.  This file can be freely distributed 
+  13:libs/CMSIS/Include/core_cmFunc.h ****  * within development tools that are supporting such ARM based processors. 
+  14:libs/CMSIS/Include/core_cmFunc.h ****  *
+  15:libs/CMSIS/Include/core_cmFunc.h ****  * @par
+  16:libs/CMSIS/Include/core_cmFunc.h ****  * THIS SOFTWARE IS PROVIDED "AS IS".  NO WARRANTIES, WHETHER EXPRESS, IMPLIED
+  17:libs/CMSIS/Include/core_cmFunc.h ****  * OR STATUTORY, INCLUDING, BUT NOT LIMITED TO, IMPLIED WARRANTIES OF
+  18:libs/CMSIS/Include/core_cmFunc.h ****  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE.
+  19:libs/CMSIS/Include/core_cmFunc.h ****  * ARM SHALL NOT, IN ANY CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR
+  20:libs/CMSIS/Include/core_cmFunc.h ****  * CONSEQUENTIAL DAMAGES, FOR ANY REASON WHATSOEVER.
+  21:libs/CMSIS/Include/core_cmFunc.h ****  *
+  22:libs/CMSIS/Include/core_cmFunc.h ****  ******************************************************************************/
+  23:libs/CMSIS/Include/core_cmFunc.h **** 
+  24:libs/CMSIS/Include/core_cmFunc.h **** #ifndef __CORE_CMFUNC_H
+  25:libs/CMSIS/Include/core_cmFunc.h **** #define __CORE_CMFUNC_H
+  26:libs/CMSIS/Include/core_cmFunc.h **** 
+  27:libs/CMSIS/Include/core_cmFunc.h **** 
+  28:libs/CMSIS/Include/core_cmFunc.h **** /* ###########################  Core Function Access  ########################### */
+  29:libs/CMSIS/Include/core_cmFunc.h **** /** \ingroup  CMSIS_Core_FunctionInterface   
+  30:libs/CMSIS/Include/core_cmFunc.h ****     \defgroup CMSIS_Core_RegAccFunctions CMSIS Core Register Access Functions
+  31:libs/CMSIS/Include/core_cmFunc.h ****   @{
+  32:libs/CMSIS/Include/core_cmFunc.h ****  */
+  33:libs/CMSIS/Include/core_cmFunc.h **** 
+  34:libs/CMSIS/Include/core_cmFunc.h **** #if   defined ( __CC_ARM ) /*------------------RealView Compiler -----------------*/
+  35:libs/CMSIS/Include/core_cmFunc.h **** /* ARM armcc specific functions */
+  36:libs/CMSIS/Include/core_cmFunc.h **** 
+  37:libs/CMSIS/Include/core_cmFunc.h **** #if (__ARMCC_VERSION < 400677)
+  38:libs/CMSIS/Include/core_cmFunc.h ****   #error "Please use ARM Compiler Toolchain V4.0.677 or later!"
+  39:libs/CMSIS/Include/core_cmFunc.h **** #endif
+  40:libs/CMSIS/Include/core_cmFunc.h **** 
+  41:libs/CMSIS/Include/core_cmFunc.h **** /* intrinsic void __enable_irq();     */
+  42:libs/CMSIS/Include/core_cmFunc.h **** /* intrinsic void __disable_irq();    */
+  43:libs/CMSIS/Include/core_cmFunc.h **** 
+  44:libs/CMSIS/Include/core_cmFunc.h **** /** \brief  Get Control Register
+  45:libs/CMSIS/Include/core_cmFunc.h **** 
+  46:libs/CMSIS/Include/core_cmFunc.h ****     This function returns the content of the Control Register.
+  47:libs/CMSIS/Include/core_cmFunc.h **** 
+  48:libs/CMSIS/Include/core_cmFunc.h ****     \return               Control Register value
+  49:libs/CMSIS/Include/core_cmFunc.h ****  */
+  50:libs/CMSIS/Include/core_cmFunc.h **** static __INLINE uint32_t __get_CONTROL(void)
+  51:libs/CMSIS/Include/core_cmFunc.h **** {
+  52:libs/CMSIS/Include/core_cmFunc.h ****   register uint32_t __regControl         __ASM("control");
+  53:libs/CMSIS/Include/core_cmFunc.h ****   return(__regControl);
+  54:libs/CMSIS/Include/core_cmFunc.h **** }
+  55:libs/CMSIS/Include/core_cmFunc.h **** 
+  56:libs/CMSIS/Include/core_cmFunc.h **** 
+  57:libs/CMSIS/Include/core_cmFunc.h **** /** \brief  Set Control Register
+  58:libs/CMSIS/Include/core_cmFunc.h **** 
+  59:libs/CMSIS/Include/core_cmFunc.h ****     This function writes the given value to the Control Register.
+  60:libs/CMSIS/Include/core_cmFunc.h **** 
+  61:libs/CMSIS/Include/core_cmFunc.h ****     \param [in]    control  Control Register value to set
+  62:libs/CMSIS/Include/core_cmFunc.h ****  */
+  63:libs/CMSIS/Include/core_cmFunc.h **** static __INLINE void __set_CONTROL(uint32_t control)
+  64:libs/CMSIS/Include/core_cmFunc.h **** {
+  65:libs/CMSIS/Include/core_cmFunc.h ****   register uint32_t __regControl         __ASM("control");
+  66:libs/CMSIS/Include/core_cmFunc.h ****   __regControl = control;
+  67:libs/CMSIS/Include/core_cmFunc.h **** }
+  68:libs/CMSIS/Include/core_cmFunc.h **** 
+  69:libs/CMSIS/Include/core_cmFunc.h **** 
+  70:libs/CMSIS/Include/core_cmFunc.h **** /** \brief  Get ISPR Register
+  71:libs/CMSIS/Include/core_cmFunc.h **** 
+  72:libs/CMSIS/Include/core_cmFunc.h ****     This function returns the content of the ISPR Register.
+  73:libs/CMSIS/Include/core_cmFunc.h **** 
+  74:libs/CMSIS/Include/core_cmFunc.h ****     \return               ISPR Register value
+  75:libs/CMSIS/Include/core_cmFunc.h ****  */
+  76:libs/CMSIS/Include/core_cmFunc.h **** static __INLINE uint32_t __get_IPSR(void)
+  77:libs/CMSIS/Include/core_cmFunc.h **** {
+  78:libs/CMSIS/Include/core_cmFunc.h ****   register uint32_t __regIPSR          __ASM("ipsr");
+  79:libs/CMSIS/Include/core_cmFunc.h ****   return(__regIPSR);
+  80:libs/CMSIS/Include/core_cmFunc.h **** }
+  81:libs/CMSIS/Include/core_cmFunc.h **** 
+  82:libs/CMSIS/Include/core_cmFunc.h **** 
+  83:libs/CMSIS/Include/core_cmFunc.h **** /** \brief  Get APSR Register
+  84:libs/CMSIS/Include/core_cmFunc.h **** 
+  85:libs/CMSIS/Include/core_cmFunc.h ****     This function returns the content of the APSR Register.
+  86:libs/CMSIS/Include/core_cmFunc.h **** 
+  87:libs/CMSIS/Include/core_cmFunc.h ****     \return               APSR Register value
+  88:libs/CMSIS/Include/core_cmFunc.h ****  */
+  89:libs/CMSIS/Include/core_cmFunc.h **** static __INLINE uint32_t __get_APSR(void)
+  90:libs/CMSIS/Include/core_cmFunc.h **** {
+  91:libs/CMSIS/Include/core_cmFunc.h ****   register uint32_t __regAPSR          __ASM("apsr");
+  92:libs/CMSIS/Include/core_cmFunc.h ****   return(__regAPSR);
+  93:libs/CMSIS/Include/core_cmFunc.h **** }
+  94:libs/CMSIS/Include/core_cmFunc.h **** 
+  95:libs/CMSIS/Include/core_cmFunc.h **** 
+  96:libs/CMSIS/Include/core_cmFunc.h **** /** \brief  Get xPSR Register
+  97:libs/CMSIS/Include/core_cmFunc.h **** 
+  98:libs/CMSIS/Include/core_cmFunc.h ****     This function returns the content of the xPSR Register.
+  99:libs/CMSIS/Include/core_cmFunc.h **** 
+ 100:libs/CMSIS/Include/core_cmFunc.h ****     \return               xPSR Register value
+ 101:libs/CMSIS/Include/core_cmFunc.h ****  */
+ 102:libs/CMSIS/Include/core_cmFunc.h **** static __INLINE uint32_t __get_xPSR(void)
+ 103:libs/CMSIS/Include/core_cmFunc.h **** {
+ 104:libs/CMSIS/Include/core_cmFunc.h ****   register uint32_t __regXPSR          __ASM("xpsr");
+ 105:libs/CMSIS/Include/core_cmFunc.h ****   return(__regXPSR);
+ 106:libs/CMSIS/Include/core_cmFunc.h **** }
+ 107:libs/CMSIS/Include/core_cmFunc.h **** 
+ 108:libs/CMSIS/Include/core_cmFunc.h **** 
+ 109:libs/CMSIS/Include/core_cmFunc.h **** /** \brief  Get Process Stack Pointer
+ 110:libs/CMSIS/Include/core_cmFunc.h **** 
+ 111:libs/CMSIS/Include/core_cmFunc.h ****     This function returns the current value of the Process Stack Pointer (PSP).
+ 112:libs/CMSIS/Include/core_cmFunc.h **** 
+ 113:libs/CMSIS/Include/core_cmFunc.h ****     \return               PSP Register value
+ 114:libs/CMSIS/Include/core_cmFunc.h ****  */
+ 115:libs/CMSIS/Include/core_cmFunc.h **** static __INLINE uint32_t __get_PSP(void)
+ 116:libs/CMSIS/Include/core_cmFunc.h **** {
+ 117:libs/CMSIS/Include/core_cmFunc.h ****   register uint32_t __regProcessStackPointer  __ASM("psp");
+ 118:libs/CMSIS/Include/core_cmFunc.h ****   return(__regProcessStackPointer);
+ 119:libs/CMSIS/Include/core_cmFunc.h **** }
+ 120:libs/CMSIS/Include/core_cmFunc.h **** 
+ 121:libs/CMSIS/Include/core_cmFunc.h **** 
+ 122:libs/CMSIS/Include/core_cmFunc.h **** /** \brief  Set Process Stack Pointer
+ 123:libs/CMSIS/Include/core_cmFunc.h **** 
+ 124:libs/CMSIS/Include/core_cmFunc.h ****     This function assigns the given value to the Process Stack Pointer (PSP).
+ 125:libs/CMSIS/Include/core_cmFunc.h **** 
+ 126:libs/CMSIS/Include/core_cmFunc.h ****     \param [in]    topOfProcStack  Process Stack Pointer value to set
+ 127:libs/CMSIS/Include/core_cmFunc.h ****  */
+ 128:libs/CMSIS/Include/core_cmFunc.h **** static __INLINE void __set_PSP(uint32_t topOfProcStack)
+ 129:libs/CMSIS/Include/core_cmFunc.h **** {
+ 130:libs/CMSIS/Include/core_cmFunc.h ****   register uint32_t __regProcessStackPointer  __ASM("psp");
+ 131:libs/CMSIS/Include/core_cmFunc.h ****   __regProcessStackPointer = topOfProcStack;
+ 132:libs/CMSIS/Include/core_cmFunc.h **** }
+ 133:libs/CMSIS/Include/core_cmFunc.h **** 
+ 134:libs/CMSIS/Include/core_cmFunc.h **** 
+ 135:libs/CMSIS/Include/core_cmFunc.h **** /** \brief  Get Main Stack Pointer
+ 136:libs/CMSIS/Include/core_cmFunc.h **** 
+ 137:libs/CMSIS/Include/core_cmFunc.h ****     This function returns the current value of the Main Stack Pointer (MSP).
+ 138:libs/CMSIS/Include/core_cmFunc.h **** 
+ 139:libs/CMSIS/Include/core_cmFunc.h ****     \return               MSP Register value
+ 140:libs/CMSIS/Include/core_cmFunc.h ****  */
+ 141:libs/CMSIS/Include/core_cmFunc.h **** static __INLINE uint32_t __get_MSP(void)
+ 142:libs/CMSIS/Include/core_cmFunc.h **** {
+ 143:libs/CMSIS/Include/core_cmFunc.h ****   register uint32_t __regMainStackPointer     __ASM("msp");
+ 144:libs/CMSIS/Include/core_cmFunc.h ****   return(__regMainStackPointer);
+ 145:libs/CMSIS/Include/core_cmFunc.h **** }
+ 146:libs/CMSIS/Include/core_cmFunc.h **** 
+ 147:libs/CMSIS/Include/core_cmFunc.h **** 
+ 148:libs/CMSIS/Include/core_cmFunc.h **** /** \brief  Set Main Stack Pointer
+ 149:libs/CMSIS/Include/core_cmFunc.h **** 
+ 150:libs/CMSIS/Include/core_cmFunc.h ****     This function assigns the given value to the Main Stack Pointer (MSP).
+ 151:libs/CMSIS/Include/core_cmFunc.h **** 
+ 152:libs/CMSIS/Include/core_cmFunc.h ****     \param [in]    topOfMainStack  Main Stack Pointer value to set
+ 153:libs/CMSIS/Include/core_cmFunc.h ****  */
+ 154:libs/CMSIS/Include/core_cmFunc.h **** static __INLINE void __set_MSP(uint32_t topOfMainStack)
+ 155:libs/CMSIS/Include/core_cmFunc.h **** {
+ 156:libs/CMSIS/Include/core_cmFunc.h ****   register uint32_t __regMainStackPointer     __ASM("msp");
+ 157:libs/CMSIS/Include/core_cmFunc.h ****   __regMainStackPointer = topOfMainStack;
+ 158:libs/CMSIS/Include/core_cmFunc.h **** }
+ 159:libs/CMSIS/Include/core_cmFunc.h **** 
+ 160:libs/CMSIS/Include/core_cmFunc.h **** 
+ 161:libs/CMSIS/Include/core_cmFunc.h **** /** \brief  Get Priority Mask
+ 162:libs/CMSIS/Include/core_cmFunc.h **** 
+ 163:libs/CMSIS/Include/core_cmFunc.h ****     This function returns the current state of the priority mask bit from the Priority Mask Registe
+ 164:libs/CMSIS/Include/core_cmFunc.h **** 
+ 165:libs/CMSIS/Include/core_cmFunc.h ****     \return               Priority Mask value
+ 166:libs/CMSIS/Include/core_cmFunc.h ****  */
+ 167:libs/CMSIS/Include/core_cmFunc.h **** static __INLINE uint32_t __get_PRIMASK(void)
+ 168:libs/CMSIS/Include/core_cmFunc.h **** {
+ 169:libs/CMSIS/Include/core_cmFunc.h ****   register uint32_t __regPriMask         __ASM("primask");
+ 170:libs/CMSIS/Include/core_cmFunc.h ****   return(__regPriMask);
+ 171:libs/CMSIS/Include/core_cmFunc.h **** }
+ 172:libs/CMSIS/Include/core_cmFunc.h **** 
+ 173:libs/CMSIS/Include/core_cmFunc.h **** 
+ 174:libs/CMSIS/Include/core_cmFunc.h **** /** \brief  Set Priority Mask
+ 175:libs/CMSIS/Include/core_cmFunc.h **** 
+ 176:libs/CMSIS/Include/core_cmFunc.h ****     This function assigns the given value to the Priority Mask Register.
+ 177:libs/CMSIS/Include/core_cmFunc.h **** 
+ 178:libs/CMSIS/Include/core_cmFunc.h ****     \param [in]    priMask  Priority Mask
+ 179:libs/CMSIS/Include/core_cmFunc.h ****  */
+ 180:libs/CMSIS/Include/core_cmFunc.h **** static __INLINE void __set_PRIMASK(uint32_t priMask)
+ 181:libs/CMSIS/Include/core_cmFunc.h **** {
+ 182:libs/CMSIS/Include/core_cmFunc.h ****   register uint32_t __regPriMask         __ASM("primask");
+ 183:libs/CMSIS/Include/core_cmFunc.h ****   __regPriMask = (priMask);
+ 184:libs/CMSIS/Include/core_cmFunc.h **** }
+ 185:libs/CMSIS/Include/core_cmFunc.h ****  
+ 186:libs/CMSIS/Include/core_cmFunc.h **** 
+ 187:libs/CMSIS/Include/core_cmFunc.h **** #if       (__CORTEX_M >= 0x03)
+ 188:libs/CMSIS/Include/core_cmFunc.h **** 
+ 189:libs/CMSIS/Include/core_cmFunc.h **** /** \brief  Enable FIQ
+ 190:libs/CMSIS/Include/core_cmFunc.h **** 
+ 191:libs/CMSIS/Include/core_cmFunc.h ****     This function enables FIQ interrupts by clearing the F-bit in the CPSR.
+ 192:libs/CMSIS/Include/core_cmFunc.h ****     Can only be executed in Privileged modes.
+ 193:libs/CMSIS/Include/core_cmFunc.h ****  */
+ 194:libs/CMSIS/Include/core_cmFunc.h **** #define __enable_fault_irq                __enable_fiq
+ 195:libs/CMSIS/Include/core_cmFunc.h **** 
+ 196:libs/CMSIS/Include/core_cmFunc.h **** 
+ 197:libs/CMSIS/Include/core_cmFunc.h **** /** \brief  Disable FIQ
+ 198:libs/CMSIS/Include/core_cmFunc.h **** 
+ 199:libs/CMSIS/Include/core_cmFunc.h ****     This function disables FIQ interrupts by setting the F-bit in the CPSR.
+ 200:libs/CMSIS/Include/core_cmFunc.h ****     Can only be executed in Privileged modes.
+ 201:libs/CMSIS/Include/core_cmFunc.h ****  */
+ 202:libs/CMSIS/Include/core_cmFunc.h **** #define __disable_fault_irq               __disable_fiq
+ 203:libs/CMSIS/Include/core_cmFunc.h **** 
+ 204:libs/CMSIS/Include/core_cmFunc.h **** 
+ 205:libs/CMSIS/Include/core_cmFunc.h **** /** \brief  Get Base Priority
+ 206:libs/CMSIS/Include/core_cmFunc.h **** 
+ 207:libs/CMSIS/Include/core_cmFunc.h ****     This function returns the current value of the Base Priority register.
+ 208:libs/CMSIS/Include/core_cmFunc.h **** 
+ 209:libs/CMSIS/Include/core_cmFunc.h ****     \return               Base Priority register value
+ 210:libs/CMSIS/Include/core_cmFunc.h ****  */
+ 211:libs/CMSIS/Include/core_cmFunc.h **** static __INLINE uint32_t  __get_BASEPRI(void)
+ 212:libs/CMSIS/Include/core_cmFunc.h **** {
+ 213:libs/CMSIS/Include/core_cmFunc.h ****   register uint32_t __regBasePri         __ASM("basepri");
+ 214:libs/CMSIS/Include/core_cmFunc.h ****   return(__regBasePri);
+ 215:libs/CMSIS/Include/core_cmFunc.h **** }
+ 216:libs/CMSIS/Include/core_cmFunc.h **** 
+ 217:libs/CMSIS/Include/core_cmFunc.h **** 
+ 218:libs/CMSIS/Include/core_cmFunc.h **** /** \brief  Set Base Priority
+ 219:libs/CMSIS/Include/core_cmFunc.h **** 
+ 220:libs/CMSIS/Include/core_cmFunc.h ****     This function assigns the given value to the Base Priority register.
+ 221:libs/CMSIS/Include/core_cmFunc.h **** 
+ 222:libs/CMSIS/Include/core_cmFunc.h ****     \param [in]    basePri  Base Priority value to set
+ 223:libs/CMSIS/Include/core_cmFunc.h ****  */
+ 224:libs/CMSIS/Include/core_cmFunc.h **** static __INLINE void __set_BASEPRI(uint32_t basePri)
+ 225:libs/CMSIS/Include/core_cmFunc.h **** {
+ 226:libs/CMSIS/Include/core_cmFunc.h ****   register uint32_t __regBasePri         __ASM("basepri");
+ 227:libs/CMSIS/Include/core_cmFunc.h ****   __regBasePri = (basePri & 0xff);
+ 228:libs/CMSIS/Include/core_cmFunc.h **** }
+ 229:libs/CMSIS/Include/core_cmFunc.h ****  
+ 230:libs/CMSIS/Include/core_cmFunc.h **** 
+ 231:libs/CMSIS/Include/core_cmFunc.h **** /** \brief  Get Fault Mask
+ 232:libs/CMSIS/Include/core_cmFunc.h **** 
+ 233:libs/CMSIS/Include/core_cmFunc.h ****     This function returns the current value of the Fault Mask register.
+ 234:libs/CMSIS/Include/core_cmFunc.h **** 
+ 235:libs/CMSIS/Include/core_cmFunc.h ****     \return               Fault Mask register value
+ 236:libs/CMSIS/Include/core_cmFunc.h ****  */
+ 237:libs/CMSIS/Include/core_cmFunc.h **** static __INLINE uint32_t __get_FAULTMASK(void)
+ 238:libs/CMSIS/Include/core_cmFunc.h **** {
+ 239:libs/CMSIS/Include/core_cmFunc.h ****   register uint32_t __regFaultMask       __ASM("faultmask");
+ 240:libs/CMSIS/Include/core_cmFunc.h ****   return(__regFaultMask);
+ 241:libs/CMSIS/Include/core_cmFunc.h **** }
+ 242:libs/CMSIS/Include/core_cmFunc.h **** 
+ 243:libs/CMSIS/Include/core_cmFunc.h **** 
+ 244:libs/CMSIS/Include/core_cmFunc.h **** /** \brief  Set Fault Mask
+ 245:libs/CMSIS/Include/core_cmFunc.h **** 
+ 246:libs/CMSIS/Include/core_cmFunc.h ****     This function assigns the given value to the Fault Mask register.
+ 247:libs/CMSIS/Include/core_cmFunc.h **** 
+ 248:libs/CMSIS/Include/core_cmFunc.h ****     \param [in]    faultMask  Fault Mask value to set
+ 249:libs/CMSIS/Include/core_cmFunc.h ****  */
+ 250:libs/CMSIS/Include/core_cmFunc.h **** static __INLINE void __set_FAULTMASK(uint32_t faultMask)
+ 251:libs/CMSIS/Include/core_cmFunc.h **** {
+ 252:libs/CMSIS/Include/core_cmFunc.h ****   register uint32_t __regFaultMask       __ASM("faultmask");
+ 253:libs/CMSIS/Include/core_cmFunc.h ****   __regFaultMask = (faultMask & (uint32_t)1);
+ 254:libs/CMSIS/Include/core_cmFunc.h **** }
+ 255:libs/CMSIS/Include/core_cmFunc.h **** 
+ 256:libs/CMSIS/Include/core_cmFunc.h **** #endif /* (__CORTEX_M >= 0x03) */
+ 257:libs/CMSIS/Include/core_cmFunc.h **** 
+ 258:libs/CMSIS/Include/core_cmFunc.h **** 
+ 259:libs/CMSIS/Include/core_cmFunc.h **** #if       (__CORTEX_M == 0x04)
+ 260:libs/CMSIS/Include/core_cmFunc.h **** 
+ 261:libs/CMSIS/Include/core_cmFunc.h **** /** \brief  Get FPSCR
+ 262:libs/CMSIS/Include/core_cmFunc.h **** 
+ 263:libs/CMSIS/Include/core_cmFunc.h ****     This function returns the current value of the Floating Point Status/Control register.
+ 264:libs/CMSIS/Include/core_cmFunc.h **** 
+ 265:libs/CMSIS/Include/core_cmFunc.h ****     \return               Floating Point Status/Control register value
+ 266:libs/CMSIS/Include/core_cmFunc.h ****  */
+ 267:libs/CMSIS/Include/core_cmFunc.h **** static __INLINE uint32_t __get_FPSCR(void)
+ 268:libs/CMSIS/Include/core_cmFunc.h **** {
+ 269:libs/CMSIS/Include/core_cmFunc.h **** #if (__FPU_PRESENT == 1) && (__FPU_USED == 1)
+ 270:libs/CMSIS/Include/core_cmFunc.h ****   register uint32_t __regfpscr         __ASM("fpscr");
+ 271:libs/CMSIS/Include/core_cmFunc.h ****   return(__regfpscr);
+ 272:libs/CMSIS/Include/core_cmFunc.h **** #else
+ 273:libs/CMSIS/Include/core_cmFunc.h ****    return(0);
+ 274:libs/CMSIS/Include/core_cmFunc.h **** #endif
+ 275:libs/CMSIS/Include/core_cmFunc.h **** }
+ 276:libs/CMSIS/Include/core_cmFunc.h **** 
+ 277:libs/CMSIS/Include/core_cmFunc.h **** 
+ 278:libs/CMSIS/Include/core_cmFunc.h **** /** \brief  Set FPSCR
+ 279:libs/CMSIS/Include/core_cmFunc.h **** 
+ 280:libs/CMSIS/Include/core_cmFunc.h ****     This function assigns the given value to the Floating Point Status/Control register.
+ 281:libs/CMSIS/Include/core_cmFunc.h **** 
+ 282:libs/CMSIS/Include/core_cmFunc.h ****     \param [in]    fpscr  Floating Point Status/Control value to set
+ 283:libs/CMSIS/Include/core_cmFunc.h ****  */
+ 284:libs/CMSIS/Include/core_cmFunc.h **** static __INLINE void __set_FPSCR(uint32_t fpscr)
+ 285:libs/CMSIS/Include/core_cmFunc.h **** {
+ 286:libs/CMSIS/Include/core_cmFunc.h **** #if (__FPU_PRESENT == 1) && (__FPU_USED == 1)
+ 287:libs/CMSIS/Include/core_cmFunc.h ****   register uint32_t __regfpscr         __ASM("fpscr");
+ 288:libs/CMSIS/Include/core_cmFunc.h ****   __regfpscr = (fpscr);
+ 289:libs/CMSIS/Include/core_cmFunc.h **** #endif
+ 290:libs/CMSIS/Include/core_cmFunc.h **** }
+ 291:libs/CMSIS/Include/core_cmFunc.h **** 
+ 292:libs/CMSIS/Include/core_cmFunc.h **** #endif /* (__CORTEX_M == 0x04) */
+ 293:libs/CMSIS/Include/core_cmFunc.h **** 
+ 294:libs/CMSIS/Include/core_cmFunc.h **** 
+ 295:libs/CMSIS/Include/core_cmFunc.h **** #elif defined ( __ICCARM__ ) /*------------------ ICC Compiler -------------------*/
+ 296:libs/CMSIS/Include/core_cmFunc.h **** /* IAR iccarm specific functions */
+ 297:libs/CMSIS/Include/core_cmFunc.h **** 
+ 298:libs/CMSIS/Include/core_cmFunc.h **** #include <cmsis_iar.h>
+ 299:libs/CMSIS/Include/core_cmFunc.h **** 
+ 300:libs/CMSIS/Include/core_cmFunc.h **** #elif defined ( __GNUC__ ) /*------------------ GNU Compiler ---------------------*/
+ 301:libs/CMSIS/Include/core_cmFunc.h **** /* GNU gcc specific functions */
+ 302:libs/CMSIS/Include/core_cmFunc.h **** 
+ 303:libs/CMSIS/Include/core_cmFunc.h **** /** \brief  Enable IRQ Interrupts
+ 304:libs/CMSIS/Include/core_cmFunc.h **** 
+ 305:libs/CMSIS/Include/core_cmFunc.h ****   This function enables IRQ interrupts by clearing the I-bit in the CPSR.
+ 306:libs/CMSIS/Include/core_cmFunc.h ****   Can only be executed in Privileged modes.
+ 307:libs/CMSIS/Include/core_cmFunc.h ****  */
+ 308:libs/CMSIS/Include/core_cmFunc.h **** __attribute__( ( always_inline ) ) static __INLINE void __enable_irq(void)
+ 309:libs/CMSIS/Include/core_cmFunc.h **** {
+ 310:libs/CMSIS/Include/core_cmFunc.h ****   __ASM volatile ("cpsie i");
+ 311:libs/CMSIS/Include/core_cmFunc.h **** }
+ 312:libs/CMSIS/Include/core_cmFunc.h **** 
+ 313:libs/CMSIS/Include/core_cmFunc.h **** 
+ 314:libs/CMSIS/Include/core_cmFunc.h **** /** \brief  Disable IRQ Interrupts
+ 315:libs/CMSIS/Include/core_cmFunc.h **** 
+ 316:libs/CMSIS/Include/core_cmFunc.h ****   This function disables IRQ interrupts by setting the I-bit in the CPSR.
+ 317:libs/CMSIS/Include/core_cmFunc.h ****   Can only be executed in Privileged modes.
+ 318:libs/CMSIS/Include/core_cmFunc.h ****  */
+ 319:libs/CMSIS/Include/core_cmFunc.h **** __attribute__( ( always_inline ) ) static __INLINE void __disable_irq(void)
+ 320:libs/CMSIS/Include/core_cmFunc.h **** {
+ 321:libs/CMSIS/Include/core_cmFunc.h ****   __ASM volatile ("cpsid i");
+ 322:libs/CMSIS/Include/core_cmFunc.h **** }
+ 323:libs/CMSIS/Include/core_cmFunc.h **** 
+ 324:libs/CMSIS/Include/core_cmFunc.h **** 
+ 325:libs/CMSIS/Include/core_cmFunc.h **** /** \brief  Get Control Register
+ 326:libs/CMSIS/Include/core_cmFunc.h **** 
+ 327:libs/CMSIS/Include/core_cmFunc.h ****     This function returns the content of the Control Register.
+ 328:libs/CMSIS/Include/core_cmFunc.h **** 
+ 329:libs/CMSIS/Include/core_cmFunc.h ****     \return               Control Register value
+ 330:libs/CMSIS/Include/core_cmFunc.h ****  */
+ 331:libs/CMSIS/Include/core_cmFunc.h **** __attribute__( ( always_inline ) ) static __INLINE uint32_t __get_CONTROL(void)
+ 332:libs/CMSIS/Include/core_cmFunc.h **** {
+ 333:libs/CMSIS/Include/core_cmFunc.h ****   uint32_t result;
+ 334:libs/CMSIS/Include/core_cmFunc.h **** 
+ 335:libs/CMSIS/Include/core_cmFunc.h ****   __ASM volatile ("MRS %0, control" : "=r" (result) );
+ 336:libs/CMSIS/Include/core_cmFunc.h ****   return(result);
+ 337:libs/CMSIS/Include/core_cmFunc.h **** }
+ 338:libs/CMSIS/Include/core_cmFunc.h **** 
+ 339:libs/CMSIS/Include/core_cmFunc.h **** 
+ 340:libs/CMSIS/Include/core_cmFunc.h **** /** \brief  Set Control Register
+ 341:libs/CMSIS/Include/core_cmFunc.h **** 
+ 342:libs/CMSIS/Include/core_cmFunc.h ****     This function writes the given value to the Control Register.
+ 343:libs/CMSIS/Include/core_cmFunc.h **** 
+ 344:libs/CMSIS/Include/core_cmFunc.h ****     \param [in]    control  Control Register value to set
+ 345:libs/CMSIS/Include/core_cmFunc.h ****  */
+ 346:libs/CMSIS/Include/core_cmFunc.h **** __attribute__( ( always_inline ) ) static __INLINE void __set_CONTROL(uint32_t control)
+ 347:libs/CMSIS/Include/core_cmFunc.h **** {
+ 348:libs/CMSIS/Include/core_cmFunc.h ****   __ASM volatile ("MSR control, %0" : : "r" (control) );
+ 349:libs/CMSIS/Include/core_cmFunc.h **** }
+ 350:libs/CMSIS/Include/core_cmFunc.h **** 
+ 351:libs/CMSIS/Include/core_cmFunc.h **** 
+ 352:libs/CMSIS/Include/core_cmFunc.h **** /** \brief  Get ISPR Register
+ 353:libs/CMSIS/Include/core_cmFunc.h **** 
+ 354:libs/CMSIS/Include/core_cmFunc.h ****     This function returns the content of the ISPR Register.
+ 355:libs/CMSIS/Include/core_cmFunc.h **** 
+ 356:libs/CMSIS/Include/core_cmFunc.h ****     \return               ISPR Register value
+ 357:libs/CMSIS/Include/core_cmFunc.h ****  */
+ 358:libs/CMSIS/Include/core_cmFunc.h **** __attribute__( ( always_inline ) ) static __INLINE uint32_t __get_IPSR(void)
+ 359:libs/CMSIS/Include/core_cmFunc.h **** {
+ 360:libs/CMSIS/Include/core_cmFunc.h ****   uint32_t result;
+ 361:libs/CMSIS/Include/core_cmFunc.h **** 
+ 362:libs/CMSIS/Include/core_cmFunc.h ****   __ASM volatile ("MRS %0, ipsr" : "=r" (result) );
+ 363:libs/CMSIS/Include/core_cmFunc.h ****   return(result);
+ 364:libs/CMSIS/Include/core_cmFunc.h **** }
+ 365:libs/CMSIS/Include/core_cmFunc.h **** 
+ 366:libs/CMSIS/Include/core_cmFunc.h **** 
+ 367:libs/CMSIS/Include/core_cmFunc.h **** /** \brief  Get APSR Register
+ 368:libs/CMSIS/Include/core_cmFunc.h **** 
+ 369:libs/CMSIS/Include/core_cmFunc.h ****     This function returns the content of the APSR Register.
+ 370:libs/CMSIS/Include/core_cmFunc.h **** 
+ 371:libs/CMSIS/Include/core_cmFunc.h ****     \return               APSR Register value
+ 372:libs/CMSIS/Include/core_cmFunc.h ****  */
+ 373:libs/CMSIS/Include/core_cmFunc.h **** __attribute__( ( always_inline ) ) static __INLINE uint32_t __get_APSR(void)
+ 374:libs/CMSIS/Include/core_cmFunc.h **** {
+ 375:libs/CMSIS/Include/core_cmFunc.h ****   uint32_t result;
+ 376:libs/CMSIS/Include/core_cmFunc.h **** 
+ 377:libs/CMSIS/Include/core_cmFunc.h ****   __ASM volatile ("MRS %0, apsr" : "=r" (result) );
+ 378:libs/CMSIS/Include/core_cmFunc.h ****   return(result);
+ 379:libs/CMSIS/Include/core_cmFunc.h **** }
+ 380:libs/CMSIS/Include/core_cmFunc.h **** 
+ 381:libs/CMSIS/Include/core_cmFunc.h **** 
+ 382:libs/CMSIS/Include/core_cmFunc.h **** /** \brief  Get xPSR Register
+ 383:libs/CMSIS/Include/core_cmFunc.h **** 
+ 384:libs/CMSIS/Include/core_cmFunc.h ****     This function returns the content of the xPSR Register.
+ 385:libs/CMSIS/Include/core_cmFunc.h **** 
+ 386:libs/CMSIS/Include/core_cmFunc.h ****     \return               xPSR Register value
+ 387:libs/CMSIS/Include/core_cmFunc.h ****  */
+ 388:libs/CMSIS/Include/core_cmFunc.h **** __attribute__( ( always_inline ) ) static __INLINE uint32_t __get_xPSR(void)
+ 389:libs/CMSIS/Include/core_cmFunc.h **** {
+ 390:libs/CMSIS/Include/core_cmFunc.h ****   uint32_t result;
+ 391:libs/CMSIS/Include/core_cmFunc.h **** 
+ 392:libs/CMSIS/Include/core_cmFunc.h ****   __ASM volatile ("MRS %0, xpsr" : "=r" (result) );
+ 393:libs/CMSIS/Include/core_cmFunc.h ****   return(result);
+ 394:libs/CMSIS/Include/core_cmFunc.h **** }
+ 395:libs/CMSIS/Include/core_cmFunc.h **** 
+ 396:libs/CMSIS/Include/core_cmFunc.h **** 
+ 397:libs/CMSIS/Include/core_cmFunc.h **** /** \brief  Get Process Stack Pointer
+ 398:libs/CMSIS/Include/core_cmFunc.h **** 
+ 399:libs/CMSIS/Include/core_cmFunc.h ****     This function returns the current value of the Process Stack Pointer (PSP).
+ 400:libs/CMSIS/Include/core_cmFunc.h **** 
+ 401:libs/CMSIS/Include/core_cmFunc.h ****     \return               PSP Register value
+ 402:libs/CMSIS/Include/core_cmFunc.h ****  */
+ 403:libs/CMSIS/Include/core_cmFunc.h **** __attribute__( ( always_inline ) ) static __INLINE uint32_t __get_PSP(void)
+ 404:libs/CMSIS/Include/core_cmFunc.h **** {
+ 405:libs/CMSIS/Include/core_cmFunc.h ****   register uint32_t result;
+ 406:libs/CMSIS/Include/core_cmFunc.h **** 
+ 407:libs/CMSIS/Include/core_cmFunc.h ****   __ASM volatile ("MRS %0, psp\n"  : "=r" (result) );
+ 408:libs/CMSIS/Include/core_cmFunc.h ****   return(result);
+ 409:libs/CMSIS/Include/core_cmFunc.h **** }
+ 410:libs/CMSIS/Include/core_cmFunc.h ****  
+ 411:libs/CMSIS/Include/core_cmFunc.h **** 
+ 412:libs/CMSIS/Include/core_cmFunc.h **** /** \brief  Set Process Stack Pointer
+ 413:libs/CMSIS/Include/core_cmFunc.h **** 
+ 414:libs/CMSIS/Include/core_cmFunc.h ****     This function assigns the given value to the Process Stack Pointer (PSP).
+ 415:libs/CMSIS/Include/core_cmFunc.h **** 
+ 416:libs/CMSIS/Include/core_cmFunc.h ****     \param [in]    topOfProcStack  Process Stack Pointer value to set
+ 417:libs/CMSIS/Include/core_cmFunc.h ****  */
+ 418:libs/CMSIS/Include/core_cmFunc.h **** __attribute__( ( always_inline ) ) static __INLINE void __set_PSP(uint32_t topOfProcStack)
+ 419:libs/CMSIS/Include/core_cmFunc.h **** {
+ 420:libs/CMSIS/Include/core_cmFunc.h ****   __ASM volatile ("MSR psp, %0\n" : : "r" (topOfProcStack) );
+ 421:libs/CMSIS/Include/core_cmFunc.h **** }
+ 422:libs/CMSIS/Include/core_cmFunc.h **** 
+ 423:libs/CMSIS/Include/core_cmFunc.h **** 
+ 424:libs/CMSIS/Include/core_cmFunc.h **** /** \brief  Get Main Stack Pointer
+ 425:libs/CMSIS/Include/core_cmFunc.h **** 
+ 426:libs/CMSIS/Include/core_cmFunc.h ****     This function returns the current value of the Main Stack Pointer (MSP).
+ 427:libs/CMSIS/Include/core_cmFunc.h **** 
+ 428:libs/CMSIS/Include/core_cmFunc.h ****     \return               MSP Register value
+ 429:libs/CMSIS/Include/core_cmFunc.h ****  */
+ 430:libs/CMSIS/Include/core_cmFunc.h **** __attribute__( ( always_inline ) ) static __INLINE uint32_t __get_MSP(void)
+ 431:libs/CMSIS/Include/core_cmFunc.h **** {
+ 432:libs/CMSIS/Include/core_cmFunc.h ****   register uint32_t result;
+ 433:libs/CMSIS/Include/core_cmFunc.h **** 
+ 434:libs/CMSIS/Include/core_cmFunc.h ****   __ASM volatile ("MRS %0, msp\n" : "=r" (result) );
+ 435:libs/CMSIS/Include/core_cmFunc.h ****   return(result);
+ 436:libs/CMSIS/Include/core_cmFunc.h **** }
+ 437:libs/CMSIS/Include/core_cmFunc.h ****  
+ 438:libs/CMSIS/Include/core_cmFunc.h **** 
+ 439:libs/CMSIS/Include/core_cmFunc.h **** /** \brief  Set Main Stack Pointer
+ 440:libs/CMSIS/Include/core_cmFunc.h **** 
+ 441:libs/CMSIS/Include/core_cmFunc.h ****     This function assigns the given value to the Main Stack Pointer (MSP).
+ 442:libs/CMSIS/Include/core_cmFunc.h **** 
+ 443:libs/CMSIS/Include/core_cmFunc.h ****     \param [in]    topOfMainStack  Main Stack Pointer value to set
+ 444:libs/CMSIS/Include/core_cmFunc.h ****  */
+ 445:libs/CMSIS/Include/core_cmFunc.h **** __attribute__( ( always_inline ) ) static __INLINE void __set_MSP(uint32_t topOfMainStack)
+ 446:libs/CMSIS/Include/core_cmFunc.h **** {
+ 447:libs/CMSIS/Include/core_cmFunc.h ****   __ASM volatile ("MSR msp, %0\n" : : "r" (topOfMainStack) );
+ 448:libs/CMSIS/Include/core_cmFunc.h **** }
+ 449:libs/CMSIS/Include/core_cmFunc.h **** 
+ 450:libs/CMSIS/Include/core_cmFunc.h **** 
+ 451:libs/CMSIS/Include/core_cmFunc.h **** /** \brief  Get Priority Mask
+ 452:libs/CMSIS/Include/core_cmFunc.h **** 
+ 453:libs/CMSIS/Include/core_cmFunc.h ****     This function returns the current state of the priority mask bit from the Priority Mask Registe
+ 454:libs/CMSIS/Include/core_cmFunc.h **** 
+ 455:libs/CMSIS/Include/core_cmFunc.h ****     \return               Priority Mask value
+ 456:libs/CMSIS/Include/core_cmFunc.h ****  */
+ 457:libs/CMSIS/Include/core_cmFunc.h **** __attribute__( ( always_inline ) ) static __INLINE uint32_t __get_PRIMASK(void)
+ 458:libs/CMSIS/Include/core_cmFunc.h **** {
+ 459:libs/CMSIS/Include/core_cmFunc.h ****   uint32_t result;
+ 460:libs/CMSIS/Include/core_cmFunc.h **** 
+ 461:libs/CMSIS/Include/core_cmFunc.h ****   __ASM volatile ("MRS %0, primask" : "=r" (result) );
+ 749              		.loc 2 461 0
+ 750              	@ 461 "libs/CMSIS/Include/core_cmFunc.h" 1
+ 751 002e EFF31083 		MRS r3, primask
+ 752              	@ 0 "" 2
+ 753              	.LVL81:
+ 754              		.thumb
+ 755              	.LBE13:
+ 756              	.LBE12:
+ 757              	.LBB14:
+ 758              	.LBB15:
+ 321:libs/CMSIS/Include/core_cmFunc.h **** }
+ 759              		.loc 2 321 0
+ 760              	@ 321 "libs/CMSIS/Include/core_cmFunc.h" 1
+ 761 0032 72B6     		cpsid i
+ 762              	@ 0 "" 2
+ 763              		.thumb
+ 764              	.LBE15:
+ 765              	.LBE14:
+ 191:src/usart_rtos.c **** 
+ 766              		.loc 1 191 0
+ 767 0034 03B9     		cbnz	r3, .L37
+ 768              	.LBB16:
+ 769              	.LBB17:
+ 310:libs/CMSIS/Include/core_cmFunc.h **** }
+ 770              		.loc 2 310 0
+ 771              	@ 310 "libs/CMSIS/Include/core_cmFunc.h" 1
+ 772 0036 62B6     		cpsie i
+ 773              	@ 0 "" 2
+ 774              		.thumb
+ 775              	.L37:
+ 776              	.LBE17:
+ 777              	.LBE16:
+ 778              		.loc 1 193 0
+ 779 0038 6368     		ldr	r3, [r4, #4]
+ 780 003a 4B45     		cmp	r3, r9
+ 781 003c 08BF     		it	eq
+ 782 003e 6560     		streq	r5, [r4, #4]
+ 194:src/usart_rtos.c ****             buffer[USARTx_rtos->read_pos] = USARTx_rtos->buffer[USARTx_rtos->read_pos];
+ 783              		.loc 1 194 0
+ 784 0040 6368     		ldr	r3, [r4, #4]
+ 785 0042 E218     		adds	r2, r4, r3
+ 786 0044 127F     		ldrb	r2, [r2, #28]	@ zero_extendqisi2
+ 787 0046 08F80320 		strb	r2, [r8, r3]
+ 195:src/usart_rtos.c ****             xSemaphoreGive(USARTx_rtos->receive_mutex);
+ 788              		.loc 1 195 0
+ 789 004a 2069     		ldr	r0, [r4, #16]
+ 790 004c 2946     		mov	r1, r5
+ 791 004e 2A46     		mov	r2, r5
+ 792 0050 2B46     		mov	r3, r5
+ 793 0052 FFF7FEFF 		bl	xQueueGenericSend
+ 794              	.LVL82:
+ 795              	.L36:
+ 796              	.LBE18:
+ 184:src/usart_rtos.c ****         uint32_t prim;
+ 797              		.loc 1 184 0
+ 798 0056 6368     		ldr	r3, [r4, #4]
+ 799 0058 0133     		adds	r3, r3, #1
+ 800 005a 6360     		str	r3, [r4, #4]
+ 801              	.L35:
+ 184:src/usart_rtos.c ****         uint32_t prim;
+ 802              		.loc 1 184 0 is_stmt 0 discriminator 1
+ 803 005c 6368     		ldr	r3, [r4, #4]
+ 804 005e B342     		cmp	r3, r6
+ 805 0060 DDDB     		blt	.L39
+ 196:src/usart_rtos.c ****         }
+ 197:src/usart_rtos.c ****     }
+ 198:src/usart_rtos.c ****    // if (!first) read_pos++; //This skips the previous Carriage return added to the end of data ad
+ 199:src/usart_rtos.c ****     //else first = 0;
+ 200:src/usart_rtos.c ****     USARTx_rtos->read_pos++;
+ 806              		.loc 1 200 0 is_stmt 1
+ 807 0062 0133     		adds	r3, r3, #1
+ 808 0064 6360     		str	r3, [r4, #4]
+ 809 0066 BDE8F883 		pop	{r3, r4, r5, r6, r7, r8, r9, pc}
+ 810              		.cfi_endproc
+ 811              	.LFE121:
+ 813 006a 00BF     		.section	.text.USART_readline_int,"ax",%progbits
+ 814              		.align	2
+ 815              		.global	USART_readline_int
+ 816              		.thumb
+ 817              		.thumb_func
+ 819              	USART_readline_int:
+ 820              	.LFB122:
+ 201:src/usart_rtos.c **** 
+ 202:src/usart_rtos.c **** }
+ 203:src/usart_rtos.c **** 
+ 204:src/usart_rtos.c **** void USART_readline_int(USART_rtos *USARTx_rtos, int *num) {
+ 821              		.loc 1 204 0
+ 822              		.cfi_startproc
+ 823              		@ args = 0, pretend = 0, frame = 0
+ 824              		@ frame_needed = 1, uses_anonymous_args = 0
+ 825              	.LVL83:
+ 826 0000 F8B5     		push	{r3, r4, r5, r6, r7, lr}
+ 827              	.LCFI17:
+ 828              		.cfi_def_cfa_offset 24
+ 829              		.cfi_offset 3, -24
+ 830              		.cfi_offset 4, -20
+ 831              		.cfi_offset 5, -16
+ 832              		.cfi_offset 6, -12
+ 833              		.cfi_offset 7, -8
+ 834              		.cfi_offset 14, -4
+ 835 0002 00AF     		add	r7, sp, #0
+ 836              	.LCFI18:
+ 837              		.cfi_def_cfa_register 7
+ 838 0004 0646     		mov	r6, r0
+ 839 0006 0C46     		mov	r4, r1
+ 205:src/usart_rtos.c ****     *(num) = 0;
+ 840              		.loc 1 205 0
+ 841 0008 0023     		movs	r3, #0
+ 842 000a 0B60     		str	r3, [r1]
+ 843              	.LVL84:
+ 206:src/usart_rtos.c ****     int i=0;
+ 207:src/usart_rtos.c ****     uint8_t neg = 0;
+ 208:src/usart_rtos.c **** 
+ 209:src/usart_rtos.c ****     int len = USART_nextline_length(USARTx_rtos)+1; //add for str terminator
+ 844              		.loc 1 209 0
+ 845 000c FFF7FEFF 		bl	USART_nextline_length
+ 846              	.LVL85:
+ 847 0010 421C     		adds	r2, r0, #1
+ 848              	.LVL86:
+ 210:src/usart_rtos.c ****     char buffer[len];
+ 849              		.loc 1 210 0
+ 850 0012 0830     		adds	r0, r0, #8
+ 851              	.LVL87:
+ 852 0014 20F00700 		bic	r0, r0, #7
+ 853              	.LVL88:
+ 854 0018 ADEB000D 		sub	sp, sp, r0
+ 855 001c 6D46     		mov	r5, sp
+ 856              	.LVL89:
+ 211:src/usart_rtos.c ****     USART_readline(USARTx_rtos->id, buffer, len);
+ 857              		.loc 1 211 0
+ 858 001e B068     		ldr	r0, [r6, #8]
+ 859 0020 6946     		mov	r1, sp
+ 860 0022 D2B2     		uxtb	r2, r2
+ 861              	.LVL90:
+ 862 0024 FFF7FEFF 		bl	USART_readline
+ 863              	.LVL91:
+ 212:src/usart_rtos.c **** 
+ 213:src/usart_rtos.c ****     if (buffer[i] == '-') {
+ 864              		.loc 1 213 0
+ 865 0028 9DF80030 		ldrb	r3, [sp]	@ zero_extendqisi2
+ 866 002c 2D2B     		cmp	r3, #45
+ 207:src/usart_rtos.c **** 
+ 867              		.loc 1 207 0
+ 868 002e 14BF     		ite	ne
+ 869 0030 0020     		movne	r0, #0
+ 214:src/usart_rtos.c ****         i++;
+ 215:src/usart_rtos.c ****         neg = 1;
+ 870              		.loc 1 215 0
+ 871 0032 0120     		moveq	r0, #1
+ 214:src/usart_rtos.c ****         i++;
+ 872              		.loc 1 214 0
+ 873 0034 0346     		mov	r3, r0
+ 874 0036 0CE0     		b	.L47
+ 875              	.LVL92:
+ 876              	.L44:
+ 216:src/usart_rtos.c ****     }
+ 217:src/usart_rtos.c **** 
+ 218:src/usart_rtos.c ****     for(i; buffer[i]!='\0'; i++) {
+ 219:src/usart_rtos.c ****         if (buffer[i] >= '0' && buffer[i]<='9'){
+ 877              		.loc 1 219 0
+ 878 0038 303A     		subs	r2, r2, #48
+ 879 003a D2B2     		uxtb	r2, r2
+ 880 003c 092A     		cmp	r2, #9
+ 881 003e 0BD8     		bhi	.L43
+ 220:src/usart_rtos.c ****             *(num) *= 10; 
+ 882              		.loc 1 220 0
+ 883 0040 2268     		ldr	r2, [r4]
+ 884 0042 02EB8202 		add	r2, r2, r2, lsl #2
+ 221:src/usart_rtos.c ****             *(num) += buffer[i]-'0';
+ 885              		.loc 1 221 0
+ 886 0046 E95C     		ldrb	r1, [r5, r3]	@ zero_extendqisi2
+ 887 0048 3039     		subs	r1, r1, #48
+ 888 004a 01EB4202 		add	r2, r1, r2, lsl #1
+ 889 004e 2260     		str	r2, [r4]
+ 218:src/usart_rtos.c ****         if (buffer[i] >= '0' && buffer[i]<='9'){
+ 890              		.loc 1 218 0
+ 891 0050 0133     		adds	r3, r3, #1
+ 892              	.LVL93:
+ 893              	.L47:
+ 218:src/usart_rtos.c ****         if (buffer[i] >= '0' && buffer[i]<='9'){
+ 894              		.loc 1 218 0 is_stmt 0 discriminator 1
+ 895 0052 EA5C     		ldrb	r2, [r5, r3]	@ zero_extendqisi2
+ 896 0054 002A     		cmp	r2, #0
+ 897 0056 EFD1     		bne	.L44
+ 898              	.L43:
+ 222:src/usart_rtos.c ****         }
+ 223:src/usart_rtos.c **** 
+ 224:src/usart_rtos.c ****         else {
+ 225:src/usart_rtos.c ****             break;
+ 226:src/usart_rtos.c ****         }    
+ 227:src/usart_rtos.c ****     }
+ 228:src/usart_rtos.c **** 
+ 229:src/usart_rtos.c ****     if (neg) {
+ 899              		.loc 1 229 0 is_stmt 1
+ 900 0058 10B1     		cbz	r0, .L40
+ 230:src/usart_rtos.c ****         *(num) *= -1;
+ 901              		.loc 1 230 0
+ 902 005a 2368     		ldr	r3, [r4]
+ 903              	.LVL94:
+ 904 005c 5B42     		negs	r3, r3
+ 905 005e 2360     		str	r3, [r4]
+ 906              	.L40:
+ 231:src/usart_rtos.c ****     }
+ 232:src/usart_rtos.c **** 
+ 233:src/usart_rtos.c **** }
+ 907              		.loc 1 233 0
+ 908 0060 BD46     		mov	sp, r7
+ 909              		@ sp needed
+ 910 0062 F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 911              		.cfi_endproc
+ 912              	.LFE122:
+ 914              		.section	.rodata.str1.4,"aMS",%progbits,1
+ 915              		.align	2
+ 916              	.LC0:
+ 917 0000 76555341 		.ascii	"vUSART_puts\000"
+ 917      52545F70 
+ 917      75747300 
+ 918              	.LC1:
+ 919 000c 4552524F 		.ascii	"ERROR483\015\012\000"
+ 919      52343833 
+ 919      0D0A00
+ 920 0017 00       		.space	1
+ 921              	.LC2:
+ 922 0018 5052494E 		.ascii	"PRINTING NEXT LINE: \000"
+ 922      54494E47 
+ 922      204E4558 
+ 922      54204C49 
+ 922      4E453A20 
+ 923 002d 000000   		.space	3
+ 924              	.LC3:
+ 925 0030 0D0A00   		.ascii	"\015\012\000"
+ 926 0033 00       		.space	1
+ 927              	.LC4:
+ 928 0034 436F6D6D 		.ascii	"Command: \000"
+ 928      616E643A 
+ 928      2000
+ 929 003e 0000     		.space	2
+ 930              	.LC5:
+ 931 0040 6F766572 		.ascii	"overview\015\000"
+ 931      76696577 
+ 931      0D00
+ 932 004a 0000     		.text
+ 933              	.Letext0:
+ 934              		.file 3 "FreeRTOS/Source/include/projdefs.h"
+ 935              		.file 4 "/usr/include/newlib/machine/_default_types.h"
+ 936              		.file 5 "/usr/include/newlib/stdint.h"
+ 937              		.file 6 "libs/Device/STM32F4xx/Include/stm32f4xx.h"
+ 938              		.file 7 "FreeRTOS/Source/include/../../Source/portable/GCC/ARM_CM4F/portmacro.h"
+ 939              		.file 8 "FreeRTOS/Source/include/task.h"
+ 940              		.file 9 "FreeRTOS/Source/include/queue.h"
+ 941              		.file 10 "FreeRTOS/Source/include/semphr.h"
+ 942              		.file 11 "src/usart_rtos.h"
+ 943              		.file 12 "/usr/lib/gcc/arm-none-eabi/4.8.2/include/stdarg.h"
+ 944              		.file 13 "<built-in>"
+ 945              		.file 14 "libs/STM32F4xx_StdPeriph_Driver/inc/stm32f4xx_usart.h"
+ 946              		.file 15 "libs/CMSIS/Include/core_cm4.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 usart_rtos.c
+     /tmp/ccM0Byas.s:20     .text.USART_rtos_wait_send:0000000000000000 $t
+     /tmp/ccM0Byas.s:25     .text.USART_rtos_wait_send:0000000000000000 USART_rtos_wait_send
+     /tmp/ccM0Byas.s:58     .text.USART_rtos_init:0000000000000000 $t
+     /tmp/ccM0Byas.s:63     .text.USART_rtos_init:0000000000000000 USART_rtos_init
+     /tmp/ccM0Byas.s:104    .text.USART_put:0000000000000000 $t
+     /tmp/ccM0Byas.s:109    .text.USART_put:0000000000000000 USART_put
+     /tmp/ccM0Byas.s:144    .text.USART_puts:0000000000000000 $t
+     /tmp/ccM0Byas.s:149    .text.USART_puts:0000000000000000 USART_puts
+     /tmp/ccM0Byas.s:190    .text.vUSART_puts:0000000000000000 $t
+     /tmp/ccM0Byas.s:195    .text.vUSART_puts:0000000000000000 vUSART_puts
+     /tmp/ccM0Byas.s:264    .text.USART_rtos_puts:0000000000000000 $t
+     /tmp/ccM0Byas.s:269    .text.USART_rtos_puts:0000000000000000 USART_rtos_puts
+     /tmp/ccM0Byas.s:916    .rodata.str1.4:0000000000000000 .LC0
+     /tmp/ccM0Byas.s:918    .rodata.str1.4:000000000000000c .LC1
+     /tmp/ccM0Byas.s:343    .text.USART_rtos_sputs:0000000000000000 $t
+     /tmp/ccM0Byas.s:348    .text.USART_rtos_sputs:0000000000000000 USART_rtos_sputs
+     /tmp/ccM0Byas.s:413    .text.USART_put_int:0000000000000000 $t
+     /tmp/ccM0Byas.s:418    .text.USART_put_int:0000000000000000 USART_put_int
+     /tmp/ccM0Byas.s:511    .text.USART_getline:0000000000000000 $t
+     /tmp/ccM0Byas.s:516    .text.USART_getline:0000000000000000 USART_getline
+     /tmp/ccM0Byas.s:565    .text.USART_nextline_length:0000000000000000 $t
+     /tmp/ccM0Byas.s:570    .text.USART_nextline_length:0000000000000000 USART_nextline_length
+     /tmp/ccM0Byas.s:921    .rodata.str1.4:0000000000000018 .LC2
+     /tmp/ccM0Byas.s:924    .rodata.str1.4:0000000000000030 .LC3
+     /tmp/ccM0Byas.s:640    .text.handle_usart_command:0000000000000000 $t
+     /tmp/ccM0Byas.s:645    .text.handle_usart_command:0000000000000000 handle_usart_command
+     /tmp/ccM0Byas.s:927    .rodata.str1.4:0000000000000034 .LC4
+     /tmp/ccM0Byas.s:930    .rodata.str1.4:0000000000000040 .LC5
+     /tmp/ccM0Byas.s:693    .text.USART_readline:0000000000000000 $t
+     /tmp/ccM0Byas.s:698    .text.USART_readline:0000000000000000 USART_readline
+     /tmp/ccM0Byas.s:814    .text.USART_readline_int:0000000000000000 $t
+     /tmp/ccM0Byas.s:819    .text.USART_readline_int:0000000000000000 USART_readline_int
+     /tmp/ccM0Byas.s:915    .rodata.str1.4:0000000000000000 $d
+                     .debug_frame:0000000000000010 $d
+                           .group:0000000000000000 wm4.1.7402b5479d3fa4780665141f585fc0ee
+                           .group:0000000000000000 wm4.stddef.h.39.daafd3d79fe2f3a84d2d73d7d4e706f8
+                           .group:0000000000000000 wm4.projdefs.h.55.cdae9ead80b5a2ac004f41bb277aad45
+                           .group:0000000000000000 wm4.FreeRTOSConfig.h.55.a343614a17c4367a6359a1f530d6d32b
+                           .group:0000000000000000 wm4.stm32f4xx.h.48.a3308e16720c7afc3eb28e585e628ce6
+                           .group:0000000000000000 wm4.core_cm4.h.32.5f62939b60122629d60d85d0c4a14709
+                           .group:0000000000000000 wm4.features.h.22.6a4ca7cd053637cc1d0db6c16f39b2d7
+                           .group:0000000000000000 wm4._default_types.h.15.8b2cb27e528498f8ff711db085d6e489
+                           .group:0000000000000000 wm4.stdint.h.20.796e373797e732130a803d4c0338fa1b
+                           .group:0000000000000000 wm4.core_cmInstr.h.25.f50f886f2edf670cf199b35fd96f5c91
+                           .group:0000000000000000 wm4.core_cm4_simd.h.29.b4a3fdfb606cb3b26119424324d4b963
+                           .group:0000000000000000 wm4.core_cm4.h.153.5393ef7e6cebf34dd51ca528f9218ab3
+                           .group:0000000000000000 wm4.stm32f4xx.h.282.95bae448a91bccfbf24a6f9d95904bb8
+                           .group:0000000000000000 wm4.stm32f4xx_adc.h.102.2061aa73008746f3c2cc6ce8f635cad3
+                           .group:0000000000000000 wm4.stm32f4xx_can.h.25.87f18ca48b2692d39f76e87b1f07c953
+                           .group:0000000000000000 wm4.stm32f4xx_cryp.h.25.db1951c06ee684df97ea3a11aba6cb51
+                           .group:0000000000000000 wm4.stm32f4xx_dac.h.25.c43557a6416ea4dfa986c1209c2558d6
+                           .group:0000000000000000 wm4.stm32f4xx_dbgmcu.h.24.7aedfdcf091890b5cb96019bd29a2bfc
+                           .group:0000000000000000 wm4.stm32f4xx_dcmi.h.24.64883d9be802a535b1d7770d14da73e0
+                           .group:0000000000000000 wm4.stm32f4xx_dma.h.25.c1fa1d44ae0bc9c2b3a0d1d355d8c1e6
+                           .group:0000000000000000 wm4.stm32f4xx_exti.h.25.620998268d5d3d9042a8297fbe07d507
+                           .group:0000000000000000 wm4.stm32f4xx_flash.h.25.65d4f351b72ee41355279f70305f361a
+                           .group:0000000000000000 wm4.stm32f4xx_fsmc.h.25.b907ac7bd9bec46e02d06b137d53cfd8
+                           .group:0000000000000000 wm4.stm32f4xx_hash.h.25.633fb84f031cf2ab1bd834e536716dfa
+                           .group:0000000000000000 wm4.stm32f4xx_gpio.h.25.5bd1d790d742a307b55aea5fa8fcdae8
+                           .group:0000000000000000 wm4.stm32f4xx_i2c.h.25.8fcdb817a00a67d4624d79bab0d9275f
+                           .group:0000000000000000 wm4.stm32f4xx_iwdg.h.25.3013e8d2058415cb9d51af77f748a146
+                           .group:0000000000000000 wm4.stm32f4xx_pwr.h.25.48b68c1f3a894ab012f9c2a2c222f159
+                           .group:0000000000000000 wm4.stm32f4xx_rcc.h.24.c15e7c8dc065bb29146f29591b195c87
+                           .group:0000000000000000 wm4.stm32f4xx_rng.h.25.cdb5c5c07de6a48aedfde608da3f447e
+                           .group:0000000000000000 wm4.stm32f4xx_rtc.h.25.4809a79ad46ad97b4a01e735a96738eb
+                           .group:0000000000000000 wm4.stm32f4xx_sdio.h.25.406302aabae34eada94e5f2cde635a3e
+                           .group:0000000000000000 wm4.stm32f4xx_spi.h.25.46c61b79ff8408da93e2e90cf9b717d6
+                           .group:0000000000000000 wm4.stm32f4xx_syscfg.h.25.9d5caab5677661b69e959531364e23d7
+                           .group:0000000000000000 wm4.stm32f4xx_tim.h.25.948f7fc943f34bd206e29758e77ee0a2
+                           .group:0000000000000000 wm4.stm32f4xx_usart.h.25.b64697dad017ba547dd272c2cdb5846a
+                           .group:0000000000000000 wm4.stm32f4xx_wwdg.h.25.09d70b7849c6894ddf1e83c8e86b70e1
+                           .group:0000000000000000 wm4.misc.h.25.a0cb758c1f091b46f201b19cec9e63a1
+                           .group:0000000000000000 wm4.stm32f4xx.h.6913.da011404ccb203790556c86f10c46b18
+                           .group:0000000000000000 wm4.FreeRTOSConfig.h.74.fc794e36cd6c91c3b4695c74d78d9ccd
+                           .group:0000000000000000 wm4.portmacro.h.69.a7e264ae32accd81a6ffb6f75a8356fe
+                           .group:0000000000000000 wm4.portable.h.315.489c085dbd13c768c8594a7d23ef5545
+                           .group:0000000000000000 wm4.mpu_wrappers.h.55.46a4a008a193040c38098e9a5f07ff9d
+                           .group:0000000000000000 wm4.FreeRTOS.h.136.a1d4f27d190f434afd0502fdd510d30a
+                           .group:0000000000000000 wm4.list.h.84.e713c47e239b06424d7c93968625e34d
+                           .group:0000000000000000 wm4.task.h.73.ea72fb74b80a9cae261e97c6a9e3f3a7
+                           .group:0000000000000000 wm4.queue.h.56.a4282b659085ac883e461fc7ab8aecd1
+                           .group:0000000000000000 wm4.semphr.h.65.53591bdf1c84eee2eae05897a780c325
+                           .group:0000000000000000 wm4.newlib.h.8.fec018e441fee7bfa1923812ad010f97
+                           .group:0000000000000000 wm4.config.h.212.4163ef2871a828c674038d036b081cfd
+                           .group:0000000000000000 wm4._ansi.h.23.2147fde150631f5584b9dc29b914d1b8
+                           .group:0000000000000000 wm4.stdlib.h.13.4ed386f5c1a80d71e72172885d946ef2
+                           .group:0000000000000000 wm4.stddef.h.158.a7efb00f6cbc6f43213b50e183c9830c
+                           .group:0000000000000000 wm4.lock.h.2.9bc98482741e5e2a9450b12934a684ea
+                           .group:0000000000000000 wm4._types.h.54.d3d34a3b7f3cc230cd159baf022b4b08
+                           .group:0000000000000000 wm4.stddef.h.158.61317cdbfb4026324507d123a50b0fd6
+                           .group:0000000000000000 wm4.reent.h.17.8bd9e4098e0428508c282cad794fae43
+                           .group:0000000000000000 wm4.alloca.h.8.dfc0c703c47ec3e69746825b17d9e66d
+                           .group:0000000000000000 wm4.stdlib.h.53.1a82a3cc35cb0a04319c41bcf41d2a02
+                           .group:0000000000000000 wm4.stdarg.h.31.72c3aa8d68b291953fa52b9471bcdff7
+
+UNDEFINED SYMBOLS
+xQueueGenericReceive
+xQueueCreateMutex
+USART_SendData
+vPortEnterCritical
+xQueueGenericSend
+vPortExitCritical
+vTaskDelete
+xTaskGenericCreate
+vsprintf
+str_compare

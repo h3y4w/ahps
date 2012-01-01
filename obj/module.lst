@@ -1,0 +1,487 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m4
+   3              		.eabi_attribute 27, 3
+   4              		.fpu fpv4-sp-d16
+   5              		.eabi_attribute 20, 1
+   6              		.eabi_attribute 21, 1
+   7              		.eabi_attribute 23, 3
+   8              		.eabi_attribute 24, 1
+   9              		.eabi_attribute 25, 1
+  10              		.eabi_attribute 26, 1
+  11              		.eabi_attribute 30, 1
+  12              		.eabi_attribute 34, 1
+  13              		.eabi_attribute 18, 4
+  14              		.thumb
+  15              		.file	"module.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.PHMeter_Module_Init,"ax",%progbits
+  20              		.align	2
+  21              		.global	PHMeter_Module_Init
+  22              		.thumb
+  23              		.thumb_func
+  25              	PHMeter_Module_Init:
+  26              	.LFB110:
+  27              		.file 1 "src/module.c"
+   1:src/module.c  **** #include "module.h" 
+   2:src/module.c  **** #include "semphr.h"
+   3:src/module.c  **** #include "FreeRTOS.h"
+   4:src/module.c  **** #include <stdlib.h>
+   5:src/module.c  **** #include <stdint.h>
+   6:src/module.c  **** #include "task.h"
+   7:src/module.c  **** 
+   8:src/module.c  **** void PHMeter_Module_Init(PHMeter_Module *module) {
+  28              		.loc 1 8 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              	.LVL0:
+  33 0000 10B5     		push	{r4, lr}
+  34              	.LCFI0:
+  35              		.cfi_def_cfa_offset 8
+  36              		.cfi_offset 4, -8
+  37              		.cfi_offset 14, -4
+   9:src/module.c  ****     if (module) {
+  38              		.loc 1 9 0
+  39 0002 0446     		mov	r4, r0
+  40 0004 20B1     		cbz	r0, .L1
+  10:src/module.c  ****         module->state = MODULE_STANDBY;
+  41              		.loc 1 10 0
+  42 0006 0123     		movs	r3, #1
+  43 0008 0372     		strb	r3, [r0, #8]
+  11:src/module.c  ****         module->mutex = xSemaphoreCreateMutex();
+  44              		.loc 1 11 0
+  45 000a FFF7FEFF 		bl	xQueueCreateMutex
+  46              	.LVL1:
+  47 000e 6060     		str	r0, [r4, #4]
+  48              	.L1:
+  49 0010 10BD     		pop	{r4, pc}
+  50              		.cfi_endproc
+  51              	.LFE110:
+  53 0012 00BF     		.section	.text.UDS_Module_Init,"ax",%progbits
+  54              		.align	2
+  55              		.global	UDS_Module_Init
+  56              		.thumb
+  57              		.thumb_func
+  59              	UDS_Module_Init:
+  60              	.LFB111:
+  12:src/module.c  ****     }
+  13:src/module.c  **** }
+  14:src/module.c  **** 
+  15:src/module.c  **** void UDS_Module_Init( UDS_Module *module) { 
+  61              		.loc 1 15 0
+  62              		.cfi_startproc
+  63              		@ args = 0, pretend = 0, frame = 0
+  64              		@ frame_needed = 0, uses_anonymous_args = 0
+  65              	.LVL2:
+  66 0000 10B5     		push	{r4, lr}
+  67              	.LCFI1:
+  68              		.cfi_def_cfa_offset 8
+  69              		.cfi_offset 4, -8
+  70              		.cfi_offset 14, -4
+  16:src/module.c  ****     if (module) {
+  71              		.loc 1 16 0
+  72 0002 0446     		mov	r4, r0
+  73 0004 20B1     		cbz	r0, .L3
+  17:src/module.c  ****         module->state = MODULE_STANDBY;
+  74              		.loc 1 17 0
+  75 0006 0123     		movs	r3, #1
+  76 0008 0375     		strb	r3, [r0, #20]
+  18:src/module.c  ****         module->mutex = xSemaphoreCreateMutex();
+  77              		.loc 1 18 0
+  78 000a FFF7FEFF 		bl	xQueueCreateMutex
+  79              	.LVL3:
+  80 000e 2061     		str	r0, [r4, #16]
+  81              	.L3:
+  82 0010 10BD     		pop	{r4, pc}
+  83              		.cfi_endproc
+  84              	.LFE111:
+  86 0012 00BF     		.section	.text.UDS_Module_distance,"ax",%progbits
+  87              		.align	2
+  88              		.global	UDS_Module_distance
+  89              		.thumb
+  90              		.thumb_func
+  92              	UDS_Module_distance:
+  93              	.LFB112:
+  19:src/module.c  ****     }
+  20:src/module.c  **** }
+  21:src/module.c  **** 
+  22:src/module.c  **** int UDS_Module_distance(UDS_Module *module) {
+  94              		.loc 1 22 0
+  95              		.cfi_startproc
+  96              		@ args = 0, pretend = 0, frame = 8
+  97              		@ frame_needed = 0, uses_anonymous_args = 0
+  98              	.LVL4:
+  99 0000 70B5     		push	{r4, r5, r6, lr}
+ 100              	.LCFI2:
+ 101              		.cfi_def_cfa_offset 16
+ 102              		.cfi_offset 4, -16
+ 103              		.cfi_offset 5, -12
+ 104              		.cfi_offset 6, -8
+ 105              		.cfi_offset 14, -4
+ 106 0002 82B0     		sub	sp, sp, #8
+ 107              	.LCFI3:
+ 108              		.cfi_def_cfa_offset 24
+ 109 0004 0446     		mov	r4, r0
+  23:src/module.c  **** 
+  24:src/module.c  ****   __IO uint8_t flag=0;
+ 110              		.loc 1 24 0
+ 111 0006 0023     		movs	r3, #0
+ 112 0008 8DF80730 		strb	r3, [sp, #7]
+  25:src/module.c  ****   __IO uint32_t disTime=0;
+ 113              		.loc 1 25 0
+ 114 000c 0093     		str	r3, [sp]
+  26:src/module.c  **** 
+  27:src/module.c  ****     GPIO_ResetBits(module->port_in, module->pin_in);
+ 115              		.loc 1 27 0
+ 116 000e 0068     		ldr	r0, [r0]
+ 117              	.LVL5:
+ 118 0010 2189     		ldrh	r1, [r4, #8]
+ 119 0012 FFF7FEFF 		bl	GPIO_ResetBits
+ 120              	.LVL6:
+  28:src/module.c  **** 
+  29:src/module.c  ****     GPIO_ResetBits(module->port_out, module->pin_out);
+ 121              		.loc 1 29 0
+ 122 0016 6068     		ldr	r0, [r4, #4]
+ 123 0018 6189     		ldrh	r1, [r4, #10]
+ 124 001a FFF7FEFF 		bl	GPIO_ResetBits
+ 125              	.LVL7:
+  30:src/module.c  ****     delay_us(2);
+ 126              		.loc 1 30 0
+ 127 001e 0220     		movs	r0, #2
+ 128 0020 FFF7FEFF 		bl	delay_us
+ 129              	.LVL8:
+  31:src/module.c  ****     GPIO_SetBits(module->port_out, module->pin_out);
+ 130              		.loc 1 31 0
+ 131 0024 6068     		ldr	r0, [r4, #4]
+ 132 0026 6189     		ldrh	r1, [r4, #10]
+ 133 0028 FFF7FEFF 		bl	GPIO_SetBits
+ 134              	.LVL9:
+  32:src/module.c  ****     delay_us(11);
+ 135              		.loc 1 32 0
+ 136 002c 0B20     		movs	r0, #11
+ 137 002e FFF7FEFF 		bl	delay_us
+ 138              	.LVL10:
+  33:src/module.c  ****     GPIO_ResetBits(module->port_out, module->pin_out);
+ 139              		.loc 1 33 0
+ 140 0032 6068     		ldr	r0, [r4, #4]
+ 141 0034 6189     		ldrh	r1, [r4, #10]
+ 142 0036 FFF7FEFF 		bl	GPIO_ResetBits
+ 143              	.LVL11:
+  34:src/module.c  **** 
+  35:src/module.c  **** 
+  36:src/module.c  ****   while(flag == 0) {
+  37:src/module.c  **** 
+  38:src/module.c  ****     while(GPIO_ReadInputDataBit(module->port_in, module->pin_in) == SET) {
+  39:src/module.c  ****         disTime++;
+  40:src/module.c  ****         flag = 1;
+ 144              		.loc 1 40 0
+ 145 003a 0125     		movs	r5, #1
+  41:src/module.c  ****         delay_us(1);
+  42:src/module.c  ****         if (disTime == module->timeout*1000) {
+ 146              		.loc 1 42 0
+ 147 003c 4FF47A76 		mov	r6, #1000
+  36:src/module.c  **** 
+ 148              		.loc 1 36 0
+ 149 0040 13E0     		b	.L6
+ 150              	.L8:
+  39:src/module.c  ****         flag = 1;
+ 151              		.loc 1 39 0
+ 152 0042 009B     		ldr	r3, [sp]
+ 153 0044 0133     		adds	r3, r3, #1
+ 154 0046 0093     		str	r3, [sp]
+  40:src/module.c  ****         delay_us(1);
+ 155              		.loc 1 40 0
+ 156 0048 8DF80750 		strb	r5, [sp, #7]
+  41:src/module.c  ****         if (disTime == module->timeout*1000) {
+ 157              		.loc 1 41 0
+ 158 004c 2846     		mov	r0, r5
+ 159 004e FFF7FEFF 		bl	delay_us
+ 160              	.LVL12:
+ 161              		.loc 1 42 0
+ 162 0052 A289     		ldrh	r2, [r4, #12]
+ 163 0054 06FB02F2 		mul	r2, r6, r2
+ 164 0058 009B     		ldr	r3, [sp]
+ 165 005a 9A42     		cmp	r2, r3
+ 166 005c 19D0     		beq	.L10
+ 167              	.L11:
+  38:src/module.c  ****         disTime++;
+ 168              		.loc 1 38 0 discriminator 1
+ 169 005e 2068     		ldr	r0, [r4]
+ 170 0060 2189     		ldrh	r1, [r4, #8]
+ 171 0062 FFF7FEFF 		bl	GPIO_ReadInputDataBit
+ 172              	.LVL13:
+ 173 0066 0128     		cmp	r0, #1
+ 174 0068 EBD0     		beq	.L8
+ 175              	.L6:
+  36:src/module.c  **** 
+ 176              		.loc 1 36 0 discriminator 1
+ 177 006a 9DF80730 		ldrb	r3, [sp, #7]	@ zero_extendqisi2
+ 178 006e 13F0FF0F 		tst	r3, #255
+ 179 0072 F4D0     		beq	.L11
+  43:src/module.c  ****             return -1;
+  44:src/module.c  ****         }
+  45:src/module.c  ****     }
+  46:src/module.c  ****   }
+  47:src/module.c  **** 
+  48:src/module.c  ****     return disTime/CM_CONVERSION*2; //converts to centimeters
+ 180              		.loc 1 48 0
+ 181 0074 9DED007A 		flds	s14, [sp]	@ int
+ 182 0078 B8EE477A 		fuitos	s14, s14
+ 183 007c DFED077A 		flds	s15, .L12
+ 184 0080 C7EE277A 		fdivs	s15, s14, s15
+ 185 0084 77EEA77A 		fadds	s15, s15, s15
+ 186 0088 FDEEE77A 		ftosizs	s15, s15
+ 187 008c 17EE900A 		fmrs	r0, s15	@ int
+ 188 0090 01E0     		b	.L7
+ 189              	.L10:
+  43:src/module.c  ****             return -1;
+ 190              		.loc 1 43 0
+ 191 0092 4FF0FF30 		mov	r0, #-1
+ 192              	.L7:
+  49:src/module.c  **** }
+ 193              		.loc 1 49 0
+ 194 0096 02B0     		add	sp, sp, #8
+ 195              		@ sp needed
+ 196 0098 70BD     		pop	{r4, r5, r6, pc}
+ 197              	.LVL14:
+ 198              	.L13:
+ 199 009a 00BF     		.align	2
+ 200              	.L12:
+ 201 009c CDCC6842 		.word	1114164429
+ 202              		.cfi_endproc
+ 203              	.LFE112:
+ 205              		.section	.text.PPump_Module_Init,"ax",%progbits
+ 206              		.align	2
+ 207              		.global	PPump_Module_Init
+ 208              		.thumb
+ 209              		.thumb_func
+ 211              	PPump_Module_Init:
+ 212              	.LFB113:
+  50:src/module.c  **** 
+  51:src/module.c  **** void PPump_Module_Init(PPump_Module *module, UDS_Module *sensor) {
+ 213              		.loc 1 51 0
+ 214              		.cfi_startproc
+ 215              		@ args = 0, pretend = 0, frame = 0
+ 216              		@ frame_needed = 0, uses_anonymous_args = 0
+ 217              	.LVL15:
+ 218 0000 10B5     		push	{r4, lr}
+ 219              	.LCFI4:
+ 220              		.cfi_def_cfa_offset 8
+ 221              		.cfi_offset 4, -8
+ 222              		.cfi_offset 14, -4
+  52:src/module.c  ****     if (module) {
+ 223              		.loc 1 52 0
+ 224 0002 0446     		mov	r4, r0
+ 225 0004 30B1     		cbz	r0, .L14
+  53:src/module.c  ****         //use sensor to calculate distance Make this a task.  One parent task for getting tank size
+  54:src/module.c  ****         sensor->value = 8;
+ 226              		.loc 1 54 0
+ 227 0006 0823     		movs	r3, #8
+ 228 0008 8B61     		str	r3, [r1, #24]
+  55:src/module.c  ****         //module->tank = 100*(sensor->value/module->tank_height); //finds the percentage filled
+  56:src/module.c  ****         module->state = MODULE_STANDBY;
+ 229              		.loc 1 56 0
+ 230 000a 0123     		movs	r3, #1
+ 231 000c 0372     		strb	r3, [r0, #8]
+  57:src/module.c  ****         module->mutex = xSemaphoreCreateMutex();
+ 232              		.loc 1 57 0
+ 233 000e FFF7FEFF 		bl	xQueueCreateMutex
+ 234              	.LVL16:
+ 235 0012 E060     		str	r0, [r4, #12]
+ 236              	.L14:
+ 237 0014 10BD     		pop	{r4, pc}
+ 238              		.cfi_endproc
+ 239              	.LFE113:
+ 241 0016 00BF     		.section	.text.PPump_Module_dispense,"ax",%progbits
+ 242              		.align	2
+ 243              		.global	PPump_Module_dispense
+ 244              		.thumb
+ 245              		.thumb_func
+ 247              	PPump_Module_dispense:
+ 248              	.LFB114:
+  58:src/module.c  ****     }
+  59:src/module.c  **** }
+  60:src/module.c  **** 
+  61:src/module.c  **** void PPump_Module_dispense(PPump_Module *module, int amount_ml) {
+ 249              		.loc 1 61 0
+ 250              		.cfi_startproc
+ 251              		@ args = 0, pretend = 0, frame = 0
+ 252              		@ frame_needed = 0, uses_anonymous_args = 0
+ 253              	.LVL17:
+ 254 0000 38B5     		push	{r3, r4, r5, lr}
+ 255              	.LCFI5:
+ 256              		.cfi_def_cfa_offset 16
+ 257              		.cfi_offset 3, -16
+ 258              		.cfi_offset 4, -12
+ 259              		.cfi_offset 5, -8
+ 260              		.cfi_offset 14, -4
+ 261 0002 0D46     		mov	r5, r1
+  62:src/module.c  ****     if (module) {
+ 262              		.loc 1 62 0
+ 263 0004 0446     		mov	r4, r0
+ 264 0006 B8B1     		cbz	r0, .L16
+  63:src/module.c  ****         GPIO_SetBits(module->port_out, module->pin_out);
+ 265              		.loc 1 63 0
+ 266 0008 0068     		ldr	r0, [r0]
+ 267              	.LVL18:
+ 268 000a A188     		ldrh	r1, [r4, #4]
+ 269              	.LVL19:
+ 270 000c FFF7FEFF 		bl	GPIO_SetBits
+ 271              	.LVL20:
+  64:src/module.c  ****         delay_ms((module->ml_per_m/60*amount_ml)*1000);
+ 272              		.loc 1 64 0
+ 273 0010 E288     		ldrh	r2, [r4, #6]
+ 274 0012 48F68903 		movw	r3, #34953
+ 275 0016 C8F68803 		movt	r3, 34952
+ 276 001a A3FB0213 		umull	r1, r3, r3, r2
+ 277 001e 5B09     		lsrs	r3, r3, #5
+ 278 0020 05FB03F5 		mul	r5, r5, r3
+ 279              	.LVL21:
+ 280 0024 4FF47A70 		mov	r0, #1000
+ 281 0028 00FB05F0 		mul	r0, r0, r5
+ 282 002c FFF7FEFF 		bl	delay_ms
+ 283              	.LVL22:
+  65:src/module.c  ****         GPIO_ResetBits(module->port_out, module->pin_out);
+ 284              		.loc 1 65 0
+ 285 0030 2068     		ldr	r0, [r4]
+ 286 0032 A188     		ldrh	r1, [r4, #4]
+ 287 0034 FFF7FEFF 		bl	GPIO_ResetBits
+ 288              	.LVL23:
+ 289              	.L16:
+ 290 0038 38BD     		pop	{r3, r4, r5, pc}
+ 291              		.cfi_endproc
+ 292              	.LFE114:
+ 294 003a 00BF     		.section	.text.Fan_Module_Init,"ax",%progbits
+ 295              		.align	2
+ 296              		.global	Fan_Module_Init
+ 297              		.thumb
+ 298              		.thumb_func
+ 300              	Fan_Module_Init:
+ 301              	.LFB115:
+  66:src/module.c  ****     }
+  67:src/module.c  **** }
+  68:src/module.c  **** 
+  69:src/module.c  **** void Fan_Module_Init(Fan_Module *module) {
+ 302              		.loc 1 69 0
+ 303              		.cfi_startproc
+ 304              		@ args = 0, pretend = 0, frame = 0
+ 305              		@ frame_needed = 0, uses_anonymous_args = 0
+ 306              	.LVL24:
+ 307 0000 10B5     		push	{r4, lr}
+ 308              	.LCFI6:
+ 309              		.cfi_def_cfa_offset 8
+ 310              		.cfi_offset 4, -8
+ 311              		.cfi_offset 14, -4
+  70:src/module.c  ****     if (module){
+ 312              		.loc 1 70 0
+ 313 0002 0446     		mov	r4, r0
+ 314 0004 20B1     		cbz	r0, .L18
+  71:src/module.c  ****         module->mutex = xSemaphoreCreateMutex();
+ 315              		.loc 1 71 0
+ 316 0006 FFF7FEFF 		bl	xQueueCreateMutex
+ 317              	.LVL25:
+ 318 000a 6060     		str	r0, [r4, #4]
+  72:src/module.c  ****         module->state = MODULE_STANDBY;
+ 319              		.loc 1 72 0
+ 320 000c 0123     		movs	r3, #1
+ 321 000e 2372     		strb	r3, [r4, #8]
+ 322              	.L18:
+ 323 0010 10BD     		pop	{r4, pc}
+ 324              		.cfi_endproc
+ 325              	.LFE115:
+ 327 0012 00BF     		.text
+ 328              	.Letext0:
+ 329              		.file 2 "/usr/include/newlib/machine/_default_types.h"
+ 330              		.file 3 "/usr/include/newlib/stdint.h"
+ 331              		.file 4 "libs/Device/STM32F4xx/Include/stm32f4xx.h"
+ 332              		.file 5 "FreeRTOS/Source/include/queue.h"
+ 333              		.file 6 "FreeRTOS/Source/include/semphr.h"
+ 334              		.file 7 "src/module.h"
+ 335              		.file 8 "libs/STM32F4xx_StdPeriph_Driver/inc/stm32f4xx_gpio.h"
+ 336              		.file 9 "src/ustime.h"
+ 337              		.file 10 "libs/CMSIS/Include/core_cm4.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 module.c
+     /tmp/ccdfsFC9.s:20     .text.PHMeter_Module_Init:0000000000000000 $t
+     /tmp/ccdfsFC9.s:25     .text.PHMeter_Module_Init:0000000000000000 PHMeter_Module_Init
+     /tmp/ccdfsFC9.s:54     .text.UDS_Module_Init:0000000000000000 $t
+     /tmp/ccdfsFC9.s:59     .text.UDS_Module_Init:0000000000000000 UDS_Module_Init
+     /tmp/ccdfsFC9.s:87     .text.UDS_Module_distance:0000000000000000 $t
+     /tmp/ccdfsFC9.s:92     .text.UDS_Module_distance:0000000000000000 UDS_Module_distance
+     /tmp/ccdfsFC9.s:201    .text.UDS_Module_distance:000000000000009c $d
+     /tmp/ccdfsFC9.s:206    .text.PPump_Module_Init:0000000000000000 $t
+     /tmp/ccdfsFC9.s:211    .text.PPump_Module_Init:0000000000000000 PPump_Module_Init
+     /tmp/ccdfsFC9.s:242    .text.PPump_Module_dispense:0000000000000000 $t
+     /tmp/ccdfsFC9.s:247    .text.PPump_Module_dispense:0000000000000000 PPump_Module_dispense
+     /tmp/ccdfsFC9.s:295    .text.Fan_Module_Init:0000000000000000 $t
+     /tmp/ccdfsFC9.s:300    .text.Fan_Module_Init:0000000000000000 Fan_Module_Init
+                     .debug_frame:0000000000000010 $d
+                           .group:0000000000000000 wm4.1.7402b5479d3fa4780665141f585fc0ee
+                           .group:0000000000000000 wm4.stddef.h.39.daafd3d79fe2f3a84d2d73d7d4e706f8
+                           .group:0000000000000000 wm4.projdefs.h.55.cdae9ead80b5a2ac004f41bb277aad45
+                           .group:0000000000000000 wm4.FreeRTOSConfig.h.55.a343614a17c4367a6359a1f530d6d32b
+                           .group:0000000000000000 wm4.stm32f4xx.h.48.a3308e16720c7afc3eb28e585e628ce6
+                           .group:0000000000000000 wm4.core_cm4.h.32.5f62939b60122629d60d85d0c4a14709
+                           .group:0000000000000000 wm4.features.h.22.6a4ca7cd053637cc1d0db6c16f39b2d7
+                           .group:0000000000000000 wm4._default_types.h.15.8b2cb27e528498f8ff711db085d6e489
+                           .group:0000000000000000 wm4.stdint.h.20.796e373797e732130a803d4c0338fa1b
+                           .group:0000000000000000 wm4.core_cmInstr.h.25.f50f886f2edf670cf199b35fd96f5c91
+                           .group:0000000000000000 wm4.core_cm4_simd.h.29.b4a3fdfb606cb3b26119424324d4b963
+                           .group:0000000000000000 wm4.core_cm4.h.153.5393ef7e6cebf34dd51ca528f9218ab3
+                           .group:0000000000000000 wm4.stm32f4xx.h.282.95bae448a91bccfbf24a6f9d95904bb8
+                           .group:0000000000000000 wm4.stm32f4xx_adc.h.102.2061aa73008746f3c2cc6ce8f635cad3
+                           .group:0000000000000000 wm4.stm32f4xx_can.h.25.87f18ca48b2692d39f76e87b1f07c953
+                           .group:0000000000000000 wm4.stm32f4xx_cryp.h.25.db1951c06ee684df97ea3a11aba6cb51
+                           .group:0000000000000000 wm4.stm32f4xx_dac.h.25.c43557a6416ea4dfa986c1209c2558d6
+                           .group:0000000000000000 wm4.stm32f4xx_dbgmcu.h.24.7aedfdcf091890b5cb96019bd29a2bfc
+                           .group:0000000000000000 wm4.stm32f4xx_dcmi.h.24.64883d9be802a535b1d7770d14da73e0
+                           .group:0000000000000000 wm4.stm32f4xx_dma.h.25.c1fa1d44ae0bc9c2b3a0d1d355d8c1e6
+                           .group:0000000000000000 wm4.stm32f4xx_exti.h.25.620998268d5d3d9042a8297fbe07d507
+                           .group:0000000000000000 wm4.stm32f4xx_flash.h.25.65d4f351b72ee41355279f70305f361a
+                           .group:0000000000000000 wm4.stm32f4xx_fsmc.h.25.b907ac7bd9bec46e02d06b137d53cfd8
+                           .group:0000000000000000 wm4.stm32f4xx_hash.h.25.633fb84f031cf2ab1bd834e536716dfa
+                           .group:0000000000000000 wm4.stm32f4xx_gpio.h.25.5bd1d790d742a307b55aea5fa8fcdae8
+                           .group:0000000000000000 wm4.stm32f4xx_i2c.h.25.8fcdb817a00a67d4624d79bab0d9275f
+                           .group:0000000000000000 wm4.stm32f4xx_iwdg.h.25.3013e8d2058415cb9d51af77f748a146
+                           .group:0000000000000000 wm4.stm32f4xx_pwr.h.25.48b68c1f3a894ab012f9c2a2c222f159
+                           .group:0000000000000000 wm4.stm32f4xx_rcc.h.24.c15e7c8dc065bb29146f29591b195c87
+                           .group:0000000000000000 wm4.stm32f4xx_rng.h.25.cdb5c5c07de6a48aedfde608da3f447e
+                           .group:0000000000000000 wm4.stm32f4xx_rtc.h.25.4809a79ad46ad97b4a01e735a96738eb
+                           .group:0000000000000000 wm4.stm32f4xx_sdio.h.25.406302aabae34eada94e5f2cde635a3e
+                           .group:0000000000000000 wm4.stm32f4xx_spi.h.25.46c61b79ff8408da93e2e90cf9b717d6
+                           .group:0000000000000000 wm4.stm32f4xx_syscfg.h.25.9d5caab5677661b69e959531364e23d7
+                           .group:0000000000000000 wm4.stm32f4xx_tim.h.25.948f7fc943f34bd206e29758e77ee0a2
+                           .group:0000000000000000 wm4.stm32f4xx_usart.h.25.b64697dad017ba547dd272c2cdb5846a
+                           .group:0000000000000000 wm4.stm32f4xx_wwdg.h.25.09d70b7849c6894ddf1e83c8e86b70e1
+                           .group:0000000000000000 wm4.misc.h.25.a0cb758c1f091b46f201b19cec9e63a1
+                           .group:0000000000000000 wm4.stm32f4xx.h.6913.da011404ccb203790556c86f10c46b18
+                           .group:0000000000000000 wm4.FreeRTOSConfig.h.74.fc794e36cd6c91c3b4695c74d78d9ccd
+                           .group:0000000000000000 wm4.portmacro.h.69.a7e264ae32accd81a6ffb6f75a8356fe
+                           .group:0000000000000000 wm4.portable.h.315.489c085dbd13c768c8594a7d23ef5545
+                           .group:0000000000000000 wm4.mpu_wrappers.h.55.46a4a008a193040c38098e9a5f07ff9d
+                           .group:0000000000000000 wm4.FreeRTOS.h.136.a1d4f27d190f434afd0502fdd510d30a
+                           .group:0000000000000000 wm4.queue.h.56.a4282b659085ac883e461fc7ab8aecd1
+                           .group:0000000000000000 wm4.semphr.h.65.53591bdf1c84eee2eae05897a780c325
+                           .group:0000000000000000 wm4.newlib.h.8.fec018e441fee7bfa1923812ad010f97
+                           .group:0000000000000000 wm4.config.h.212.4163ef2871a828c674038d036b081cfd
+                           .group:0000000000000000 wm4._ansi.h.23.2147fde150631f5584b9dc29b914d1b8
+                           .group:0000000000000000 wm4.stdlib.h.13.4ed386f5c1a80d71e72172885d946ef2
+                           .group:0000000000000000 wm4.stddef.h.158.a7efb00f6cbc6f43213b50e183c9830c
+                           .group:0000000000000000 wm4.lock.h.2.9bc98482741e5e2a9450b12934a684ea
+                           .group:0000000000000000 wm4._types.h.54.d3d34a3b7f3cc230cd159baf022b4b08
+                           .group:0000000000000000 wm4.stddef.h.158.61317cdbfb4026324507d123a50b0fd6
+                           .group:0000000000000000 wm4.reent.h.17.8bd9e4098e0428508c282cad794fae43
+                           .group:0000000000000000 wm4.alloca.h.8.dfc0c703c47ec3e69746825b17d9e66d
+                           .group:0000000000000000 wm4.stdlib.h.53.1a82a3cc35cb0a04319c41bcf41d2a02
+                           .group:0000000000000000 wm4.list.h.84.e713c47e239b06424d7c93968625e34d
+                           .group:0000000000000000 wm4.task.h.73.ea72fb74b80a9cae261e97c6a9e3f3a7
+
+UNDEFINED SYMBOLS
+xQueueCreateMutex
+GPIO_ResetBits
+delay_us
+GPIO_SetBits
+GPIO_ReadInputDataBit
+delay_ms

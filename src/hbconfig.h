@@ -1,0 +1,6 @@
+#define UDS_PHUP_PIN_IN GPIO_Pin_3
+#define UDS_PHUP_PORT_IN GPIOD
+#define UDS_PHUP_PIN_OUT GPIO_Pin_4
+#define UDS_PHUP_PORT_OUT GPIOD
+
+

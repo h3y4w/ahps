@@ -40,7 +40,7 @@ uint32_t ultrasonic_read_distance(Ultrasonic_Typedef *sensor) {
     }
 
   }
-    return disTime/58*2; //converts to centimeters
+    return disTime / CM_CONVERSION *2; //converts to centimeters
 }
 
 void servo_init(Servo_Typedef *servo, volatile uint32_t *CCR, uint16_t offset, uint16_t range) {
