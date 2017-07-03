@@ -1,0 +1,175 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m4
+   3              		.eabi_attribute 27, 3
+   4              		.fpu fpv4-sp-d16
+   5              		.eabi_attribute 20, 1
+   6              		.eabi_attribute 21, 1
+   7              		.eabi_attribute 23, 3
+   8              		.eabi_attribute 24, 1
+   9              		.eabi_attribute 25, 1
+  10              		.eabi_attribute 26, 1
+  11              		.eabi_attribute 30, 6
+  12              		.eabi_attribute 34, 1
+  13              		.eabi_attribute 18, 4
+  14              		.thumb
+  15              		.file	"delay.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text._delay_tick,"ax",%progbits
+  20              		.align	2
+  21              		.thumb
+  22              		.thumb_func
+  24              	_delay_tick:
+  25              	.LFB110:
+  26              		.file 1 "src/delay.c"
+   1:src/delay.c   **** 
+   2:src/delay.c   **** #include "stm32f4xx.h"
+   3:src/delay.c   **** 
+   4:src/delay.c   **** static void _delay_tick(unsigned long ulCount)
+   5:src/delay.c   **** {
+  27              		.loc 1 5 0
+  28              		.cfi_startproc
+  29              		@ args = 0, pretend = 0, frame = 8
+  30              		@ frame_needed = 1, uses_anonymous_args = 0
+  31              		@ link register save eliminated.
+  32 0000 80B4     		push	{r7}
+  33              	.LCFI0:
+  34              		.cfi_def_cfa_offset 4
+  35              		.cfi_offset 7, -4
+  36 0002 83B0     		sub	sp, sp, #12
+  37              	.LCFI1:
+  38              		.cfi_def_cfa_offset 16
+  39 0004 00AF     		add	r7, sp, #0
+  40              	.LCFI2:
+  41              		.cfi_def_cfa_register 7
+  42 0006 7860     		str	r0, [r7, #4]
+   6:src/delay.c   ****     __asm("    subs    r0, #1\n"
+  43              		.loc 1 6 0
+  44              	@ 6 "src/delay.c" 1
+  45 0008 0138     		    subs    r0, #1
+  46 000a F9D1     	    bne.n   _delay_tick
+  47 000c 7047     	    bx      lr
+  48              	@ 0 "" 2
+   7:src/delay.c   ****           "    bne.n   _delay_tick\n"
+   8:src/delay.c   ****           "    bx      lr");
+   9:src/delay.c   **** }
+  49              		.loc 1 9 0
+  50              		.thumb
+  51 000e 0C37     		adds	r7, r7, #12
+  52 0010 BD46     		mov	sp, r7
+  53              		@ sp needed
+  54 0012 5DF8047B 		ldr	r7, [sp], #4
+  55 0016 7047     		bx	lr
+  56              		.cfi_endproc
+  57              	.LFE110:
+  59              		.section	.text.delay_us,"ax",%progbits
+  60              		.align	2
+  61              		.global	delay_us
+  62              		.thumb
+  63              		.thumb_func
+  65              	delay_us:
+  66              	.LFB111:
+  10:src/delay.c   **** 
+  11:src/delay.c   **** 
+  12:src/delay.c   **** 
+  13:src/delay.c   **** 
+  14:src/delay.c   **** 
+  15:src/delay.c   **** // micro second 단위로 delay
+  16:src/delay.c   **** void delay_us(unsigned long us)
+  17:src/delay.c   **** {
+  67              		.loc 1 17 0
+  68              		.cfi_startproc
+  69              		@ args = 0, pretend = 0, frame = 8
+  70              		@ frame_needed = 1, uses_anonymous_args = 0
+  71 0000 80B5     		push	{r7, lr}
+  72              	.LCFI3:
+  73              		.cfi_def_cfa_offset 8
+  74              		.cfi_offset 7, -8
+  75              		.cfi_offset 14, -4
+  76 0002 82B0     		sub	sp, sp, #8
+  77              	.LCFI4:
+  78              		.cfi_def_cfa_offset 16
+  79 0004 00AF     		add	r7, sp, #0
+  80              	.LCFI5:
+  81              		.cfi_def_cfa_register 7
+  82 0006 7860     		str	r0, [r7, #4]
+  18:src/delay.c   ****     _delay_tick(us * (168000000 / 3 / 1000000));
+  83              		.loc 1 18 0
+  84 0008 7A68     		ldr	r2, [r7, #4]
+  85 000a 1346     		mov	r3, r2
+  86 000c DB00     		lsls	r3, r3, #3
+  87 000e 9B1A     		subs	r3, r3, r2
+  88 0010 DB00     		lsls	r3, r3, #3
+  89 0012 1846     		mov	r0, r3
+  90 0014 FFF7FEFF 		bl	_delay_tick
+  19:src/delay.c   **** }
+  91              		.loc 1 19 0
+  92 0018 0837     		adds	r7, r7, #8
+  93 001a BD46     		mov	sp, r7
+  94              		@ sp needed
+  95 001c 80BD     		pop	{r7, pc}
+  96              		.cfi_endproc
+  97              	.LFE111:
+  99              		.section	.text.delay_ms,"ax",%progbits
+ 100              		.align	2
+ 101              		.global	delay_ms
+ 102              		.thumb
+ 103              		.thumb_func
+ 105              	delay_ms:
+ 106              	.LFB112:
+  20:src/delay.c   **** 
+  21:src/delay.c   **** 
+  22:src/delay.c   **** 
+  23:src/delay.c   **** 
+  24:src/delay.c   **** 
+  25:src/delay.c   **** // mili second 단위로 delay
+  26:src/delay.c   **** void delay_ms(unsigned long ms)
+  27:src/delay.c   **** {
+ 107              		.loc 1 27 0
+ 108              		.cfi_startproc
+ 109              		@ args = 0, pretend = 0, frame = 8
+ 110              		@ frame_needed = 1, uses_anonymous_args = 0
+ 111 0000 80B5     		push	{r7, lr}
+ 112              	.LCFI6:
+ 113              		.cfi_def_cfa_offset 8
+ 114              		.cfi_offset 7, -8
+ 115              		.cfi_offset 14, -4
+ 116 0002 82B0     		sub	sp, sp, #8
+ 117              	.LCFI7:
+ 118              		.cfi_def_cfa_offset 16
+ 119 0004 00AF     		add	r7, sp, #0
+ 120              	.LCFI8:
+ 121              		.cfi_def_cfa_register 7
+ 122 0006 7860     		str	r0, [r7, #4]
+  28:src/delay.c   ****     delay_us(ms * 1000);
+ 123              		.loc 1 28 0
+ 124 0008 7B68     		ldr	r3, [r7, #4]
+ 125 000a 4FF47A72 		mov	r2, #1000
+ 126 000e 02FB03F3 		mul	r3, r2, r3
+ 127 0012 1846     		mov	r0, r3
+ 128 0014 FFF7FEFF 		bl	delay_us
+  29:src/delay.c   **** }
+ 129              		.loc 1 29 0
+ 130 0018 0837     		adds	r7, r7, #8
+ 131 001a BD46     		mov	sp, r7
+ 132              		@ sp needed
+ 133 001c 80BD     		pop	{r7, pc}
+ 134              		.cfi_endproc
+ 135              	.LFE112:
+ 137 001e 00BF     		.text
+ 138              	.Letext0:
+ 139              		.file 2 "/usr/include/newlib/machine/_default_types.h"
+ 140              		.file 3 "/usr/include/newlib/stdint.h"
+ 141              		.file 4 "libs/CMSIS/Include/core_cm4.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 delay.c
+     /tmp/cc19S7QP.s:20     .text._delay_tick:0000000000000000 $t
+     /tmp/cc19S7QP.s:24     .text._delay_tick:0000000000000000 _delay_tick
+     /tmp/cc19S7QP.s:60     .text.delay_us:0000000000000000 $t
+     /tmp/cc19S7QP.s:65     .text.delay_us:0000000000000000 delay_us
+     /tmp/cc19S7QP.s:100    .text.delay_ms:0000000000000000 $t
+     /tmp/cc19S7QP.s:105    .text.delay_ms:0000000000000000 delay_ms
+                     .debug_frame:0000000000000010 $d
+
+NO UNDEFINED SYMBOLS

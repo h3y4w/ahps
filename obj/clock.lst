@@ -1,0 +1,184 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m4
+   3              		.eabi_attribute 27, 3
+   4              		.fpu fpv4-sp-d16
+   5              		.eabi_attribute 20, 1
+   6              		.eabi_attribute 21, 1
+   7              		.eabi_attribute 23, 3
+   8              		.eabi_attribute 24, 1
+   9              		.eabi_attribute 25, 1
+  10              		.eabi_attribute 26, 1
+  11              		.eabi_attribute 30, 6
+  12              		.eabi_attribute 34, 1
+  13              		.eabi_attribute 18, 4
+  14              		.thumb
+  15              		.file	"clock.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.CLOCK_SetClockTo168MHz,"ax",%progbits
+  20              		.align	2
+  21              		.global	CLOCK_SetClockTo168MHz
+  22              		.thumb
+  23              		.thumb_func
+  25              	CLOCK_SetClockTo168MHz:
+  26              	.LFB110:
+  27              		.file 1 "src/clock.c"
+   1:src/clock.c   **** /**
+   2:src/clock.c   ****   ******************************************************************************
+   3:src/clock.c   ****   * @file	clock.c
+   4:src/clock.c   ****   * @author	Yohanes Erwin Setiawan 歐陽文孝
+   5:src/clock.c   ****   * @brief	This file contains function for setting the system clock
+   6:src/clock.c   ****   * 		frequency to 168MHz.
+   7:src/clock.c   ****   ******************************************************************************
+   8:src/clock.c   ****   * @note	Before use this library, make sure the HSE_VALUE in stm32f4xx.h
+   9:src/clock.c   ****   * 		file is correct according to the external crystal value of
+  10:src/clock.c   ****   * 		STM32F4 Discovery board which is 8MHz.
+  11:src/clock.c   ****   * 		Another way to change the HSE_VALUE is from toolchain compiler
+  12:src/clock.c   ****   * 		preprocessor.
+  13:src/clock.c   ****   ******************************************************************************
+  14:src/clock.c   ****   */
+  15:src/clock.c   **** 
+  16:src/clock.c   **** #include "clock.h"
+  17:src/clock.c   **** 
+  18:src/clock.c   **** ErrorStatus CLOCK_SetClockTo168MHz()
+  19:src/clock.c   **** {
+  28              		.loc 1 19 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 8
+  31              		@ frame_needed = 1, uses_anonymous_args = 0
+  32 0000 80B5     		push	{r7, lr}
+  33              	.LCFI0:
+  34              		.cfi_def_cfa_offset 8
+  35              		.cfi_offset 7, -8
+  36              		.cfi_offset 14, -4
+  37 0002 84B0     		sub	sp, sp, #16
+  38              	.LCFI1:
+  39              		.cfi_def_cfa_offset 24
+  40 0004 02AF     		add	r7, sp, #8
+  41              	.LCFI2:
+  42              		.cfi_def_cfa 7, 16
+  20:src/clock.c   **** 	// Resets the clock configuration to the default reset state
+  21:src/clock.c   **** 	RCC_DeInit();
+  43              		.loc 1 21 0
+  44 0006 FFF7FEFF 		bl	RCC_DeInit
+  22:src/clock.c   **** 
+  23:src/clock.c   **** 	// Enable external crystal (HSE)
+  24:src/clock.c   **** 	RCC_HSEConfig(RCC_HSE_ON);
+  45              		.loc 1 24 0
+  46 000a 0120     		movs	r0, #1
+  47 000c FFF7FEFF 		bl	RCC_HSEConfig
+  25:src/clock.c   **** 	// Wait until HSE ready to use or not
+  26:src/clock.c   **** 	ErrorStatus errorStatus = RCC_WaitForHSEStartUp();
+  48              		.loc 1 26 0
+  49 0010 FFF7FEFF 		bl	RCC_WaitForHSEStartUp
+  50 0014 0346     		mov	r3, r0
+  51 0016 FB71     		strb	r3, [r7, #7]
+  27:src/clock.c   **** 
+  28:src/clock.c   **** 	if (errorStatus == SUCCESS)
+  52              		.loc 1 28 0
+  53 0018 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+  54 001a 012B     		cmp	r3, #1
+  55 001c 26D1     		bne	.L2
+  29:src/clock.c   **** 	{
+  30:src/clock.c   **** 		// Configure the PLL for 168MHz SysClk and 48MHz for USB OTG, SDIO
+  31:src/clock.c   **** 		RCC_PLLConfig(RCC_PLLSource_HSE, 8, 336, 2, 7);
+  56              		.loc 1 31 0
+  57 001e 0723     		movs	r3, #7
+  58 0020 0093     		str	r3, [sp]
+  59 0022 4FF48000 		mov	r0, #4194304
+  60 0026 0821     		movs	r1, #8
+  61 0028 4FF4A872 		mov	r2, #336
+  62 002c 0223     		movs	r3, #2
+  63 002e FFF7FEFF 		bl	RCC_PLLConfig
+  32:src/clock.c   **** 		// Enable PLL
+  33:src/clock.c   **** 		RCC_PLLCmd(ENABLE);
+  64              		.loc 1 33 0
+  65 0032 0120     		movs	r0, #1
+  66 0034 FFF7FEFF 		bl	RCC_PLLCmd
+  34:src/clock.c   **** 		// Wait until main PLL clock ready
+  35:src/clock.c   **** 		while (RCC_GetFlagStatus(RCC_FLAG_PLLRDY) == RESET);
+  67              		.loc 1 35 0
+  68 0038 00BF     		nop
+  69              	.L3:
+  70              		.loc 1 35 0 is_stmt 0 discriminator 1
+  71 003a 3920     		movs	r0, #57
+  72 003c FFF7FEFF 		bl	RCC_GetFlagStatus
+  73 0040 0346     		mov	r3, r0
+  74 0042 002B     		cmp	r3, #0
+  75 0044 F9D0     		beq	.L3
+  36:src/clock.c   **** 
+  37:src/clock.c   **** 		// Set flash latency
+  38:src/clock.c   **** 		FLASH_SetLatency(FLASH_Latency_5);
+  76              		.loc 1 38 0 is_stmt 1
+  77 0046 0520     		movs	r0, #5
+  78 0048 FFF7FEFF 		bl	FLASH_SetLatency
+  39:src/clock.c   **** 
+  40:src/clock.c   **** 		// AHB 168MHz
+  41:src/clock.c   **** 		RCC_HCLKConfig(RCC_SYSCLK_Div1);
+  79              		.loc 1 41 0
+  80 004c 0020     		movs	r0, #0
+  81 004e FFF7FEFF 		bl	RCC_HCLKConfig
+  42:src/clock.c   **** 		// APB1 42MHz
+  43:src/clock.c   **** 		RCC_PCLK1Config(RCC_HCLK_Div4);
+  82              		.loc 1 43 0
+  83 0052 4FF4A050 		mov	r0, #5120
+  84 0056 FFF7FEFF 		bl	RCC_PCLK1Config
+  44:src/clock.c   **** 		// APB2 84 MHz
+  45:src/clock.c   **** 		RCC_PCLK2Config(RCC_HCLK_Div2);
+  85              		.loc 1 45 0
+  86 005a 4FF48050 		mov	r0, #4096
+  87 005e FFF7FEFF 		bl	RCC_PCLK2Config
+  46:src/clock.c   **** 
+  47:src/clock.c   **** 		// Set SysClk using PLL
+  48:src/clock.c   **** 		RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);
+  88              		.loc 1 48 0
+  89 0062 0220     		movs	r0, #2
+  90 0064 FFF7FEFF 		bl	RCC_SYSCLKConfig
+  49:src/clock.c   **** 
+  50:src/clock.c   **** 		return SUCCESS;
+  91              		.loc 1 50 0
+  92 0068 0123     		movs	r3, #1
+  93 006a 00E0     		b	.L4
+  94              	.L2:
+  51:src/clock.c   **** 	}
+  52:src/clock.c   **** 	else
+  53:src/clock.c   **** 	{
+  54:src/clock.c   **** 		return ERROR;
+  95              		.loc 1 54 0
+  96 006c 0023     		movs	r3, #0
+  97              	.L4:
+  55:src/clock.c   **** 	}
+  56:src/clock.c   **** }
+  98              		.loc 1 56 0
+  99 006e 1846     		mov	r0, r3
+ 100 0070 0837     		adds	r7, r7, #8
+ 101 0072 BD46     		mov	sp, r7
+ 102              		@ sp needed
+ 103 0074 80BD     		pop	{r7, pc}
+ 104              		.cfi_endproc
+ 105              	.LFE110:
+ 107 0076 00BF     		.text
+ 108              	.Letext0:
+ 109              		.file 2 "/usr/include/newlib/machine/_default_types.h"
+ 110              		.file 3 "/usr/include/newlib/stdint.h"
+ 111              		.file 4 "libs/Device/STM32F4xx/Include/stm32f4xx.h"
+ 112              		.file 5 "libs/CMSIS/Include/core_cm4.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 clock.c
+     /tmp/cccjAxcd.s:20     .text.CLOCK_SetClockTo168MHz:0000000000000000 $t
+     /tmp/cccjAxcd.s:25     .text.CLOCK_SetClockTo168MHz:0000000000000000 CLOCK_SetClockTo168MHz
+                     .debug_frame:0000000000000010 $d
+
+UNDEFINED SYMBOLS
+RCC_DeInit
+RCC_HSEConfig
+RCC_WaitForHSEStartUp
+RCC_PLLConfig
+RCC_PLLCmd
+RCC_GetFlagStatus
+FLASH_SetLatency
+RCC_HCLKConfig
+RCC_PCLK1Config
+RCC_PCLK2Config
+RCC_SYSCLKConfig

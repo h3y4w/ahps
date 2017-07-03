@@ -1,0 +1,418 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m4
+   3              		.eabi_attribute 27, 3
+   4              		.fpu fpv4-sp-d16
+   5              		.eabi_attribute 20, 1
+   6              		.eabi_attribute 21, 1
+   7              		.eabi_attribute 23, 3
+   8              		.eabi_attribute 24, 1
+   9              		.eabi_attribute 25, 1
+  10              		.eabi_attribute 26, 1
+  11              		.eabi_attribute 30, 6
+  12              		.eabi_attribute 34, 1
+  13              		.eabi_attribute 18, 4
+  14              		.thumb
+  15              		.file	"hbperiph.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.ultrasonic_init,"ax",%progbits
+  20              		.align	2
+  21              		.global	ultrasonic_init
+  22              		.thumb
+  23              		.thumb_func
+  25              	ultrasonic_init:
+  26              	.LFB110:
+  27              		.file 1 "src/hbperiph.c"
+   1:src/hbperiph.c **** #include "hbperiph.h"
+   2:src/hbperiph.c **** #include "stm32f4xx.h"
+   3:src/hbperiph.c **** #include "delay.h"
+   4:src/hbperiph.c **** 
+   5:src/hbperiph.c **** 
+   6:src/hbperiph.c **** 
+   7:src/hbperiph.c **** void ultrasonic_init( Ultrasonic_Typedef *sensor, 
+   8:src/hbperiph.c ****                       GPIO_TypeDef *port_in,
+   9:src/hbperiph.c ****                       GPIO_TypeDef *port_out,
+  10:src/hbperiph.c ****                       uint16_t pin_in,
+  11:src/hbperiph.c ****                       uint16_t pin_out,
+  12:src/hbperiph.c ****                       uint16_t timeout)
+  13:src/hbperiph.c **** {
+  28              		.loc 1 13 0
+  29              		.cfi_startproc
+  30              		@ args = 8, pretend = 0, frame = 16
+  31              		@ frame_needed = 1, uses_anonymous_args = 0
+  32              		@ link register save eliminated.
+  33 0000 80B4     		push	{r7}
+  34              	.LCFI0:
+  35              		.cfi_def_cfa_offset 4
+  36              		.cfi_offset 7, -4
+  37 0002 85B0     		sub	sp, sp, #20
+  38              	.LCFI1:
+  39              		.cfi_def_cfa_offset 24
+  40 0004 00AF     		add	r7, sp, #0
+  41              	.LCFI2:
+  42              		.cfi_def_cfa_register 7
+  43 0006 F860     		str	r0, [r7, #12]
+  44 0008 B960     		str	r1, [r7, #8]
+  45 000a 7A60     		str	r2, [r7, #4]
+  46 000c 7B80     		strh	r3, [r7, #2]	@ movhi
+  14:src/hbperiph.c ****     sensor->port_in = port_in;
+  47              		.loc 1 14 0
+  48 000e FB68     		ldr	r3, [r7, #12]
+  49 0010 BA68     		ldr	r2, [r7, #8]
+  50 0012 1A60     		str	r2, [r3]
+  15:src/hbperiph.c ****     sensor->pin_in = pin_in;
+  51              		.loc 1 15 0
+  52 0014 FB68     		ldr	r3, [r7, #12]
+  53 0016 7A88     		ldrh	r2, [r7, #2]	@ movhi
+  54 0018 9A80     		strh	r2, [r3, #4]	@ movhi
+  16:src/hbperiph.c ****     sensor->port_out = port_out;
+  55              		.loc 1 16 0
+  56 001a FB68     		ldr	r3, [r7, #12]
+  57 001c 7A68     		ldr	r2, [r7, #4]
+  58 001e 9A60     		str	r2, [r3, #8]
+  17:src/hbperiph.c ****     sensor->pin_out = pin_out;
+  59              		.loc 1 17 0
+  60 0020 FB68     		ldr	r3, [r7, #12]
+  61 0022 3A8B     		ldrh	r2, [r7, #24]	@ movhi
+  62 0024 9A81     		strh	r2, [r3, #12]	@ movhi
+  18:src/hbperiph.c **** 
+  19:src/hbperiph.c ****     sensor->timeout = timeout;
+  63              		.loc 1 19 0
+  64 0026 FB68     		ldr	r3, [r7, #12]
+  65 0028 BA8B     		ldrh	r2, [r7, #28]	@ movhi
+  66 002a DA81     		strh	r2, [r3, #14]	@ movhi
+  20:src/hbperiph.c **** }
+  67              		.loc 1 20 0
+  68 002c 1437     		adds	r7, r7, #20
+  69 002e BD46     		mov	sp, r7
+  70              		@ sp needed
+  71 0030 5DF8047B 		ldr	r7, [sp], #4
+  72 0034 7047     		bx	lr
+  73              		.cfi_endproc
+  74              	.LFE110:
+  76 0036 00BF     		.section	.text.ultrasonic_read_distance,"ax",%progbits
+  77              		.align	2
+  78              		.global	ultrasonic_read_distance
+  79              		.thumb
+  80              		.thumb_func
+  82              	ultrasonic_read_distance:
+  83              	.LFB111:
+  21:src/hbperiph.c **** 
+  22:src/hbperiph.c **** uint32_t ultrasonic_read_distance(Ultrasonic_Typedef *sensor) {
+  84              		.loc 1 22 0
+  85              		.cfi_startproc
+  86              		@ args = 0, pretend = 0, frame = 16
+  87              		@ frame_needed = 1, uses_anonymous_args = 0
+  88 0000 80B5     		push	{r7, lr}
+  89              	.LCFI3:
+  90              		.cfi_def_cfa_offset 8
+  91              		.cfi_offset 7, -8
+  92              		.cfi_offset 14, -4
+  93 0002 84B0     		sub	sp, sp, #16
+  94              	.LCFI4:
+  95              		.cfi_def_cfa_offset 24
+  96 0004 00AF     		add	r7, sp, #0
+  97              	.LCFI5:
+  98              		.cfi_def_cfa_register 7
+  99 0006 7860     		str	r0, [r7, #4]
+  23:src/hbperiph.c ****   __IO uint8_t flag=0;
+ 100              		.loc 1 23 0
+ 101 0008 0023     		movs	r3, #0
+ 102 000a FB73     		strb	r3, [r7, #15]
+  24:src/hbperiph.c ****   __IO uint32_t disTime=0;
+ 103              		.loc 1 24 0
+ 104 000c 0023     		movs	r3, #0
+ 105 000e BB60     		str	r3, [r7, #8]
+  25:src/hbperiph.c **** 
+  26:src/hbperiph.c ****     GPIO_ResetBits(sensor->port_in, sensor->pin_in);
+ 106              		.loc 1 26 0
+ 107 0010 7B68     		ldr	r3, [r7, #4]
+ 108 0012 1A68     		ldr	r2, [r3]
+ 109 0014 7B68     		ldr	r3, [r7, #4]
+ 110 0016 9B88     		ldrh	r3, [r3, #4]
+ 111 0018 1046     		mov	r0, r2
+ 112 001a 1946     		mov	r1, r3
+ 113 001c FFF7FEFF 		bl	GPIO_ResetBits
+  27:src/hbperiph.c **** 
+  28:src/hbperiph.c ****     GPIO_ResetBits(sensor->port_out, sensor->pin_out);
+ 114              		.loc 1 28 0
+ 115 0020 7B68     		ldr	r3, [r7, #4]
+ 116 0022 9A68     		ldr	r2, [r3, #8]
+ 117 0024 7B68     		ldr	r3, [r7, #4]
+ 118 0026 9B89     		ldrh	r3, [r3, #12]
+ 119 0028 1046     		mov	r0, r2
+ 120 002a 1946     		mov	r1, r3
+ 121 002c FFF7FEFF 		bl	GPIO_ResetBits
+  29:src/hbperiph.c ****     delay_us(2);
+ 122              		.loc 1 29 0
+ 123 0030 0220     		movs	r0, #2
+ 124 0032 FFF7FEFF 		bl	delay_us
+  30:src/hbperiph.c ****     GPIO_SetBits(sensor->port_out, sensor->pin_out);
+ 125              		.loc 1 30 0
+ 126 0036 7B68     		ldr	r3, [r7, #4]
+ 127 0038 9A68     		ldr	r2, [r3, #8]
+ 128 003a 7B68     		ldr	r3, [r7, #4]
+ 129 003c 9B89     		ldrh	r3, [r3, #12]
+ 130 003e 1046     		mov	r0, r2
+ 131 0040 1946     		mov	r1, r3
+ 132 0042 FFF7FEFF 		bl	GPIO_SetBits
+  31:src/hbperiph.c ****     delay_us(11);
+ 133              		.loc 1 31 0
+ 134 0046 0B20     		movs	r0, #11
+ 135 0048 FFF7FEFF 		bl	delay_us
+  32:src/hbperiph.c ****     GPIO_ResetBits(sensor->port_out, sensor->pin_out);
+ 136              		.loc 1 32 0
+ 137 004c 7B68     		ldr	r3, [r7, #4]
+ 138 004e 9A68     		ldr	r2, [r3, #8]
+ 139 0050 7B68     		ldr	r3, [r7, #4]
+ 140 0052 9B89     		ldrh	r3, [r3, #12]
+ 141 0054 1046     		mov	r0, r2
+ 142 0056 1946     		mov	r1, r3
+ 143 0058 FFF7FEFF 		bl	GPIO_ResetBits
+  33:src/hbperiph.c **** 
+  34:src/hbperiph.c ****   while(flag == 0) {
+ 144              		.loc 1 34 0
+ 145 005c 13E0     		b	.L3
+ 146              	.L6:
+  35:src/hbperiph.c ****     while(GPIO_ReadInputDataBit(sensor->port_in, sensor->pin_in) == SET) {
+ 147              		.loc 1 35 0
+ 148 005e 07E0     		b	.L4
+ 149              	.L5:
+  36:src/hbperiph.c ****         disTime++;
+ 150              		.loc 1 36 0
+ 151 0060 BB68     		ldr	r3, [r7, #8]
+ 152 0062 0133     		adds	r3, r3, #1
+ 153 0064 BB60     		str	r3, [r7, #8]
+  37:src/hbperiph.c ****         flag = 1;
+ 154              		.loc 1 37 0
+ 155 0066 0123     		movs	r3, #1
+ 156 0068 FB73     		strb	r3, [r7, #15]
+  38:src/hbperiph.c ****         delay_us(1);
+ 157              		.loc 1 38 0
+ 158 006a 0120     		movs	r0, #1
+ 159 006c FFF7FEFF 		bl	delay_us
+ 160              	.L4:
+  35:src/hbperiph.c ****         disTime++;
+ 161              		.loc 1 35 0 discriminator 1
+ 162 0070 7B68     		ldr	r3, [r7, #4]
+ 163 0072 1A68     		ldr	r2, [r3]
+ 164 0074 7B68     		ldr	r3, [r7, #4]
+ 165 0076 9B88     		ldrh	r3, [r3, #4]
+ 166 0078 1046     		mov	r0, r2
+ 167 007a 1946     		mov	r1, r3
+ 168 007c FFF7FEFF 		bl	GPIO_ReadInputDataBit
+ 169 0080 0346     		mov	r3, r0
+ 170 0082 012B     		cmp	r3, #1
+ 171 0084 ECD0     		beq	.L5
+ 172              	.L3:
+  34:src/hbperiph.c ****     while(GPIO_ReadInputDataBit(sensor->port_in, sensor->pin_in) == SET) {
+ 173              		.loc 1 34 0 discriminator 1
+ 174 0086 FB7B     		ldrb	r3, [r7, #15]
+ 175 0088 DBB2     		uxtb	r3, r3
+ 176 008a 002B     		cmp	r3, #0
+ 177 008c E7D0     		beq	.L6
+  39:src/hbperiph.c ****         //if (disTime == timeout) return 0;
+  40:src/hbperiph.c ****     }
+  41:src/hbperiph.c **** 
+  42:src/hbperiph.c ****   }
+  43:src/hbperiph.c ****     return disTime/58*2; //converts to centimeters
+ 178              		.loc 1 43 0
+ 179 008e BA68     		ldr	r2, [r7, #8]
+ 180 0090 4CF60933 		movw	r3, #51977
+ 181 0094 C8F63D53 		movt	r3, 36157
+ 182 0098 A3FB0213 		umull	r1, r3, r3, r2
+ 183 009c 5B09     		lsrs	r3, r3, #5
+ 184 009e 5B00     		lsls	r3, r3, #1
+  44:src/hbperiph.c **** }
+ 185              		.loc 1 44 0
+ 186 00a0 1846     		mov	r0, r3
+ 187 00a2 1037     		adds	r7, r7, #16
+ 188 00a4 BD46     		mov	sp, r7
+ 189              		@ sp needed
+ 190 00a6 80BD     		pop	{r7, pc}
+ 191              		.cfi_endproc
+ 192              	.LFE111:
+ 194              		.section	.text.servo_init,"ax",%progbits
+ 195              		.align	2
+ 196              		.global	servo_init
+ 197              		.thumb
+ 198              		.thumb_func
+ 200              	servo_init:
+ 201              	.LFB112:
+  45:src/hbperiph.c **** 
+  46:src/hbperiph.c **** void servo_init(Servo_Typedef *servo, volatile uint32_t *CCR, uint16_t offset, uint16_t range) {
+ 202              		.loc 1 46 0
+ 203              		.cfi_startproc
+ 204              		@ args = 0, pretend = 0, frame = 16
+ 205              		@ frame_needed = 1, uses_anonymous_args = 0
+ 206              		@ link register save eliminated.
+ 207 0000 80B4     		push	{r7}
+ 208              	.LCFI6:
+ 209              		.cfi_def_cfa_offset 4
+ 210              		.cfi_offset 7, -4
+ 211 0002 85B0     		sub	sp, sp, #20
+ 212              	.LCFI7:
+ 213              		.cfi_def_cfa_offset 24
+ 214 0004 00AF     		add	r7, sp, #0
+ 215              	.LCFI8:
+ 216              		.cfi_def_cfa_register 7
+ 217 0006 F860     		str	r0, [r7, #12]
+ 218 0008 B960     		str	r1, [r7, #8]
+ 219 000a FA80     		strh	r2, [r7, #6]	@ movhi
+ 220 000c BB80     		strh	r3, [r7, #4]	@ movhi
+  47:src/hbperiph.c ****     servo->CCR = CCR;
+ 221              		.loc 1 47 0
+ 222 000e FB68     		ldr	r3, [r7, #12]
+ 223 0010 BA68     		ldr	r2, [r7, #8]
+ 224 0012 1A60     		str	r2, [r3]
+  48:src/hbperiph.c ****     servo->offset = offset;
+ 225              		.loc 1 48 0
+ 226 0014 FB68     		ldr	r3, [r7, #12]
+ 227 0016 FA88     		ldrh	r2, [r7, #6]	@ movhi
+ 228 0018 9A80     		strh	r2, [r3, #4]	@ movhi
+  49:src/hbperiph.c ****     servo->ratio = range/180;
+ 229              		.loc 1 49 0
+ 230 001a BB88     		ldrh	r3, [r7, #4]
+ 231 001c 9A08     		lsrs	r2, r3, #2
+ 232 001e 46F61743 		movw	r3, #27671
+ 233 0022 C1F2C163 		movt	r3, 5825
+ 234 0026 A3FB0213 		umull	r1, r3, r3, r2
+ 235 002a 9B08     		lsrs	r3, r3, #2
+ 236 002c 9BB2     		uxth	r3, r3
+ 237 002e DAB2     		uxtb	r2, r3
+ 238 0030 FB68     		ldr	r3, [r7, #12]
+ 239 0032 9A71     		strb	r2, [r3, #6]
+  50:src/hbperiph.c ****     servo->last_pos = 0;
+ 240              		.loc 1 50 0
+ 241 0034 FB68     		ldr	r3, [r7, #12]
+ 242 0036 0022     		movs	r2, #0
+ 243 0038 DA71     		strb	r2, [r3, #7]
+  51:src/hbperiph.c ****     servo->current_pos = 0;
+ 244              		.loc 1 51 0
+ 245 003a FB68     		ldr	r3, [r7, #12]
+ 246 003c 0022     		movs	r2, #0
+ 247 003e 1A72     		strb	r2, [r3, #8]
+  52:src/hbperiph.c **** 
+  53:src/hbperiph.c ****     *(servo->CCR) = 0;
+ 248              		.loc 1 53 0
+ 249 0040 FB68     		ldr	r3, [r7, #12]
+ 250 0042 1B68     		ldr	r3, [r3]
+ 251 0044 0022     		movs	r2, #0
+ 252 0046 1A80     		strh	r2, [r3]	@ movhi
+  54:src/hbperiph.c **** }
+ 253              		.loc 1 54 0
+ 254 0048 1437     		adds	r7, r7, #20
+ 255 004a BD46     		mov	sp, r7
+ 256              		@ sp needed
+ 257 004c 5DF8047B 		ldr	r7, [sp], #4
+ 258 0050 7047     		bx	lr
+ 259              		.cfi_endproc
+ 260              	.LFE112:
+ 262 0052 00BF     		.section	.text.servo_set_degrees,"ax",%progbits
+ 263              		.align	2
+ 264              		.global	servo_set_degrees
+ 265              		.thumb
+ 266              		.thumb_func
+ 268              	servo_set_degrees:
+ 269              	.LFB113:
+  55:src/hbperiph.c **** 
+  56:src/hbperiph.c **** int servo_set_degrees(Servo_Typedef *servo, uint8_t degrees) {
+ 270              		.loc 1 56 0
+ 271              		.cfi_startproc
+ 272              		@ args = 0, pretend = 0, frame = 8
+ 273              		@ frame_needed = 1, uses_anonymous_args = 0
+ 274              		@ link register save eliminated.
+ 275 0000 80B4     		push	{r7}
+ 276              	.LCFI9:
+ 277              		.cfi_def_cfa_offset 4
+ 278              		.cfi_offset 7, -4
+ 279 0002 83B0     		sub	sp, sp, #12
+ 280              	.LCFI10:
+ 281              		.cfi_def_cfa_offset 16
+ 282 0004 00AF     		add	r7, sp, #0
+ 283              	.LCFI11:
+ 284              		.cfi_def_cfa_register 7
+ 285 0006 7860     		str	r0, [r7, #4]
+ 286 0008 0B46     		mov	r3, r1
+ 287 000a FB70     		strb	r3, [r7, #3]
+  57:src/hbperiph.c ****     if (degrees==-1) *(servo->CCR) = -1;
+  58:src/hbperiph.c ****     else {
+  59:src/hbperiph.c ****         *(servo->CCR) = servo->offset+degrees*servo->ratio;
+ 288              		.loc 1 59 0
+ 289 000c 7B68     		ldr	r3, [r7, #4]
+ 290 000e 1B68     		ldr	r3, [r3]
+ 291 0010 7A68     		ldr	r2, [r7, #4]
+ 292 0012 9188     		ldrh	r1, [r2, #4]
+ 293 0014 FA78     		ldrb	r2, [r7, #3]	@ zero_extendqisi2
+ 294 0016 92B2     		uxth	r2, r2
+ 295 0018 7868     		ldr	r0, [r7, #4]
+ 296 001a 8079     		ldrb	r0, [r0, #6]	@ zero_extendqisi2
+ 297 001c 00FB02F2 		mul	r2, r0, r2
+ 298 0020 92B2     		uxth	r2, r2
+ 299 0022 0A44     		add	r2, r2, r1
+ 300 0024 92B2     		uxth	r2, r2
+ 301 0026 1A80     		strh	r2, [r3]	@ movhi
+  60:src/hbperiph.c ****         //int8_t offset = (10*(degrees - servo->current_pos));
+  61:src/hbperiph.c ****         //if (offset<0) offset*-1;
+  62:src/hbperiph.c **** 
+  63:src/hbperiph.c ****         //*(servo->CCR) = 0;
+  64:src/hbperiph.c **** 
+  65:src/hbperiph.c ****         servo->last_pos = servo->current_pos;
+ 302              		.loc 1 65 0
+ 303 0028 7B68     		ldr	r3, [r7, #4]
+ 304 002a 1A7A     		ldrb	r2, [r3, #8]	@ zero_extendqisi2
+ 305 002c 7B68     		ldr	r3, [r7, #4]
+ 306 002e DA71     		strb	r2, [r3, #7]
+  66:src/hbperiph.c ****         servo->current_pos = degrees;
+ 307              		.loc 1 66 0
+ 308 0030 7B68     		ldr	r3, [r7, #4]
+ 309 0032 FA78     		ldrb	r2, [r7, #3]
+ 310 0034 1A72     		strb	r2, [r3, #8]
+  67:src/hbperiph.c ****         return servo->offset+degrees*servo->ratio;
+ 311              		.loc 1 67 0
+ 312 0036 7B68     		ldr	r3, [r7, #4]
+ 313 0038 9B88     		ldrh	r3, [r3, #4]
+ 314 003a 1A46     		mov	r2, r3
+ 315 003c FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 316 003e 7968     		ldr	r1, [r7, #4]
+ 317 0040 8979     		ldrb	r1, [r1, #6]	@ zero_extendqisi2
+ 318 0042 01FB03F3 		mul	r3, r1, r3
+ 319 0046 1344     		add	r3, r3, r2
+  68:src/hbperiph.c **** 
+  69:src/hbperiph.c **** 
+  70:src/hbperiph.c ****     }
+  71:src/hbperiph.c **** }
+ 320              		.loc 1 71 0
+ 321 0048 1846     		mov	r0, r3
+ 322 004a 0C37     		adds	r7, r7, #12
+ 323 004c BD46     		mov	sp, r7
+ 324              		@ sp needed
+ 325 004e 5DF8047B 		ldr	r7, [sp], #4
+ 326 0052 7047     		bx	lr
+ 327              		.cfi_endproc
+ 328              	.LFE113:
+ 330              		.text
+ 331              	.Letext0:
+ 332              		.file 2 "/usr/include/newlib/machine/_default_types.h"
+ 333              		.file 3 "/usr/include/newlib/stdint.h"
+ 334              		.file 4 "libs/Device/STM32F4xx/Include/stm32f4xx.h"
+ 335              		.file 5 "src/hbperiph.h"
+ 336              		.file 6 "libs/CMSIS/Include/core_cm4.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 hbperiph.c
+     /tmp/ccPeiIPc.s:20     .text.ultrasonic_init:0000000000000000 $t
+     /tmp/ccPeiIPc.s:25     .text.ultrasonic_init:0000000000000000 ultrasonic_init
+     /tmp/ccPeiIPc.s:77     .text.ultrasonic_read_distance:0000000000000000 $t
+     /tmp/ccPeiIPc.s:82     .text.ultrasonic_read_distance:0000000000000000 ultrasonic_read_distance
+     /tmp/ccPeiIPc.s:195    .text.servo_init:0000000000000000 $t
+     /tmp/ccPeiIPc.s:200    .text.servo_init:0000000000000000 servo_init
+     /tmp/ccPeiIPc.s:263    .text.servo_set_degrees:0000000000000000 $t
+     /tmp/ccPeiIPc.s:268    .text.servo_set_degrees:0000000000000000 servo_set_degrees
+                     .debug_frame:0000000000000010 $d
+
+UNDEFINED SYMBOLS
+GPIO_ResetBits
+delay_us
+GPIO_SetBits
+GPIO_ReadInputDataBit
