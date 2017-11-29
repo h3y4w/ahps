@@ -1,4 +1,6 @@
 #include "command_parser.h"
+#include "hbfuncs.h" 
+#include "hb_structs.h"
 
 USART_rtos *USARTOutput_rtos; 
 
@@ -87,6 +89,7 @@ int REGIME_PH[MAX_REGIME_PH][2] = {
                                     {-1, -1},
                                     {-1, -1}
                                   }; //ph, delay
+
 int REGIME_LIGHTING[MAX_REGIME_LIGHTING][2] ={{-1, -1}}; //distance, hours_on
 
 void command_set_regime_ph(char *pos, char term) {
@@ -298,6 +301,7 @@ void command_del_regime_ph (char *pos, char term) {
     int idx = find_next_char(pos, 0, term);
     pos+=idx+1;
     int regime_id = str_to_int(pos, '\003')-1;
+
     if (!(regime_id>=0 && regime_id < MAX_REGIME_PH)) {
         USART_rtos_puts(&packet, "Error: Incorrect REGIME_PH id\r\n");
         return;
@@ -336,6 +340,8 @@ void command_del(char *pos, char term) {
     USART_rtos_packet packet;
     packet.USARTx_rtos = USARTOutput_rtos;
     pos+=4;
+    USART_puts(USARTOutput_rtos->id, "COOL\r\n");
+
     if (str_compare(pos, "REGIME_PH\003", term)) {
         command_del_regime_ph(pos, term);
     }
@@ -390,7 +396,7 @@ void command_get(char *pos, char term) {
     USART_rtos_packet packet;
     packet.USARTx_rtos = USARTOutput_rtos;
 
-    pos+=4;
+    pos+=4; //moves cursor 4 chars to right to access next word. ex( |get ...  --> get |...) 
 
     if (str_compare(pos, "REGIME_PH\003", term)) {
 
@@ -448,6 +454,131 @@ void command_get(char *pos, char term) {
     }
 }
 
+void command_config_clock(char *pos, char term) {
+    unsigned error_code = 99; //unknown error
+    USART_rtos_packet packet;
+    char buffer[80];
+    char msg[] = "{'object_type': 'CLOCK', 'method': 'config', 'error':%u, h=%d, m=%d, s=%d}\r\n";
+    packet.msg = buffer;
+    packet.USARTx_rtos = USARTOutput_rtos;
+
+    int NEW_ITEM = 0;
+
+    int idx = find_next_char(pos, 0, term);
+    pos+=idx+1;
+   
+    int i;
+
+    int hours = 0, minutes = 0, seconds = 0;
+    for(i=0; i<4 && idx!=0; i++) {
+        //pos++;
+        switch (*pos) {
+            case 'h': //hours
+               pos++;
+               hours = str_to_int(pos, '\003'); 
+               if (!(hours >= 0 && hours <=23)) {
+                   hours = 0;
+                   error_code = 400;
+               }
+               break;
+
+            case 'm': //minutes 
+               pos++;
+               minutes = str_to_int(pos, '\003'); 
+               if (!(minutes >= 0 && minutes <=59)) {
+                   minutes = 0;
+                   error_code = 400;
+               }
+               break;
+
+            case 's': //seconds 
+               pos++;
+               seconds = str_to_int(pos, '\003'); 
+               if (!(seconds >= 0 && seconds <=59)) {
+                   seconds = 0;
+                   error_code = 400;
+               }
+               break;
+
+            default:
+               error_code = 401;
+               break;
+        }
+
+        if (error_code != 99) break;
+
+        idx = find_next_char(pos, 0, term);
+        if (idx == -1) break;
+        pos+=idx+1;
+    }
+
+    RTC_TimeTypeDef t;
+    if (error_code == 99) {
+        getTime(&t);
+        unsigned int c = getEpoch(&t, getSystemDay());
+        setTimeSafely(hours, minutes, seconds, c);
+        //RTC_GetTime(RTC_Format_BIN, &t);
+
+        error_code = 0;
+    }
+        getTime(&t);
+
+
+
+
+
+
+    /* FOR DEBUGGING 
+    USART_puts(USARTOutput_rtos->id, "debug3: ");
+    USART_put_unsigned_int(USARTOutput_rtos->id, timer_list_head->debug3);
+    USART_puts(USARTOutput_rtos->id, "\r\n");
+
+    
+    USART_puts(USARTOutput_rtos->id, "prev: ");
+    USART_put_unsigned_int(USARTOutput_rtos->id, timer_list_head->debug);
+    USART_puts(USARTOutput_rtos->id, "\r\n");
+
+
+    USART_puts(USARTOutput_rtos->id, "prev timer: ");
+    USART_put_unsigned_int(USARTOutput_rtos->id, timer_list_head->debug2);
+    USART_puts(USARTOutput_rtos->id, "\r\n");
+
+    USART_puts(USARTOutput_rtos->id, "prev set timer: ");
+    USART_put_unsigned_int(USARTOutput_rtos->id, timer_list_head->debug0);
+    USART_puts(USARTOutput_rtos->id, "\r\n");
+
+
+
+    USART_puts(USARTOutput_rtos->id, "current: ");
+    USART_put_unsigned_int(USARTOutput_rtos->id, timer_list_head->debug1);
+
+    USART_puts(USARTOutput_rtos->id, "\r\n");
+
+    USART_puts(USARTOutput_rtos->id, "current timer: ");
+    USART_put_unsigned_int(USARTOutput_rtos->id, timer_list_head->epoch);
+    USART_puts(USARTOutput_rtos->id, "\r\n");
+
+
+    */
+
+
+    USART_rtos_sputs(&packet, msg, error_code, hours, minutes, seconds);
+    USART_rtos_wait_send(&packet);
+}
+
+void command_config(char *pos, char term) {
+    USART_rtos_packet packet;
+    packet.USARTx_rtos = USARTOutput_rtos;
+
+    pos+=7; //move cursor to next word
+    if (str_compare(pos, "CLOCK\003", term)) {
+        command_config_clock(pos, term);
+//        USART_rtos_puts(&packet, "OK!\r\n");
+ //       USART_rtos_wait_send(&packet);
+        return;
+    }
+}
+
 
 
 int command_routing(char *pos, char term) {
@@ -467,6 +598,10 @@ int command_routing(char *pos, char term) {
         command_del(pos, term);
     }
 
+    else if(str_compare(pos, "config\003", term)) {
+        command_config(pos, term);
+    }
+
     else if (*pos != term){
         USART_rtos_puts(&packet, "{'method': '', 'error': 9}\r\n"); //error 9: Unknown start command
         USART_rtos_wait_send(&packet);
@@ -474,6 +609,7 @@ int command_routing(char *pos, char term) {
     }
     return r; //1 = Error
 }
+
 
 /*
 int main(void) {

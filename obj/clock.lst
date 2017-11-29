@@ -8,7 +8,7 @@
    8              		.eabi_attribute 24, 1
    9              		.eabi_attribute 25, 1
   10              		.eabi_attribute 26, 1
-  11              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 30, 1
   12              		.eabi_attribute 34, 1
   13              		.eabi_attribute 18, 4
   14              		.thumb
@@ -45,130 +45,183 @@
   19:src/clock.c   **** {
   28              		.loc 1 19 0
   29              		.cfi_startproc
-  30              		@ args = 0, pretend = 0, frame = 8
-  31              		@ frame_needed = 1, uses_anonymous_args = 0
-  32 0000 80B5     		push	{r7, lr}
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32 0000 10B5     		push	{r4, lr}
   33              	.LCFI0:
   34              		.cfi_def_cfa_offset 8
-  35              		.cfi_offset 7, -8
+  35              		.cfi_offset 4, -8
   36              		.cfi_offset 14, -4
-  37 0002 84B0     		sub	sp, sp, #16
+  37 0002 82B0     		sub	sp, sp, #8
   38              	.LCFI1:
-  39              		.cfi_def_cfa_offset 24
-  40 0004 02AF     		add	r7, sp, #8
-  41              	.LCFI2:
-  42              		.cfi_def_cfa 7, 16
+  39              		.cfi_def_cfa_offset 16
   20:src/clock.c   **** 	// Resets the clock configuration to the default reset state
   21:src/clock.c   **** 	RCC_DeInit();
-  43              		.loc 1 21 0
-  44 0006 FFF7FEFF 		bl	RCC_DeInit
+  40              		.loc 1 21 0
+  41 0004 FFF7FEFF 		bl	RCC_DeInit
+  42              	.LVL0:
   22:src/clock.c   **** 
   23:src/clock.c   **** 	// Enable external crystal (HSE)
   24:src/clock.c   **** 	RCC_HSEConfig(RCC_HSE_ON);
-  45              		.loc 1 24 0
-  46 000a 0120     		movs	r0, #1
-  47 000c FFF7FEFF 		bl	RCC_HSEConfig
+  43              		.loc 1 24 0
+  44 0008 0120     		movs	r0, #1
+  45 000a FFF7FEFF 		bl	RCC_HSEConfig
+  46              	.LVL1:
   25:src/clock.c   **** 	// Wait until HSE ready to use or not
   26:src/clock.c   **** 	ErrorStatus errorStatus = RCC_WaitForHSEStartUp();
-  48              		.loc 1 26 0
-  49 0010 FFF7FEFF 		bl	RCC_WaitForHSEStartUp
-  50 0014 0346     		mov	r3, r0
-  51 0016 FB71     		strb	r3, [r7, #7]
+  47              		.loc 1 26 0
+  48 000e FFF7FEFF 		bl	RCC_WaitForHSEStartUp
+  49              	.LVL2:
   27:src/clock.c   **** 
   28:src/clock.c   **** 	if (errorStatus == SUCCESS)
-  52              		.loc 1 28 0
-  53 0018 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
-  54 001a 012B     		cmp	r3, #1
-  55 001c 26D1     		bne	.L2
+  50              		.loc 1 28 0
+  51 0012 0128     		cmp	r0, #1
   29:src/clock.c   **** 	{
   30:src/clock.c   **** 		// Configure the PLL for 168MHz SysClk and 48MHz for USB OTG, SDIO
   31:src/clock.c   **** 		RCC_PLLConfig(RCC_PLLSource_HSE, 8, 336, 2, 7);
-  56              		.loc 1 31 0
-  57 001e 0723     		movs	r3, #7
-  58 0020 0093     		str	r3, [sp]
-  59 0022 4FF48000 		mov	r0, #4194304
-  60 0026 0821     		movs	r1, #8
-  61 0028 4FF4A872 		mov	r2, #336
-  62 002c 0223     		movs	r3, #2
-  63 002e FFF7FEFF 		bl	RCC_PLLConfig
   32:src/clock.c   **** 		// Enable PLL
   33:src/clock.c   **** 		RCC_PLLCmd(ENABLE);
-  64              		.loc 1 33 0
-  65 0032 0120     		movs	r0, #1
-  66 0034 FFF7FEFF 		bl	RCC_PLLCmd
   34:src/clock.c   **** 		// Wait until main PLL clock ready
   35:src/clock.c   **** 		while (RCC_GetFlagStatus(RCC_FLAG_PLLRDY) == RESET);
-  67              		.loc 1 35 0
-  68 0038 00BF     		nop
-  69              	.L3:
-  70              		.loc 1 35 0 is_stmt 0 discriminator 1
-  71 003a 3920     		movs	r0, #57
-  72 003c FFF7FEFF 		bl	RCC_GetFlagStatus
-  73 0040 0346     		mov	r3, r0
-  74 0042 002B     		cmp	r3, #0
-  75 0044 F9D0     		beq	.L3
   36:src/clock.c   **** 
   37:src/clock.c   **** 		// Set flash latency
   38:src/clock.c   **** 		FLASH_SetLatency(FLASH_Latency_5);
-  76              		.loc 1 38 0 is_stmt 1
-  77 0046 0520     		movs	r0, #5
-  78 0048 FFF7FEFF 		bl	FLASH_SetLatency
   39:src/clock.c   **** 
   40:src/clock.c   **** 		// AHB 168MHz
   41:src/clock.c   **** 		RCC_HCLKConfig(RCC_SYSCLK_Div1);
-  79              		.loc 1 41 0
-  80 004c 0020     		movs	r0, #0
-  81 004e FFF7FEFF 		bl	RCC_HCLKConfig
   42:src/clock.c   **** 		// APB1 42MHz
   43:src/clock.c   **** 		RCC_PCLK1Config(RCC_HCLK_Div4);
-  82              		.loc 1 43 0
-  83 0052 4FF4A050 		mov	r0, #5120
-  84 0056 FFF7FEFF 		bl	RCC_PCLK1Config
   44:src/clock.c   **** 		// APB2 84 MHz
   45:src/clock.c   **** 		RCC_PCLK2Config(RCC_HCLK_Div2);
-  85              		.loc 1 45 0
-  86 005a 4FF48050 		mov	r0, #4096
-  87 005e FFF7FEFF 		bl	RCC_PCLK2Config
   46:src/clock.c   **** 
   47:src/clock.c   **** 		// Set SysClk using PLL
   48:src/clock.c   **** 		RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);
-  88              		.loc 1 48 0
-  89 0062 0220     		movs	r0, #2
-  90 0064 FFF7FEFF 		bl	RCC_SYSCLKConfig
   49:src/clock.c   **** 
   50:src/clock.c   **** 		return SUCCESS;
-  91              		.loc 1 50 0
-  92 0068 0123     		movs	r3, #1
-  93 006a 00E0     		b	.L4
-  94              	.L2:
   51:src/clock.c   **** 	}
   52:src/clock.c   **** 	else
   53:src/clock.c   **** 	{
   54:src/clock.c   **** 		return ERROR;
-  95              		.loc 1 54 0
-  96 006c 0023     		movs	r3, #0
-  97              	.L4:
+  52              		.loc 1 54 0
+  53 0014 18BF     		it	ne
+  54 0016 0020     		movne	r0, #0
+  55              	.LVL3:
+  28:src/clock.c   **** 	{
+  56              		.loc 1 28 0
+  57 0018 25D1     		bne	.L2
+  31:src/clock.c   **** 		// Enable PLL
+  58              		.loc 1 31 0
+  59 001a 0723     		movs	r3, #7
+  60 001c 0093     		str	r3, [sp]
+  61 001e 4FF48000 		mov	r0, #4194304
+  62 0022 0821     		movs	r1, #8
+  63 0024 4FF4A872 		mov	r2, #336
+  64 0028 0223     		movs	r3, #2
+  65 002a FFF7FEFF 		bl	RCC_PLLConfig
+  66              	.LVL4:
+  33:src/clock.c   **** 		// Wait until main PLL clock ready
+  67              		.loc 1 33 0
+  68 002e 0120     		movs	r0, #1
+  69 0030 FFF7FEFF 		bl	RCC_PLLCmd
+  70              	.LVL5:
+  35:src/clock.c   **** 
+  71              		.loc 1 35 0
+  72 0034 3924     		movs	r4, #57
+  73              	.L3:
+  35:src/clock.c   **** 
+  74              		.loc 1 35 0 is_stmt 0 discriminator 1
+  75 0036 2046     		mov	r0, r4
+  76 0038 FFF7FEFF 		bl	RCC_GetFlagStatus
+  77              	.LVL6:
+  78 003c 0028     		cmp	r0, #0
+  79 003e FAD0     		beq	.L3
+  38:src/clock.c   **** 
+  80              		.loc 1 38 0 is_stmt 1
+  81 0040 0520     		movs	r0, #5
+  82 0042 FFF7FEFF 		bl	FLASH_SetLatency
+  83              	.LVL7:
+  41:src/clock.c   **** 		// APB1 42MHz
+  84              		.loc 1 41 0
+  85 0046 0020     		movs	r0, #0
+  86 0048 FFF7FEFF 		bl	RCC_HCLKConfig
+  87              	.LVL8:
+  43:src/clock.c   **** 		// APB2 84 MHz
+  88              		.loc 1 43 0
+  89 004c 4FF4A050 		mov	r0, #5120
+  90 0050 FFF7FEFF 		bl	RCC_PCLK1Config
+  91              	.LVL9:
+  45:src/clock.c   **** 
+  92              		.loc 1 45 0
+  93 0054 4FF48050 		mov	r0, #4096
+  94 0058 FFF7FEFF 		bl	RCC_PCLK2Config
+  95              	.LVL10:
+  48:src/clock.c   **** 
+  96              		.loc 1 48 0
+  97 005c 0220     		movs	r0, #2
+  98 005e FFF7FEFF 		bl	RCC_SYSCLKConfig
+  99              	.LVL11:
+  50:src/clock.c   **** 	}
+ 100              		.loc 1 50 0
+ 101 0062 0120     		movs	r0, #1
+ 102 0064 FFE7     		b	.L2
+ 103              	.L2:
   55:src/clock.c   **** 	}
   56:src/clock.c   **** }
-  98              		.loc 1 56 0
-  99 006e 1846     		mov	r0, r3
- 100 0070 0837     		adds	r7, r7, #8
- 101 0072 BD46     		mov	sp, r7
- 102              		@ sp needed
- 103 0074 80BD     		pop	{r7, pc}
- 104              		.cfi_endproc
- 105              	.LFE110:
- 107 0076 00BF     		.text
- 108              	.Letext0:
- 109              		.file 2 "/usr/include/newlib/machine/_default_types.h"
- 110              		.file 3 "/usr/include/newlib/stdint.h"
- 111              		.file 4 "libs/Device/STM32F4xx/Include/stm32f4xx.h"
- 112              		.file 5 "libs/CMSIS/Include/core_cm4.h"
+ 104              		.loc 1 56 0
+ 105 0066 02B0     		add	sp, sp, #8
+ 106              		@ sp needed
+ 107 0068 10BD     		pop	{r4, pc}
+ 108              		.cfi_endproc
+ 109              	.LFE110:
+ 111 006a 00BF     		.text
+ 112              	.Letext0:
+ 113              		.file 2 "/usr/include/newlib/machine/_default_types.h"
+ 114              		.file 3 "/usr/include/newlib/stdint.h"
+ 115              		.file 4 "libs/Device/STM32F4xx/Include/stm32f4xx.h"
+ 116              		.file 5 "libs/STM32F4xx_StdPeriph_Driver/inc/stm32f4xx_rcc.h"
+ 117              		.file 6 "libs/STM32F4xx_StdPeriph_Driver/inc/stm32f4xx_flash.h"
+ 118              		.file 7 "libs/CMSIS/Include/core_cm4.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 clock.c
-     /tmp/cccjAxcd.s:20     .text.CLOCK_SetClockTo168MHz:0000000000000000 $t
-     /tmp/cccjAxcd.s:25     .text.CLOCK_SetClockTo168MHz:0000000000000000 CLOCK_SetClockTo168MHz
+     /tmp/ccaaQut7.s:20     .text.CLOCK_SetClockTo168MHz:0000000000000000 $t
+     /tmp/ccaaQut7.s:25     .text.CLOCK_SetClockTo168MHz:0000000000000000 CLOCK_SetClockTo168MHz
                      .debug_frame:0000000000000010 $d
+                           .group:0000000000000000 wm4.1.7402b5479d3fa4780665141f585fc0ee
+                           .group:0000000000000000 wm4.stm32f4xx.h.48.a3308e16720c7afc3eb28e585e628ce6
+                           .group:0000000000000000 wm4.core_cm4.h.32.5f62939b60122629d60d85d0c4a14709
+                           .group:0000000000000000 wm4.features.h.22.6a4ca7cd053637cc1d0db6c16f39b2d7
+                           .group:0000000000000000 wm4._default_types.h.15.8b2cb27e528498f8ff711db085d6e489
+                           .group:0000000000000000 wm4.stdint.h.20.796e373797e732130a803d4c0338fa1b
+                           .group:0000000000000000 wm4.core_cmInstr.h.25.f50f886f2edf670cf199b35fd96f5c91
+                           .group:0000000000000000 wm4.core_cm4_simd.h.29.b4a3fdfb606cb3b26119424324d4b963
+                           .group:0000000000000000 wm4.core_cm4.h.153.5393ef7e6cebf34dd51ca528f9218ab3
+                           .group:0000000000000000 wm4.stm32f4xx.h.282.95bae448a91bccfbf24a6f9d95904bb8
+                           .group:0000000000000000 wm4.stm32f4xx_adc.h.102.2061aa73008746f3c2cc6ce8f635cad3
+                           .group:0000000000000000 wm4.stm32f4xx_can.h.25.87f18ca48b2692d39f76e87b1f07c953
+                           .group:0000000000000000 wm4.stm32f4xx_cryp.h.25.db1951c06ee684df97ea3a11aba6cb51
+                           .group:0000000000000000 wm4.stm32f4xx_dac.h.25.c43557a6416ea4dfa986c1209c2558d6
+                           .group:0000000000000000 wm4.stm32f4xx_dbgmcu.h.24.7aedfdcf091890b5cb96019bd29a2bfc
+                           .group:0000000000000000 wm4.stm32f4xx_dcmi.h.24.64883d9be802a535b1d7770d14da73e0
+                           .group:0000000000000000 wm4.stm32f4xx_dma.h.25.c1fa1d44ae0bc9c2b3a0d1d355d8c1e6
+                           .group:0000000000000000 wm4.stm32f4xx_exti.h.25.620998268d5d3d9042a8297fbe07d507
+                           .group:0000000000000000 wm4.stm32f4xx_flash.h.25.65d4f351b72ee41355279f70305f361a
+                           .group:0000000000000000 wm4.stm32f4xx_fsmc.h.25.b907ac7bd9bec46e02d06b137d53cfd8
+                           .group:0000000000000000 wm4.stm32f4xx_hash.h.25.633fb84f031cf2ab1bd834e536716dfa
+                           .group:0000000000000000 wm4.stm32f4xx_gpio.h.25.5bd1d790d742a307b55aea5fa8fcdae8
+                           .group:0000000000000000 wm4.stm32f4xx_i2c.h.25.8fcdb817a00a67d4624d79bab0d9275f
+                           .group:0000000000000000 wm4.stm32f4xx_iwdg.h.25.3013e8d2058415cb9d51af77f748a146
+                           .group:0000000000000000 wm4.stm32f4xx_pwr.h.25.48b68c1f3a894ab012f9c2a2c222f159
+                           .group:0000000000000000 wm4.stm32f4xx_rcc.h.24.c15e7c8dc065bb29146f29591b195c87
+                           .group:0000000000000000 wm4.stm32f4xx_rng.h.25.cdb5c5c07de6a48aedfde608da3f447e
+                           .group:0000000000000000 wm4.stm32f4xx_rtc.h.25.4809a79ad46ad97b4a01e735a96738eb
+                           .group:0000000000000000 wm4.stm32f4xx_sdio.h.25.406302aabae34eada94e5f2cde635a3e
+                           .group:0000000000000000 wm4.stm32f4xx_spi.h.25.46c61b79ff8408da93e2e90cf9b717d6
+                           .group:0000000000000000 wm4.stm32f4xx_syscfg.h.25.9d5caab5677661b69e959531364e23d7
+                           .group:0000000000000000 wm4.stm32f4xx_tim.h.25.948f7fc943f34bd206e29758e77ee0a2
+                           .group:0000000000000000 wm4.stm32f4xx_usart.h.25.b64697dad017ba547dd272c2cdb5846a
+                           .group:0000000000000000 wm4.stm32f4xx_wwdg.h.25.09d70b7849c6894ddf1e83c8e86b70e1
+                           .group:0000000000000000 wm4.misc.h.25.a0cb758c1f091b46f201b19cec9e63a1
+                           .group:0000000000000000 wm4.stm32f4xx.h.6913.da011404ccb203790556c86f10c46b18
 
 UNDEFINED SYMBOLS
 RCC_DeInit

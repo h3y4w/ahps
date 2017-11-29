@@ -36,7 +36,8 @@ obj/src/command_parser.o: src/command_parser.c src/command_parser.h \
  FreeRTOS/Source/include/../../Source/portable/GCC/ARM_CM4F/portmacro.h \
  FreeRTOS/Source/include/mpu_wrappers.h FreeRTOS/Source/include/task.h \
  FreeRTOS/Source/include/list.h FreeRTOS/Source/include/semphr.h \
- FreeRTOS/Source/include/queue.h
+ FreeRTOS/Source/include/queue.h src/hbfuncs.h src/hb_structs.h \
+ src/module.h
 
 src/command_parser.h:
 
@@ -129,3 +130,9 @@ FreeRTOS/Source/include/list.h:
 FreeRTOS/Source/include/semphr.h:
 
 FreeRTOS/Source/include/queue.h:
+
+src/hbfuncs.h:
+
+src/hb_structs.h:
+
+src/module.h:

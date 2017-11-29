@@ -26,6 +26,8 @@ SOURCES += src/module.c
 SOURCES += src/usart_rtos.c
 SOURCES += src/command_parser.c
 SOURCES += src/hbperiph.c
+SOURCES += src/hb_structs.c
+SOURCES += src/hbfuncs.c
 
 
 SOURCES += FreeRTOS/Source/tasks.c

@@ -1,4 +1,8 @@
 #include "usart_rtos.h"
+
+#ifndef COMMAND_PARSER_H__
+#define COMMAND_PARSER_H__
+
 #define MAX_STAGES 10
 #define MAX_REGIME_PH MAX_STAGES * 1
 #define MAX_REGIME_LIGHTING MAX_STAGES * 1
@@ -20,7 +24,6 @@ typedef struct {
     int using;
 } Stage;
 
-
 void command_set_regime_ph(char *pos, char term);
 void command_set_stage(char *pos, char term);
 void command_set(char *pos, char term);
@@ -38,14 +41,4 @@ int command_routing(char *pos, char term);
 void stage_print(Stage *stage);
 void regime_ph_print(int *regime_ph, int regime_id);
 
-
-
-
-
-
-
-
-
-
-
-
+#endif

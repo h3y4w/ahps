@@ -29,6 +29,8 @@ void USART_rtos_init(USART_rtos *USARTx_rtos,USART_TypeDef *USARTx);
 void USART_put(USART_TypeDef* USARTx, volatile char c);
 void USART_puts(USART_TypeDef* USARTx, volatile char *s);
 void USART_put_int(USART_TypeDef* USARTx, int number);
+void USART_put_unsigned_int(USART_TypeDef* USARTx, unsigned int number);
+
 
 void USART_getline(USART_rtos *USARTx_rtos, int timeout);
 int USART_nextline_length(USART_rtos *USARTx_rtos);

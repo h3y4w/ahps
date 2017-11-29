@@ -50,18 +50,15 @@ void USART_rtos_puts(USART_rtos_packet *packet, char *msg) {
 int USART_rtos_sputs(USART_rtos_packet *packet, const char *format, ...) {
     if (packet->msg){
 
+
         va_list ap;
         int rv;
 
         va_start(ap, format);
-
         rv = vsprintf(packet->msg, format, ap);
-
         va_end(ap);
 
-
         USART_rtos_puts(packet, packet->msg);
-
 
         return rv;
     }
@@ -93,6 +90,20 @@ void USART_puts(USART_TypeDef* USARTx, volatile char *s){
 		*s++;
 	}
 }
+
+void USART_put_unsigned_int(USART_TypeDef* USARTx, unsigned int number) {
+    char value[10];
+    int i=0;
+    do {
+        value[i++] = (char)(number % 10) + '0';
+        number /= 10;
+    } while (number);
+
+    while(i) {
+        USART_put(USARTx, value[--i]);
+    }
+}
+
 
 void USART_put_int(USART_TypeDef* USARTx, int number) {
     uint8_t neg = 0;

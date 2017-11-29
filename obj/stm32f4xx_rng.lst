@@ -8,7 +8,7 @@
    8              		.eabi_attribute 24, 1
    9              		.eabi_attribute 25, 1
   10              		.eabi_attribute 26, 1
-  11              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 30, 1
   12              		.eabi_attribute 34, 1
   13              		.eabi_attribute 18, 4
   14              		.thumb
@@ -122,40 +122,38 @@
   28              		.loc 1 95 0
   29              		.cfi_startproc
   30              		@ args = 0, pretend = 0, frame = 0
-  31              		@ frame_needed = 1, uses_anonymous_args = 0
-  32 0000 80B5     		push	{r7, lr}
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32 0000 08B5     		push	{r3, lr}
   33              	.LCFI0:
   34              		.cfi_def_cfa_offset 8
-  35              		.cfi_offset 7, -8
+  35              		.cfi_offset 3, -8
   36              		.cfi_offset 14, -4
-  37 0002 00AF     		add	r7, sp, #0
-  38              	.LCFI1:
-  39              		.cfi_def_cfa_register 7
   96:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   /* Enable RNG reset state */
   97:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   RCC_AHB2PeriphResetCmd(RCC_AHB2Periph_RNG, ENABLE);
-  40              		.loc 1 97 0
-  41 0004 4020     		movs	r0, #64
-  42 0006 0121     		movs	r1, #1
-  43 0008 FFF7FEFF 		bl	RCC_AHB2PeriphResetCmd
+  37              		.loc 1 97 0
+  38 0002 4020     		movs	r0, #64
+  39 0004 0121     		movs	r1, #1
+  40 0006 FFF7FEFF 		bl	RCC_AHB2PeriphResetCmd
+  41              	.LVL0:
   98:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c **** 
   99:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   /* Release RNG from reset state */
  100:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   RCC_AHB2PeriphResetCmd(RCC_AHB2Periph_RNG, DISABLE);
-  44              		.loc 1 100 0
-  45 000c 4020     		movs	r0, #64
-  46 000e 0021     		movs	r1, #0
-  47 0010 FFF7FEFF 		bl	RCC_AHB2PeriphResetCmd
+  42              		.loc 1 100 0
+  43 000a 4020     		movs	r0, #64
+  44 000c 0021     		movs	r1, #0
+  45 000e FFF7FEFF 		bl	RCC_AHB2PeriphResetCmd
+  46              	.LVL1:
+  47 0012 08BD     		pop	{r3, pc}
+  48              		.cfi_endproc
+  49              	.LFE110:
+  51              		.section	.text.RNG_Cmd,"ax",%progbits
+  52              		.align	2
+  53              		.global	RNG_Cmd
+  54              		.thumb
+  55              		.thumb_func
+  57              	RNG_Cmd:
+  58              	.LFB111:
  101:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c **** }
-  48              		.loc 1 101 0
-  49 0014 80BD     		pop	{r7, pc}
-  50              		.cfi_endproc
-  51              	.LFE110:
-  53 0016 00BF     		.section	.text.RNG_Cmd,"ax",%progbits
-  54              		.align	2
-  55              		.global	RNG_Cmd
-  56              		.thumb
-  57              		.thumb_func
-  59              	RNG_Cmd:
-  60              	.LFB111:
  102:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c **** 
  103:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c **** /**
  104:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   * @brief  Enables or disables the RNG peripheral.
@@ -165,75 +163,52 @@
  108:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   */
  109:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c **** void RNG_Cmd(FunctionalState NewState)
  110:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c **** {
-  61              		.loc 1 110 0
-  62              		.cfi_startproc
-  63              		@ args = 0, pretend = 0, frame = 8
-  64              		@ frame_needed = 1, uses_anonymous_args = 0
-  65              		@ link register save eliminated.
-  66 0000 80B4     		push	{r7}
-  67              	.LCFI2:
-  68              		.cfi_def_cfa_offset 4
-  69              		.cfi_offset 7, -4
-  70 0002 83B0     		sub	sp, sp, #12
-  71              	.LCFI3:
-  72              		.cfi_def_cfa_offset 16
-  73 0004 00AF     		add	r7, sp, #0
-  74              	.LCFI4:
-  75              		.cfi_def_cfa_register 7
-  76 0006 0346     		mov	r3, r0
-  77 0008 FB71     		strb	r3, [r7, #7]
+  59              		.loc 1 110 0
+  60              		.cfi_startproc
+  61              		@ args = 0, pretend = 0, frame = 0
+  62              		@ frame_needed = 0, uses_anonymous_args = 0
+  63              		@ link register save eliminated.
+  64              	.LVL2:
  111:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   /* Check the parameters */
  112:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   assert_param(IS_FUNCTIONAL_STATE(NewState));
  113:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c **** 
  114:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   if (NewState != DISABLE)
-  78              		.loc 1 114 0
-  79 000a FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
-  80 000c 002B     		cmp	r3, #0
-  81 000e 0CD0     		beq	.L3
+  65              		.loc 1 114 0
+  66 0000 40B1     		cbz	r0, .L3
  115:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   {
  116:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****     /* Enable the RNG */
  117:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****     RNG->CR |= RNG_CR_RNGEN;
-  82              		.loc 1 117 0
-  83 0010 4FF40063 		mov	r3, #2048
-  84 0014 C5F20603 		movt	r3, 20486
-  85 0018 4FF40062 		mov	r2, #2048
-  86 001c C5F20602 		movt	r2, 20486
-  87 0020 1268     		ldr	r2, [r2]
-  88 0022 42F00402 		orr	r2, r2, #4
-  89 0026 1A60     		str	r2, [r3]
-  90 0028 0BE0     		b	.L2
-  91              	.L3:
+  67              		.loc 1 117 0
+  68 0002 4FF40063 		mov	r3, #2048
+  69 0006 C5F20603 		movt	r3, 20486
+  70 000a 1A68     		ldr	r2, [r3]
+  71 000c 42F00402 		orr	r2, r2, #4
+  72 0010 1A60     		str	r2, [r3]
+  73 0012 7047     		bx	lr
+  74              	.L3:
  118:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   }
  119:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   else
  120:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   {
  121:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****     /* Disable the RNG */
  122:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****     RNG->CR &= ~RNG_CR_RNGEN;
-  92              		.loc 1 122 0
-  93 002a 4FF40063 		mov	r3, #2048
-  94 002e C5F20603 		movt	r3, 20486
-  95 0032 4FF40062 		mov	r2, #2048
-  96 0036 C5F20602 		movt	r2, 20486
-  97 003a 1268     		ldr	r2, [r2]
-  98 003c 22F00402 		bic	r2, r2, #4
-  99 0040 1A60     		str	r2, [r3]
- 100              	.L2:
+  75              		.loc 1 122 0
+  76 0014 4FF40063 		mov	r3, #2048
+  77 0018 C5F20603 		movt	r3, 20486
+  78 001c 1A68     		ldr	r2, [r3]
+  79 001e 22F00402 		bic	r2, r2, #4
+  80 0022 1A60     		str	r2, [r3]
+  81 0024 7047     		bx	lr
+  82              		.cfi_endproc
+  83              	.LFE111:
+  85 0026 00BF     		.section	.text.RNG_GetRandomNumber,"ax",%progbits
+  86              		.align	2
+  87              		.global	RNG_GetRandomNumber
+  88              		.thumb
+  89              		.thumb_func
+  91              	RNG_GetRandomNumber:
+  92              	.LFB112:
  123:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   }
  124:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c **** }
- 101              		.loc 1 124 0
- 102 0042 0C37     		adds	r7, r7, #12
- 103 0044 BD46     		mov	sp, r7
- 104              		@ sp needed
- 105 0046 5DF8047B 		ldr	r7, [sp], #4
- 106 004a 7047     		bx	lr
- 107              		.cfi_endproc
- 108              	.LFE111:
- 110              		.section	.text.RNG_GetRandomNumber,"ax",%progbits
- 111              		.align	2
- 112              		.global	RNG_GetRandomNumber
- 113              		.thumb
- 114              		.thumb_func
- 116              	RNG_GetRandomNumber:
- 117              	.LFB112:
  125:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c **** /**
  126:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   * @}
  127:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   */
@@ -282,40 +257,29 @@
  170:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   */
  171:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c **** uint32_t RNG_GetRandomNumber(void)
  172:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c **** {
- 118              		.loc 1 172 0
- 119              		.cfi_startproc
- 120              		@ args = 0, pretend = 0, frame = 0
- 121              		@ frame_needed = 1, uses_anonymous_args = 0
- 122              		@ link register save eliminated.
- 123 0000 80B4     		push	{r7}
- 124              	.LCFI5:
- 125              		.cfi_def_cfa_offset 4
- 126              		.cfi_offset 7, -4
- 127 0002 00AF     		add	r7, sp, #0
- 128              	.LCFI6:
- 129              		.cfi_def_cfa_register 7
+  93              		.loc 1 172 0
+  94              		.cfi_startproc
+  95              		@ args = 0, pretend = 0, frame = 0
+  96              		@ frame_needed = 0, uses_anonymous_args = 0
+  97              		@ link register save eliminated.
  173:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   /* Return the 32 bit random number from the DR register */
  174:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   return RNG->DR;
- 130              		.loc 1 174 0
- 131 0004 4FF40063 		mov	r3, #2048
- 132 0008 C5F20603 		movt	r3, 20486
- 133 000c 9B68     		ldr	r3, [r3, #8]
+  98              		.loc 1 174 0
+  99 0000 4FF40063 		mov	r3, #2048
+ 100 0004 C5F20603 		movt	r3, 20486
+ 101 0008 9868     		ldr	r0, [r3, #8]
  175:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c **** }
- 134              		.loc 1 175 0
- 135 000e 1846     		mov	r0, r3
- 136 0010 BD46     		mov	sp, r7
- 137              		@ sp needed
- 138 0012 5DF8047B 		ldr	r7, [sp], #4
- 139 0016 7047     		bx	lr
- 140              		.cfi_endproc
- 141              	.LFE112:
- 143              		.section	.text.RNG_ITConfig,"ax",%progbits
- 144              		.align	2
- 145              		.global	RNG_ITConfig
- 146              		.thumb
- 147              		.thumb_func
- 149              	RNG_ITConfig:
- 150              	.LFB113:
+ 102              		.loc 1 175 0
+ 103 000a 7047     		bx	lr
+ 104              		.cfi_endproc
+ 105              	.LFE112:
+ 107              		.section	.text.RNG_ITConfig,"ax",%progbits
+ 108              		.align	2
+ 109              		.global	RNG_ITConfig
+ 110              		.thumb
+ 111              		.thumb_func
+ 113              	RNG_ITConfig:
+ 114              	.LFB113:
  176:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c **** 
  177:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c **** 
  178:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c **** /**
@@ -410,75 +374,52 @@
  267:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   */
  268:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c **** void RNG_ITConfig(FunctionalState NewState)
  269:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c **** {
- 151              		.loc 1 269 0
- 152              		.cfi_startproc
- 153              		@ args = 0, pretend = 0, frame = 8
- 154              		@ frame_needed = 1, uses_anonymous_args = 0
- 155              		@ link register save eliminated.
- 156 0000 80B4     		push	{r7}
- 157              	.LCFI7:
- 158              		.cfi_def_cfa_offset 4
- 159              		.cfi_offset 7, -4
- 160 0002 83B0     		sub	sp, sp, #12
- 161              	.LCFI8:
- 162              		.cfi_def_cfa_offset 16
- 163 0004 00AF     		add	r7, sp, #0
- 164              	.LCFI9:
- 165              		.cfi_def_cfa_register 7
- 166 0006 0346     		mov	r3, r0
- 167 0008 FB71     		strb	r3, [r7, #7]
+ 115              		.loc 1 269 0
+ 116              		.cfi_startproc
+ 117              		@ args = 0, pretend = 0, frame = 0
+ 118              		@ frame_needed = 0, uses_anonymous_args = 0
+ 119              		@ link register save eliminated.
+ 120              	.LVL3:
  270:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   /* Check the parameters */
  271:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   assert_param(IS_FUNCTIONAL_STATE(NewState));
  272:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c **** 
  273:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   if (NewState != DISABLE)
- 168              		.loc 1 273 0
- 169 000a FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
- 170 000c 002B     		cmp	r3, #0
- 171 000e 0CD0     		beq	.L8
+ 121              		.loc 1 273 0
+ 122 0000 40B1     		cbz	r0, .L7
  274:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   {
  275:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****     /* Enable the RNG interrupt */
  276:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****     RNG->CR |= RNG_CR_IE;
- 172              		.loc 1 276 0
- 173 0010 4FF40063 		mov	r3, #2048
- 174 0014 C5F20603 		movt	r3, 20486
- 175 0018 4FF40062 		mov	r2, #2048
- 176 001c C5F20602 		movt	r2, 20486
- 177 0020 1268     		ldr	r2, [r2]
- 178 0022 42F00802 		orr	r2, r2, #8
- 179 0026 1A60     		str	r2, [r3]
- 180 0028 0BE0     		b	.L7
- 181              	.L8:
+ 123              		.loc 1 276 0
+ 124 0002 4FF40063 		mov	r3, #2048
+ 125 0006 C5F20603 		movt	r3, 20486
+ 126 000a 1A68     		ldr	r2, [r3]
+ 127 000c 42F00802 		orr	r2, r2, #8
+ 128 0010 1A60     		str	r2, [r3]
+ 129 0012 7047     		bx	lr
+ 130              	.L7:
  277:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   }
  278:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   else
  279:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   {
  280:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****     /* Disable the RNG interrupt */
  281:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****     RNG->CR &= ~RNG_CR_IE;
- 182              		.loc 1 281 0
- 183 002a 4FF40063 		mov	r3, #2048
- 184 002e C5F20603 		movt	r3, 20486
- 185 0032 4FF40062 		mov	r2, #2048
- 186 0036 C5F20602 		movt	r2, 20486
- 187 003a 1268     		ldr	r2, [r2]
- 188 003c 22F00802 		bic	r2, r2, #8
- 189 0040 1A60     		str	r2, [r3]
- 190              	.L7:
+ 131              		.loc 1 281 0
+ 132 0014 4FF40063 		mov	r3, #2048
+ 133 0018 C5F20603 		movt	r3, 20486
+ 134 001c 1A68     		ldr	r2, [r3]
+ 135 001e 22F00802 		bic	r2, r2, #8
+ 136 0022 1A60     		str	r2, [r3]
+ 137 0024 7047     		bx	lr
+ 138              		.cfi_endproc
+ 139              	.LFE113:
+ 141 0026 00BF     		.section	.text.RNG_GetFlagStatus,"ax",%progbits
+ 142              		.align	2
+ 143              		.global	RNG_GetFlagStatus
+ 144              		.thumb
+ 145              		.thumb_func
+ 147              	RNG_GetFlagStatus:
+ 148              	.LFB114:
  282:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   }
  283:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c **** }
- 191              		.loc 1 283 0
- 192 0042 0C37     		adds	r7, r7, #12
- 193 0044 BD46     		mov	sp, r7
- 194              		@ sp needed
- 195 0046 5DF8047B 		ldr	r7, [sp], #4
- 196 004a 7047     		bx	lr
- 197              		.cfi_endproc
- 198              	.LFE113:
- 200              		.section	.text.RNG_GetFlagStatus,"ax",%progbits
- 201              		.align	2
- 202              		.global	RNG_GetFlagStatus
- 203              		.thumb
- 204              		.thumb_func
- 206              	RNG_GetFlagStatus:
- 207              	.LFB114:
  284:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c **** 
  285:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c **** /**
  286:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   * @brief  Checks whether the specified RNG flag is set or not.
@@ -491,79 +432,51 @@
  293:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   */
  294:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c **** FlagStatus RNG_GetFlagStatus(uint8_t RNG_FLAG)
  295:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c **** {
- 208              		.loc 1 295 0
- 209              		.cfi_startproc
- 210              		@ args = 0, pretend = 0, frame = 16
- 211              		@ frame_needed = 1, uses_anonymous_args = 0
- 212              		@ link register save eliminated.
- 213 0000 80B4     		push	{r7}
- 214              	.LCFI10:
- 215              		.cfi_def_cfa_offset 4
- 216              		.cfi_offset 7, -4
- 217 0002 85B0     		sub	sp, sp, #20
- 218              	.LCFI11:
- 219              		.cfi_def_cfa_offset 24
- 220 0004 00AF     		add	r7, sp, #0
- 221              	.LCFI12:
- 222              		.cfi_def_cfa_register 7
- 223 0006 0346     		mov	r3, r0
- 224 0008 FB71     		strb	r3, [r7, #7]
+ 149              		.loc 1 295 0
+ 150              		.cfi_startproc
+ 151              		@ args = 0, pretend = 0, frame = 0
+ 152              		@ frame_needed = 0, uses_anonymous_args = 0
+ 153              		@ link register save eliminated.
+ 154              	.LVL4:
  296:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   FlagStatus bitstatus = RESET;
- 225              		.loc 1 296 0
- 226 000a 0023     		movs	r3, #0
- 227 000c FB73     		strb	r3, [r7, #15]
  297:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   /* Check the parameters */
  298:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   assert_param(IS_RNG_GET_FLAG(RNG_FLAG));
  299:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c **** 
  300:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   /* Check the status of the specified RNG flag */
  301:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   if ((RNG->SR & RNG_FLAG) != (uint8_t)RESET)
- 228              		.loc 1 301 0
- 229 000e 4FF40063 		mov	r3, #2048
- 230 0012 C5F20603 		movt	r3, 20486
- 231 0016 5A68     		ldr	r2, [r3, #4]
- 232 0018 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
- 233 001a 1340     		ands	r3, r3, r2
- 234 001c 002B     		cmp	r3, #0
- 235 001e 02D0     		beq	.L11
+ 155              		.loc 1 301 0
+ 156 0000 4FF40063 		mov	r3, #2048
+ 157 0004 C5F20603 		movt	r3, 20486
+ 158 0008 5B68     		ldr	r3, [r3, #4]
+ 159 000a 1840     		ands	r0, r0, r3
+ 160              	.LVL5:
  302:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   {
  303:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****     /* RNG_FLAG is set */
  304:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****     bitstatus = SET;
- 236              		.loc 1 304 0
- 237 0020 0123     		movs	r3, #1
- 238 0022 FB73     		strb	r3, [r7, #15]
- 239 0024 01E0     		b	.L12
- 240              	.L11:
  305:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   }
  306:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   else
  307:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   {
  308:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****     /* RNG_FLAG is reset */
  309:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****     bitstatus = RESET;
- 241              		.loc 1 309 0
- 242 0026 0023     		movs	r3, #0
- 243 0028 FB73     		strb	r3, [r7, #15]
- 244              	.L12:
  310:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   }
  311:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   /* Return the RNG_FLAG status */
  312:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   return  bitstatus;
- 245              		.loc 1 312 0
- 246 002a FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
  313:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c **** }
- 247              		.loc 1 313 0
- 248 002c 1846     		mov	r0, r3
- 249 002e 1437     		adds	r7, r7, #20
- 250 0030 BD46     		mov	sp, r7
- 251              		@ sp needed
- 252 0032 5DF8047B 		ldr	r7, [sp], #4
- 253 0036 7047     		bx	lr
- 254              		.cfi_endproc
- 255              	.LFE114:
- 257              		.section	.text.RNG_ClearFlag,"ax",%progbits
- 258              		.align	2
- 259              		.global	RNG_ClearFlag
- 260              		.thumb
- 261              		.thumb_func
- 263              	RNG_ClearFlag:
- 264              	.LFB115:
+ 161              		.loc 1 313 0
+ 162 000c 0030     		adds	r0, r0, #0
+ 163 000e 18BF     		it	ne
+ 164 0010 0120     		movne	r0, #1
+ 165              	.LVL6:
+ 166 0012 7047     		bx	lr
+ 167              		.cfi_endproc
+ 168              	.LFE114:
+ 170              		.section	.text.RNG_ClearFlag,"ax",%progbits
+ 171              		.align	2
+ 172              		.global	RNG_ClearFlag
+ 173              		.thumb
+ 174              		.thumb_func
+ 176              	RNG_ClearFlag:
+ 177              	.LFB115:
  314:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c **** 
  315:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c **** 
  316:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c **** /**
@@ -579,50 +492,33 @@
  326:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   */
  327:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c **** void RNG_ClearFlag(uint8_t RNG_FLAG)
  328:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c **** {
- 265              		.loc 1 328 0
- 266              		.cfi_startproc
- 267              		@ args = 0, pretend = 0, frame = 8
- 268              		@ frame_needed = 1, uses_anonymous_args = 0
- 269              		@ link register save eliminated.
- 270 0000 80B4     		push	{r7}
- 271              	.LCFI13:
- 272              		.cfi_def_cfa_offset 4
- 273              		.cfi_offset 7, -4
- 274 0002 83B0     		sub	sp, sp, #12
- 275              	.LCFI14:
- 276              		.cfi_def_cfa_offset 16
- 277 0004 00AF     		add	r7, sp, #0
- 278              	.LCFI15:
- 279              		.cfi_def_cfa_register 7
- 280 0006 0346     		mov	r3, r0
- 281 0008 FB71     		strb	r3, [r7, #7]
+ 178              		.loc 1 328 0
+ 179              		.cfi_startproc
+ 180              		@ args = 0, pretend = 0, frame = 0
+ 181              		@ frame_needed = 0, uses_anonymous_args = 0
+ 182              		@ link register save eliminated.
+ 183              	.LVL7:
  329:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   /* Check the parameters */
  330:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   assert_param(IS_RNG_CLEAR_FLAG(RNG_FLAG));
  331:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   /* Clear the selected RNG flags */
  332:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   RNG->SR = ~(uint32_t)(((uint32_t)RNG_FLAG) << 4);
- 282              		.loc 1 332 0
- 283 000a 4FF40063 		mov	r3, #2048
- 284 000e C5F20603 		movt	r3, 20486
- 285 0012 FA79     		ldrb	r2, [r7, #7]	@ zero_extendqisi2
- 286 0014 1201     		lsls	r2, r2, #4
- 287 0016 D243     		mvns	r2, r2
- 288 0018 5A60     		str	r2, [r3, #4]
+ 184              		.loc 1 332 0
+ 185 0000 6FEA0010 		mvn	r0, r0, lsl #4
+ 186              	.LVL8:
+ 187 0004 4FF40063 		mov	r3, #2048
+ 188 0008 C5F20603 		movt	r3, 20486
+ 189 000c 5860     		str	r0, [r3, #4]
+ 190 000e 7047     		bx	lr
+ 191              		.cfi_endproc
+ 192              	.LFE115:
+ 194              		.section	.text.RNG_GetITStatus,"ax",%progbits
+ 195              		.align	2
+ 196              		.global	RNG_GetITStatus
+ 197              		.thumb
+ 198              		.thumb_func
+ 200              	RNG_GetITStatus:
+ 201              	.LFB116:
  333:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c **** }
- 289              		.loc 1 333 0
- 290 001a 0C37     		adds	r7, r7, #12
- 291 001c BD46     		mov	sp, r7
- 292              		@ sp needed
- 293 001e 5DF8047B 		ldr	r7, [sp], #4
- 294 0022 7047     		bx	lr
- 295              		.cfi_endproc
- 296              	.LFE115:
- 298              		.section	.text.RNG_GetITStatus,"ax",%progbits
- 299              		.align	2
- 300              		.global	RNG_GetITStatus
- 301              		.thumb
- 302              		.thumb_func
- 304              	RNG_GetITStatus:
- 305              	.LFB116:
  334:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c **** 
  335:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c **** /**
  336:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   * @brief  Checks whether the specified RNG interrupt has occurred or not.
@@ -634,79 +530,51 @@
  342:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   */
  343:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c **** ITStatus RNG_GetITStatus(uint8_t RNG_IT)
  344:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c **** {
- 306              		.loc 1 344 0
- 307              		.cfi_startproc
- 308              		@ args = 0, pretend = 0, frame = 16
- 309              		@ frame_needed = 1, uses_anonymous_args = 0
- 310              		@ link register save eliminated.
- 311 0000 80B4     		push	{r7}
- 312              	.LCFI16:
- 313              		.cfi_def_cfa_offset 4
- 314              		.cfi_offset 7, -4
- 315 0002 85B0     		sub	sp, sp, #20
- 316              	.LCFI17:
- 317              		.cfi_def_cfa_offset 24
- 318 0004 00AF     		add	r7, sp, #0
- 319              	.LCFI18:
- 320              		.cfi_def_cfa_register 7
- 321 0006 0346     		mov	r3, r0
- 322 0008 FB71     		strb	r3, [r7, #7]
+ 202              		.loc 1 344 0
+ 203              		.cfi_startproc
+ 204              		@ args = 0, pretend = 0, frame = 0
+ 205              		@ frame_needed = 0, uses_anonymous_args = 0
+ 206              		@ link register save eliminated.
+ 207              	.LVL9:
  345:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   ITStatus bitstatus = RESET;
- 323              		.loc 1 345 0
- 324 000a 0023     		movs	r3, #0
- 325 000c FB73     		strb	r3, [r7, #15]
  346:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   /* Check the parameters */
  347:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   assert_param(IS_RNG_GET_IT(RNG_IT));
  348:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c **** 
  349:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   /* Check the status of the specified RNG interrupt */
  350:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   if ((RNG->SR & RNG_IT) != (uint8_t)RESET)
- 326              		.loc 1 350 0
- 327 000e 4FF40063 		mov	r3, #2048
- 328 0012 C5F20603 		movt	r3, 20486
- 329 0016 5A68     		ldr	r2, [r3, #4]
- 330 0018 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
- 331 001a 1340     		ands	r3, r3, r2
- 332 001c 002B     		cmp	r3, #0
- 333 001e 02D0     		beq	.L16
+ 208              		.loc 1 350 0
+ 209 0000 4FF40063 		mov	r3, #2048
+ 210 0004 C5F20603 		movt	r3, 20486
+ 211 0008 5B68     		ldr	r3, [r3, #4]
+ 212 000a 1840     		ands	r0, r0, r3
+ 213              	.LVL10:
  351:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   {
  352:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****     /* RNG_IT is set */
  353:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****     bitstatus = SET;
- 334              		.loc 1 353 0
- 335 0020 0123     		movs	r3, #1
- 336 0022 FB73     		strb	r3, [r7, #15]
- 337 0024 01E0     		b	.L17
- 338              	.L16:
  354:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   }
  355:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   else
  356:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   {
  357:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****     /* RNG_IT is reset */
  358:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****     bitstatus = RESET;
- 339              		.loc 1 358 0
- 340 0026 0023     		movs	r3, #0
- 341 0028 FB73     		strb	r3, [r7, #15]
- 342              	.L17:
  359:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   }
  360:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   /* Return the RNG_IT status */
  361:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   return bitstatus;
- 343              		.loc 1 361 0
- 344 002a FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
  362:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c **** }
- 345              		.loc 1 362 0
- 346 002c 1846     		mov	r0, r3
- 347 002e 1437     		adds	r7, r7, #20
- 348 0030 BD46     		mov	sp, r7
- 349              		@ sp needed
- 350 0032 5DF8047B 		ldr	r7, [sp], #4
- 351 0036 7047     		bx	lr
- 352              		.cfi_endproc
- 353              	.LFE116:
- 355              		.section	.text.RNG_ClearITPendingBit,"ax",%progbits
- 356              		.align	2
- 357              		.global	RNG_ClearITPendingBit
- 358              		.thumb
- 359              		.thumb_func
- 361              	RNG_ClearITPendingBit:
- 362              	.LFB117:
+ 214              		.loc 1 362 0
+ 215 000c 0030     		adds	r0, r0, #0
+ 216 000e 18BF     		it	ne
+ 217 0010 0120     		movne	r0, #1
+ 218              	.LVL11:
+ 219 0012 7047     		bx	lr
+ 220              		.cfi_endproc
+ 221              	.LFE116:
+ 223              		.section	.text.RNG_ClearITPendingBit,"ax",%progbits
+ 224              		.align	2
+ 225              		.global	RNG_ClearITPendingBit
+ 226              		.thumb
+ 227              		.thumb_func
+ 229              	RNG_ClearITPendingBit:
+ 230              	.LFB117:
  363:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c **** 
  364:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c **** 
  365:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c **** /**
@@ -719,69 +587,89 @@
  372:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   */
  373:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c **** void RNG_ClearITPendingBit(uint8_t RNG_IT)
  374:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c **** {
- 363              		.loc 1 374 0
- 364              		.cfi_startproc
- 365              		@ args = 0, pretend = 0, frame = 8
- 366              		@ frame_needed = 1, uses_anonymous_args = 0
- 367              		@ link register save eliminated.
- 368 0000 80B4     		push	{r7}
- 369              	.LCFI19:
- 370              		.cfi_def_cfa_offset 4
- 371              		.cfi_offset 7, -4
- 372 0002 83B0     		sub	sp, sp, #12
- 373              	.LCFI20:
- 374              		.cfi_def_cfa_offset 16
- 375 0004 00AF     		add	r7, sp, #0
- 376              	.LCFI21:
- 377              		.cfi_def_cfa_register 7
- 378 0006 0346     		mov	r3, r0
- 379 0008 FB71     		strb	r3, [r7, #7]
+ 231              		.loc 1 374 0
+ 232              		.cfi_startproc
+ 233              		@ args = 0, pretend = 0, frame = 0
+ 234              		@ frame_needed = 0, uses_anonymous_args = 0
+ 235              		@ link register save eliminated.
+ 236              	.LVL12:
  375:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   /* Check the parameters */
  376:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   assert_param(IS_RNG_IT(RNG_IT));
  377:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c **** 
  378:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   /* Clear the selected RNG interrupt pending bit */
  379:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c ****   RNG->SR = (uint8_t)~RNG_IT;
- 380              		.loc 1 379 0
- 381 000a 4FF40063 		mov	r3, #2048
- 382 000e C5F20603 		movt	r3, 20486
- 383 0012 FA79     		ldrb	r2, [r7, #7]
- 384 0014 D243     		mvns	r2, r2
- 385 0016 D2B2     		uxtb	r2, r2
- 386 0018 5A60     		str	r2, [r3, #4]
- 380:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rng.c **** }
- 387              		.loc 1 380 0
- 388 001a 0C37     		adds	r7, r7, #12
- 389 001c BD46     		mov	sp, r7
- 390              		@ sp needed
- 391 001e 5DF8047B 		ldr	r7, [sp], #4
- 392 0022 7047     		bx	lr
- 393              		.cfi_endproc
- 394              	.LFE117:
- 396              		.text
- 397              	.Letext0:
- 398              		.file 2 "/usr/include/newlib/machine/_default_types.h"
- 399              		.file 3 "/usr/include/newlib/stdint.h"
- 400              		.file 4 "libs/Device/STM32F4xx/Include/stm32f4xx.h"
- 401              		.file 5 "libs/CMSIS/Include/core_cm4.h"
+ 237              		.loc 1 379 0
+ 238 0000 C043     		mvns	r0, r0
+ 239              	.LVL13:
+ 240 0002 C0B2     		uxtb	r0, r0
+ 241 0004 4FF40063 		mov	r3, #2048
+ 242 0008 C5F20603 		movt	r3, 20486
+ 243 000c 5860     		str	r0, [r3, #4]
+ 244 000e 7047     		bx	lr
+ 245              		.cfi_endproc
+ 246              	.LFE117:
+ 248              		.text
+ 249              	.Letext0:
+ 250              		.file 2 "/usr/include/newlib/machine/_default_types.h"
+ 251              		.file 3 "/usr/include/newlib/stdint.h"
+ 252              		.file 4 "libs/Device/STM32F4xx/Include/stm32f4xx.h"
+ 253              		.file 5 "libs/CMSIS/Include/core_cm4.h"
+ 254              		.file 6 "libs/STM32F4xx_StdPeriph_Driver/inc/stm32f4xx_rcc.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 stm32f4xx_rng.c
-     /tmp/ccVHXTZa.s:20     .text.RNG_DeInit:0000000000000000 $t
-     /tmp/ccVHXTZa.s:25     .text.RNG_DeInit:0000000000000000 RNG_DeInit
-     /tmp/ccVHXTZa.s:54     .text.RNG_Cmd:0000000000000000 $t
-     /tmp/ccVHXTZa.s:59     .text.RNG_Cmd:0000000000000000 RNG_Cmd
-     /tmp/ccVHXTZa.s:111    .text.RNG_GetRandomNumber:0000000000000000 $t
-     /tmp/ccVHXTZa.s:116    .text.RNG_GetRandomNumber:0000000000000000 RNG_GetRandomNumber
-     /tmp/ccVHXTZa.s:144    .text.RNG_ITConfig:0000000000000000 $t
-     /tmp/ccVHXTZa.s:149    .text.RNG_ITConfig:0000000000000000 RNG_ITConfig
-     /tmp/ccVHXTZa.s:201    .text.RNG_GetFlagStatus:0000000000000000 $t
-     /tmp/ccVHXTZa.s:206    .text.RNG_GetFlagStatus:0000000000000000 RNG_GetFlagStatus
-     /tmp/ccVHXTZa.s:258    .text.RNG_ClearFlag:0000000000000000 $t
-     /tmp/ccVHXTZa.s:263    .text.RNG_ClearFlag:0000000000000000 RNG_ClearFlag
-     /tmp/ccVHXTZa.s:299    .text.RNG_GetITStatus:0000000000000000 $t
-     /tmp/ccVHXTZa.s:304    .text.RNG_GetITStatus:0000000000000000 RNG_GetITStatus
-     /tmp/ccVHXTZa.s:356    .text.RNG_ClearITPendingBit:0000000000000000 $t
-     /tmp/ccVHXTZa.s:361    .text.RNG_ClearITPendingBit:0000000000000000 RNG_ClearITPendingBit
+     /tmp/cc0fQpQK.s:20     .text.RNG_DeInit:0000000000000000 $t
+     /tmp/cc0fQpQK.s:25     .text.RNG_DeInit:0000000000000000 RNG_DeInit
+     /tmp/cc0fQpQK.s:52     .text.RNG_Cmd:0000000000000000 $t
+     /tmp/cc0fQpQK.s:57     .text.RNG_Cmd:0000000000000000 RNG_Cmd
+     /tmp/cc0fQpQK.s:86     .text.RNG_GetRandomNumber:0000000000000000 $t
+     /tmp/cc0fQpQK.s:91     .text.RNG_GetRandomNumber:0000000000000000 RNG_GetRandomNumber
+     /tmp/cc0fQpQK.s:108    .text.RNG_ITConfig:0000000000000000 $t
+     /tmp/cc0fQpQK.s:113    .text.RNG_ITConfig:0000000000000000 RNG_ITConfig
+     /tmp/cc0fQpQK.s:142    .text.RNG_GetFlagStatus:0000000000000000 $t
+     /tmp/cc0fQpQK.s:147    .text.RNG_GetFlagStatus:0000000000000000 RNG_GetFlagStatus
+     /tmp/cc0fQpQK.s:171    .text.RNG_ClearFlag:0000000000000000 $t
+     /tmp/cc0fQpQK.s:176    .text.RNG_ClearFlag:0000000000000000 RNG_ClearFlag
+     /tmp/cc0fQpQK.s:195    .text.RNG_GetITStatus:0000000000000000 $t
+     /tmp/cc0fQpQK.s:200    .text.RNG_GetITStatus:0000000000000000 RNG_GetITStatus
+     /tmp/cc0fQpQK.s:224    .text.RNG_ClearITPendingBit:0000000000000000 $t
+     /tmp/cc0fQpQK.s:229    .text.RNG_ClearITPendingBit:0000000000000000 RNG_ClearITPendingBit
                      .debug_frame:0000000000000010 $d
+                           .group:0000000000000000 wm4.1.7402b5479d3fa4780665141f585fc0ee
+                           .group:0000000000000000 wm4.stm32f4xx.h.48.a3308e16720c7afc3eb28e585e628ce6
+                           .group:0000000000000000 wm4.core_cm4.h.32.5f62939b60122629d60d85d0c4a14709
+                           .group:0000000000000000 wm4.features.h.22.6a4ca7cd053637cc1d0db6c16f39b2d7
+                           .group:0000000000000000 wm4._default_types.h.15.8b2cb27e528498f8ff711db085d6e489
+                           .group:0000000000000000 wm4.stdint.h.20.796e373797e732130a803d4c0338fa1b
+                           .group:0000000000000000 wm4.core_cmInstr.h.25.f50f886f2edf670cf199b35fd96f5c91
+                           .group:0000000000000000 wm4.core_cm4_simd.h.29.b4a3fdfb606cb3b26119424324d4b963
+                           .group:0000000000000000 wm4.core_cm4.h.153.5393ef7e6cebf34dd51ca528f9218ab3
+                           .group:0000000000000000 wm4.stm32f4xx.h.282.95bae448a91bccfbf24a6f9d95904bb8
+                           .group:0000000000000000 wm4.stm32f4xx_adc.h.102.2061aa73008746f3c2cc6ce8f635cad3
+                           .group:0000000000000000 wm4.stm32f4xx_can.h.25.87f18ca48b2692d39f76e87b1f07c953
+                           .group:0000000000000000 wm4.stm32f4xx_cryp.h.25.db1951c06ee684df97ea3a11aba6cb51
+                           .group:0000000000000000 wm4.stm32f4xx_dac.h.25.c43557a6416ea4dfa986c1209c2558d6
+                           .group:0000000000000000 wm4.stm32f4xx_dbgmcu.h.24.7aedfdcf091890b5cb96019bd29a2bfc
+                           .group:0000000000000000 wm4.stm32f4xx_dcmi.h.24.64883d9be802a535b1d7770d14da73e0
+                           .group:0000000000000000 wm4.stm32f4xx_dma.h.25.c1fa1d44ae0bc9c2b3a0d1d355d8c1e6
+                           .group:0000000000000000 wm4.stm32f4xx_exti.h.25.620998268d5d3d9042a8297fbe07d507
+                           .group:0000000000000000 wm4.stm32f4xx_flash.h.25.65d4f351b72ee41355279f70305f361a
+                           .group:0000000000000000 wm4.stm32f4xx_fsmc.h.25.b907ac7bd9bec46e02d06b137d53cfd8
+                           .group:0000000000000000 wm4.stm32f4xx_hash.h.25.633fb84f031cf2ab1bd834e536716dfa
+                           .group:0000000000000000 wm4.stm32f4xx_gpio.h.25.5bd1d790d742a307b55aea5fa8fcdae8
+                           .group:0000000000000000 wm4.stm32f4xx_i2c.h.25.8fcdb817a00a67d4624d79bab0d9275f
+                           .group:0000000000000000 wm4.stm32f4xx_iwdg.h.25.3013e8d2058415cb9d51af77f748a146
+                           .group:0000000000000000 wm4.stm32f4xx_pwr.h.25.48b68c1f3a894ab012f9c2a2c222f159
+                           .group:0000000000000000 wm4.stm32f4xx_rcc.h.24.c15e7c8dc065bb29146f29591b195c87
+                           .group:0000000000000000 wm4.stm32f4xx_rtc.h.25.4809a79ad46ad97b4a01e735a96738eb
+                           .group:0000000000000000 wm4.stm32f4xx_sdio.h.25.406302aabae34eada94e5f2cde635a3e
+                           .group:0000000000000000 wm4.stm32f4xx_spi.h.25.46c61b79ff8408da93e2e90cf9b717d6
+                           .group:0000000000000000 wm4.stm32f4xx_syscfg.h.25.9d5caab5677661b69e959531364e23d7
+                           .group:0000000000000000 wm4.stm32f4xx_tim.h.25.948f7fc943f34bd206e29758e77ee0a2
+                           .group:0000000000000000 wm4.stm32f4xx_usart.h.25.b64697dad017ba547dd272c2cdb5846a
+                           .group:0000000000000000 wm4.stm32f4xx_wwdg.h.25.09d70b7849c6894ddf1e83c8e86b70e1
+                           .group:0000000000000000 wm4.misc.h.25.a0cb758c1f091b46f201b19cec9e63a1
+                           .group:0000000000000000 wm4.stm32f4xx.h.6913.da011404ccb203790556c86f10c46b18
+                           .group:0000000000000000 wm4.stm32f4xx_rng.h.52.dbe52b3e5ee7f0bebd7860af78b124f8
 
 UNDEFINED SYMBOLS
 RCC_AHB2PeriphResetCmd

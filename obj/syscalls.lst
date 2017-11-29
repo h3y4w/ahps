@@ -912,34 +912,34 @@
  392              		.file 15 "FreeRTOS/Source/include/../../Source/portable/GCC/ARM_CM4F/portmacro.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 syscalls.c
-     /tmp/ccMN7cO7.s:20     .text._exit:0000000000000000 $t
-     /tmp/ccMN7cO7.s:25     .text._exit:0000000000000000 _exit
-     /tmp/ccMN7cO7.s:41     .text._read_r:0000000000000000 $t
-     /tmp/ccMN7cO7.s:46     .text._read_r:0000000000000000 _read_r
-     /tmp/ccMN7cO7.s:68     .text._write_r:0000000000000000 $t
-     /tmp/ccMN7cO7.s:73     .text._write_r:0000000000000000 _write_r
-     /tmp/ccMN7cO7.s:94     .text._lseek_r:0000000000000000 $t
-     /tmp/ccMN7cO7.s:99     .text._lseek_r:0000000000000000 _lseek_r
-     /tmp/ccMN7cO7.s:119    .text._close_r:0000000000000000 $t
-     /tmp/ccMN7cO7.s:124    .text._close_r:0000000000000000 _close_r
-     /tmp/ccMN7cO7.s:143    .text._fstat_r:0000000000000000 $t
-     /tmp/ccMN7cO7.s:148    .text._fstat_r:0000000000000000 _fstat_r
-     /tmp/ccMN7cO7.s:177    .text._isatty_r:0000000000000000 $t
-     /tmp/ccMN7cO7.s:182    .text._isatty_r:0000000000000000 _isatty_r
-     /tmp/ccMN7cO7.s:198    .text._sbrk_r:0000000000000000 $t
-     /tmp/ccMN7cO7.s:203    .text._sbrk_r:0000000000000000 _sbrk_r
+     /tmp/cctvi0BC.s:20     .text._exit:0000000000000000 $t
+     /tmp/cctvi0BC.s:25     .text._exit:0000000000000000 _exit
+     /tmp/cctvi0BC.s:41     .text._read_r:0000000000000000 $t
+     /tmp/cctvi0BC.s:46     .text._read_r:0000000000000000 _read_r
+     /tmp/cctvi0BC.s:68     .text._write_r:0000000000000000 $t
+     /tmp/cctvi0BC.s:73     .text._write_r:0000000000000000 _write_r
+     /tmp/cctvi0BC.s:94     .text._lseek_r:0000000000000000 $t
+     /tmp/cctvi0BC.s:99     .text._lseek_r:0000000000000000 _lseek_r
+     /tmp/cctvi0BC.s:119    .text._close_r:0000000000000000 $t
+     /tmp/cctvi0BC.s:124    .text._close_r:0000000000000000 _close_r
+     /tmp/cctvi0BC.s:143    .text._fstat_r:0000000000000000 $t
+     /tmp/cctvi0BC.s:148    .text._fstat_r:0000000000000000 _fstat_r
+     /tmp/cctvi0BC.s:177    .text._isatty_r:0000000000000000 $t
+     /tmp/cctvi0BC.s:182    .text._isatty_r:0000000000000000 _isatty_r
+     /tmp/cctvi0BC.s:198    .text._sbrk_r:0000000000000000 $t
+     /tmp/cctvi0BC.s:203    .text._sbrk_r:0000000000000000 _sbrk_r
                             *COM*:0000000000000004 __brkval
-     /tmp/ccMN7cO7.s:373    .data.__malloc_margin:0000000000000000 .LANCHOR0
-     /tmp/ccMN7cO7.s:272    .text._kill_r:0000000000000000 $t
-     /tmp/ccMN7cO7.s:277    .text._kill_r:0000000000000000 _kill_r
-     /tmp/ccMN7cO7.s:296    .text._getpid_r:0000000000000000 $t
-     /tmp/ccMN7cO7.s:301    .text._getpid_r:0000000000000000 _getpid_r
-     /tmp/ccMN7cO7.s:320    .text.__malloc_lock:0000000000000000 $t
-     /tmp/ccMN7cO7.s:325    .text.__malloc_lock:0000000000000000 __malloc_lock
-     /tmp/ccMN7cO7.s:345    .text.__malloc_unlock:0000000000000000 $t
-     /tmp/ccMN7cO7.s:350    .text.__malloc_unlock:0000000000000000 __malloc_unlock
-     /tmp/ccMN7cO7.s:376    .data.__malloc_margin:0000000000000000 __malloc_margin
-     /tmp/ccMN7cO7.s:372    .data.__malloc_margin:0000000000000000 $d
+     /tmp/cctvi0BC.s:373    .data.__malloc_margin:0000000000000000 .LANCHOR0
+     /tmp/cctvi0BC.s:272    .text._kill_r:0000000000000000 $t
+     /tmp/cctvi0BC.s:277    .text._kill_r:0000000000000000 _kill_r
+     /tmp/cctvi0BC.s:296    .text._getpid_r:0000000000000000 $t
+     /tmp/cctvi0BC.s:301    .text._getpid_r:0000000000000000 _getpid_r
+     /tmp/cctvi0BC.s:320    .text.__malloc_lock:0000000000000000 $t
+     /tmp/cctvi0BC.s:325    .text.__malloc_lock:0000000000000000 __malloc_lock
+     /tmp/cctvi0BC.s:345    .text.__malloc_unlock:0000000000000000 $t
+     /tmp/cctvi0BC.s:350    .text.__malloc_unlock:0000000000000000 __malloc_unlock
+     /tmp/cctvi0BC.s:376    .data.__malloc_margin:0000000000000000 __malloc_margin
+     /tmp/cctvi0BC.s:372    .data.__malloc_margin:0000000000000000 $d
                      .debug_frame:0000000000000010 $d
                            .group:0000000000000000 wm4.1.7402b5479d3fa4780665141f585fc0ee
                            .group:0000000000000000 wm4.newlib.h.8.fec018e441fee7bfa1923812ad010f97

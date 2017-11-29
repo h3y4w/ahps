@@ -7,10 +7,16 @@
 #include <stdarg.h>
 #include <unistd.h>
 #include "clock.h"
-#include "module.h"
 #include "command_parser.h"
 #include "hbconfig.h"
+#include "hb_structs.h"
+#include "hbfuncs.h"
 
+//NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW //
+//------------------------------------------------------------------------------------------- //
+
+// FIGURE OUT WHY USART_SPUTS DOESNT WORK, adding buffer and msg variable allow print but still freezes
+//***************//
 //Task For Sending Data Via USART
 
 //MAKE THIS A SEPERATE CONFIG FILE LATER//
@@ -31,23 +37,15 @@ void vUSART_command_handler (char *pos) {
     vTaskDelete(NULL);
 }
 
+//INTERRUPT FOR TASK TIMES EPOCH
+HydroponicSystem hydroponics;
+LightingSystem lighting;
+ACSystem AC;
 
+Timer_node* timer_list_head;
 
 USART_rtos USART1_rtos;
 USART_rtos USART2_rtos;
-
-//xSemaphoreHandle USART2_mutex;
-//xSemaphoreHandle USART1_mutex;
-
-//xSemaphoreHandle USART1_mutex_input;
-//xSemaphoreHandle USART2_mutex_input;
-
-
-
-//volatile uint8_t USART1_input_lock = 0;
-
-//volatile uint8_t USART2_input_lock = 0;
-
 
 void setSysTick(void){
     if (SysTick_Config(SystemCoreClock / 1000)) {
@@ -128,7 +126,6 @@ void USART1_IRQHandler(void){
 
                 xTaskCreate(vUSART_command_handler, (signed char*)"vUSART_command_handler", 468, pos, tskIDLE_PRIORITY+9, NULL);
 //                xTaskCreate(idle_blinky, (signed char*)"idle_blinky", 128, NULL, tskIDLE_PRIORITY, NULL);
-
 
                 xSemaphoreGive(USART1_rtos.transmit_event_mutex);
 
@@ -288,8 +285,8 @@ void initx(void){
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
 	GPIO_Init(GPIOD, &GPIO_InitStructure);
-
 	//USART Parameters
+
 	USART_InitStructure.USART_BaudRate = 38400;
 	USART_InitStructure.USART_WordLength = USART_WordLength_8b;
 	USART_InitStructure.USART_StopBits = USART_StopBits_1;
@@ -311,7 +308,6 @@ void initx(void){
     NVIC_Init(&NVIC_InitStructure);
 
 	USART_Cmd(USART2, ENABLE);
-
 }
 
 void TIM_PWM_init() {
@@ -340,8 +336,6 @@ void TIM_PWM_init() {
     TIM_OCInitStruct.TIM_Pulse = 0;
     TIM_OCInitStruct.TIM_OCPolarity = TIM_OCPolarity_High;
     
-
-
     TIM_OC1Init(TIM4, &TIM_OCInitStruct); //channel 1
     TIM_OC1PreloadConfig(TIM4, TIM_OCPreload_Enable);
 
@@ -352,11 +346,6 @@ void TIM_PWM_init() {
     TIM_ARRPreloadConfig(TIM4, ENABLE);
     TIM_Cmd(TIM4, ENABLE);
 }
-
-
-
-
-enum System_State {SYSTEM_WRITING, SYSTEM_WRITTEN, SYSTEM_READ, SYSTEM_ERROR};
 
 
 typedef struct {
@@ -373,37 +362,6 @@ typedef struct {
 } vLight_parameters;
 
 
-typedef struct {
-    enum System_State state;
-    PPump_Module PPump_PHUp;
-    UDS_Module UDS_PHUp;
-    PPump_Module PPump_PHDown;
-    UDS_Module UDS_PHDown;
-    PPump_Module PPump_Nutrient;
-    UDS_Module UDS_Nutrient;
-    PHMeter_Module PHMeter_Resvoir;
-    int target_ph;
-    int ph_delay;
-} HydroponicSystem;
-
-
-typedef struct {
-    Light_Module Lighting; //change to Lighting_Module
-    enum System_State state;
-    int distance;
-    int hours_on;
-} LightingSystem;
-
-
-typedef struct {
-    enum System_State state;
-    Fan_Module Fan_Reservoir; //fans the water
-    Fan_Module Fan_Plant; //fans the plants
-    Fan_Module Fan_In; //brings in co2
-    Fan_Module Fan_Out; //puts out oxygen through carbon filter
-    Temperature_Module Temperature_Resevoir; // straightforward, above comments apply here
-    Temperature_Module Temperature_Plant;
-} ACSystem;
 
 /*
 void System_update_member(NULL *system_member, NULL* member_value ) {
@@ -414,9 +372,7 @@ void System_update_member(NULL *system_member, NULL* member_value ) {
     //error
 }
 */
-HydroponicSystem hydroponics;
-LightingSystem lighting;
-ACSystem AC;
+
 
 
 void vACSystem_Init(void) {
@@ -542,10 +498,8 @@ void vHydroponicSystem_Init(void) {
     HydroponicUDS_Init();
 
 
-
     hydroponics.PHMeter_Resvoir.state = MODULE_RUNNING;
     PHMeter_Module_Init(&hydroponics.PHMeter_Resvoir);
-
 
 
     if (hydroponics.PPump_PHUp.state == MODULE_STANDBY &&
@@ -579,7 +533,6 @@ void vHydroponicSystem_Init(void) {
     USART_rtos_wait_send(&packet1);
 
     vTaskDelete(NULL);
-
 }
 
 void vLight_task(vLight_parameters *params) {
@@ -664,113 +617,121 @@ void vPPump_dispense(vPPump_parameters *params) {
 }
 
 void vPH_task(void) {
-    static int16_t counter = 24 - 1; //24 hours
+
+    Timer_node timer = {NULL, NULL};
+    RTC_TimeTypeDef t;
+
 
     USART_rtos_packet packet, packet1, packet2, packet3;
 
     packet.USARTx_rtos = packet1.USARTx_rtos = packet2.USARTx_rtos = packet3.USARTx_rtos = &USART1_rtos;
     USART_rtos_puts(&packet, "PH Task Launched...\r\n");
 
+    //RTC_GetTime(RTC_Format_BIN, &t);
+    getTime(&t);
+
+    timer.epoch = getEpoch(&t, getSystemDay()) + 60*60*3; //* 60 * 24;
+    timer.id = 1;
+    int r = addTimerInterrupt(&timer, &timer_list_head); //ph_timer 
+
+    //int r = 1;
+
     unsigned portBASE_TYPE parent_priority = uxTaskPriorityGet(NULL);
 
     while (1) {
 
-        if (hydroponics.PHMeter_Resvoir.mutex == NULL) {
-            hydroponics.PHMeter_Resvoir.mutex = xSemaphoreCreateMutex();
-            continue;
-        }
+        if (r) {
+            if (hydroponics.PHMeter_Resvoir.mutex == NULL) {
+                hydroponics.PHMeter_Resvoir.mutex = xSemaphoreCreateMutex();
+                continue;
+            }
 
-       //add if sepamphore is not null error check
-        int TARGET_PH_REACHED = 0;
-         //MAKE SUB TASKS CREATED INCREMENT ITS PRIORITY BY ONE RELATIVE TO PARENT TASK
-        
-        if (xSemaphoreTake(hydroponics.PHMeter_Resvoir.mutex, portMAX_DELAY) == pdTRUE) {
-            USART_rtos_puts(&packet1, "Acquired mutex for PHMeter...\r\n");
-
-            hydroponics.PHMeter_Resvoir.state = MODULE_STANDBY;
-            while (!TARGET_PH_REACHED) {
-                vPPump_parameters ppump_params;
-                portTickType start_time;
-                portTickType end_time;
-
-                xTaskCreate(vPH_read_value, (signed char*)"PH Read", 128, &hydroponics.PHMeter_Resvoir, parent_priority+1, NULL);
-
-                while(hydroponics.PHMeter_Resvoir.state != MODULE_EXECUTED);
-
-                int value = hydroponics.PHMeter_Resvoir.value; 
-                char msg[20];
-                packet3.msg = msg;
-                USART_rtos_sputs(&packet3, "PH VALUE: %d\r\n", value);
+           //add if sepamphore is not null error check
+            int TARGET_PH_REACHED = 0;
+             //MAKE SUB TASKS CREATED INCREMENT ITS PRIORITY BY ONE RELATIVE TO PARENT TASK
+            
+            if (xSemaphoreTake(hydroponics.PHMeter_Resvoir.mutex, portMAX_DELAY) == pdTRUE) {
+                USART_rtos_puts(&packet1, "Acquired mutex for PHMeter...\r\n");
 
                 hydroponics.PHMeter_Resvoir.state = MODULE_STANDBY;
+                while (!TARGET_PH_REACHED) {
+                    vPPump_parameters ppump_params;
+                    portTickType start_time;
+                    portTickType end_time;
 
-                int amount;
-                PPump_Module *ppump;
+                    xTaskCreate(vPH_read_value, (signed char*)"PH Read", 128, &hydroponics.PHMeter_Resvoir, parent_priority+1, NULL);
 
-                if (value < hydroponics.target_ph){
-                    USART_rtos_puts(&packet2, "Adding PH Up...\r\n");
-                    TEST_PH_VALUE+=5;
-                 ///   USART_rtos_puts(USART2, "ADDING PH UP\r\n");
-                    amount = hydroponics.target_ph - value;
-                    ppump = &hydroponics.PPump_PHUp;
+                    while(hydroponics.PHMeter_Resvoir.state != MODULE_EXECUTED);
 
-                }
-                else if (value > hydroponics.target_ph) {
-                    USART_rtos_puts(&packet2, "Adding PH DOwn...\r\n");
-                    TEST_PH_VALUE-=5;
-                    amount = value - hydroponics.target_ph;
-                    ppump = &hydroponics.PPump_PHDown;
+                    int value = hydroponics.PHMeter_Resvoir.value; 
+                    char msg[20];
+                    packet3.msg = msg;
+                    USART_rtos_sputs(&packet3, "PH VALUE: %d\r\n", value);
 
-                }
-                else {
-                    TARGET_PH_REACHED = 1;
-                    USART_rtos_puts(&packet2, "Stabilized PH...\r\n");
-                    continue;
-                };
+                    hydroponics.PHMeter_Resvoir.state = MODULE_STANDBY;
 
-                start_time = xTaskGetTickCount();
-                end_time = (portTickType)(1000*hydroponics.ph_delay) / portTICK_RATE_MS;
+                    int amount;
+                    PPump_Module *ppump;
 
-                if (xSemaphoreTake(hydroponics.PHMeter_Resvoir.mutex, portMAX_DELAY) == pdTRUE) {
-                    PPump_Module_dispense(ppump, amount);
-                }
-                else {
-                    continue;
-                }
+                    if (value < hydroponics.target_ph){
+                        USART_rtos_puts(&packet2, "Adding PH Up...\r\n");
+                        TEST_PH_VALUE+=5;
+                     ///   USART_rtos_puts(USART2, "ADDING PH UP\r\n");
+                        amount = hydroponics.target_ph - value;
+                        ppump = &hydroponics.PPump_PHUp;
 
-                vTaskDelayUntil(&start_time, end_time);
+                    }
+                    else if (value > hydroponics.target_ph) {
+                        USART_rtos_puts(&packet2, "Adding PH DOwn...\r\n");
+                        TEST_PH_VALUE-=5;
+                        amount = value - hydroponics.target_ph;
+                        ppump = &hydroponics.PPump_PHDown;
 
-                switch (ppump_params.ppump->state) {
-                    case MODULE_EXECUTED: 
-                      ///  USART_rtos_puts(USART2, "VPPUMP EXITED SUCCESSFULLY!\r\n");
-                        break;
-                    case MODULE_ERROR:
-                       /// USART_rtos_puts(USART2, "VPPUMP EXITED WITH AN ERROR!\r\n");
-                        break;
+                    }
+                    else {
+                        TARGET_PH_REACHED = 1;
+
+                        //RTC_GetTime(RTC_Format_BIN, &t);
+                        getTime(&t);
+
+                        timer.epoch = getEpoch(&t, getSystemDay()) + 60*60*3; //* 60 * 24;
+                        USART_rtos_puts(&packet2, "Stabilized PH...\r\n");
+                        r = addTimerInterrupt(&timer, &timer_list_head); 
+
+
+                        continue;
+                    };
+
+                    start_time = xTaskGetTickCount();
+                    end_time = (portTickType)(1000*hydroponics.ph_delay) / portTICK_RATE_MS;
+
+                    if (xSemaphoreTake(hydroponics.PHMeter_Resvoir.mutex, portMAX_DELAY) == pdTRUE) {
+                        PPump_Module_dispense(ppump, amount);
+                    }
+                    else {
+                        continue;
+                    }
+
+                    vTaskDelayUntil(&start_time, end_time);
+
+                    switch (ppump_params.ppump->state) {
+                        case MODULE_EXECUTED: 
+                          ///  USART_rtos_puts(USART2, "VPPUMP EXITED SUCCESSFULLY!\r\n");
+                            break;
+                        case MODULE_ERROR:
+                           /// USART_rtos_puts(USART2, "VPPUMP EXITED WITH AN ERROR!\r\n");
+                            break;
+                    }
                 }
             }
-        }
-        int i;
-        for(i=0; i<counter; i++) {
-            vTaskDelay((portTickType)(1000*3600) / portTICK_RATE_MS);
         }
     }
     vTaskDelete(NULL);
 }
 
 
-typedef struct {
-    char ucMessageID;
-    //char u
-
-} command_data;
-
-#define HEX_2_DEC(val) (((val)/16)*10+((val)%16))
-
 void vRTC_Init(void) {
     RTC_InitTypeDef RTC_InitStructure;
-    RTC_TimeTypeDef RTC_TimeStructure;
-    RTC_DateTypeDef RTC_DateStructure;
 
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, ENABLE);
     PWR_BackupAccessCmd(ENABLE);
@@ -781,90 +742,261 @@ void vRTC_Init(void) {
     RCC_RTCCLKCmd(ENABLE);
     RTC_WaitForSynchro();
 
-    if (RTC_ReadBackupRegister(RTC_BKP_DR0)!=0x9527) {
+    //if (RTC_ReadBackupRegister(RTC_BKP_DR0)!=0x9527) {
         RTC_WriteProtectionCmd(DISABLE); 
-        RTC_EnterInitMode();
+
+        //RTC_EnterInitMode();
 
         RTC_InitStructure.RTC_HourFormat = RTC_HourFormat_24;
         RTC_InitStructure.RTC_AsynchPrediv = 0x7D-1;
         RTC_InitStructure.RTC_SynchPrediv = 0xFF-1;
         RTC_Init(&RTC_InitStructure);
 
-        RTC_TimeStructure.RTC_Seconds = 0x00;
-        RTC_TimeStructure.RTC_Minutes = 0x01;
-        RTC_TimeStructure.RTC_Hours = 0x01;
-        RTC_TimeStructure.RTC_H12 = RTC_H12_AM;
-        RTC_SetTime(RTC_Format_BCD,&RTC_TimeStructure);
+        //setTime(0x23, 0x58, 0x00);
+        setTime(0x00, 0x00, 0x00);
 
-        RTC_DateStructure.RTC_Date = 30;
-        RTC_DateStructure.RTC_Month = 5;
-        RTC_DateStructure.RTC_WeekDay= RTC_Weekday_Thursday;
-        RTC_DateStructure.RTC_Year = 12;
-        RTC_SetDate(RTC_Format_BCD,&RTC_DateStructure);
 
-        RTC_ExitInitMode();
-        RTC_WriteBackupRegister(RTC_BKP_DR0,0X9527);
-        RTC_WriteProtectionCmd(ENABLE);
-        RTC_WriteBackupRegister(RTC_BKP_DR0,0x9527);  //Initialization is complete, set the flag
-    }
+        setDate(12, 5, 17);
 
-      PWR_BackupAccessCmd(DISABLE);
+        //RTC_WriteBackupRegister(RTC_BKP_DR0,0X9527);
+        //RTC_WriteProtectionCmd(ENABLE);
+        //RTC_WriteBackupRegister(RTC_BKP_DR0,0x9527);  //Initialization is complete, set the flag
+    //}
+
+//      PWR_BackupAccessCmd(DISABLE);
 }
 //Main Function
 
+
+unsigned timeToSeconds(RTC_TimeTypeDef* t) {
+    unsigned seconds = t->RTC_Seconds;
+    seconds += t->RTC_Minutes * 60;
+    seconds += t->RTC_Hours * 3600;
+    return seconds;
+}
+
 void vIncrementDay(void) {
+    Timer_node timer = {NULL, NULL};
+    //timer.timer_mutex = NULL;
+    //timer.timer_mutex = xSemaphoreCreateMutex();
+    
     RTC_TimeTypeDef t;
+    //RTC_GetTime(RTC_Format_BIN, &t);
+    getTime(&t);
+
+//    timer.epoch = getEpoch(&t, getSystemDay())  +(60 /** 60 * 24*/); //number of seconds in a day;
+
+    timer.debug0 = getEpoch(&t, getSystemDay());
+    timer.id = 2;
+
+
+
+
+
+   /* 
+    USART_puts(USART1, "SYSTEM DAY: ");
+    USART_put_unsigned_int(USART1,  x);
+    USART_puts(USART1, "\r\n");
+*/
+    //addTimerInterrupt(&timer, &timer_list_head);
+    //r = (xSemaphoreTake(timer->timer_mutex, portMAX_DELAY) == pdTRUE);
+
+
+    int x = 0;
+    while (1) {
+        x++;
+        RTC_GetTime(RTC_Format_BIN, &t);
+        //getTime(&t);
+
+        timer.epoch = getEpoch(&t, getSystemDay())  +(15 /** 60 * 24*/); //number of seconds in a day;
+        //USART_puts(USART1, "\r\n+++++++RAN++++++++\r\n");
+
+        int r = addTimerInterrupt(&timer, &timer_list_head); //adds timer again //increment timer;
+        if (r) {
+
+                timer.debug2 = x;
+            //setSystemDay(getSystemDay()+1);
+
+            //xSemaphoreGive(timer.timer_mutex);
+
+            //RTC_GetTime(RTC_Format_BIN, &t);
+            getTime(&t);
+
+            unsigned int e = getEpoch(&t, getSystemDay());
+            timer.debug0 = getEpoch(&t, getSystemDay());
+/*
+            USART_put_int(USART1, HEX_2_DEC(t.RTC_Hours));
+            USART_puts(USART1, "[");
+            USART_put_int(USART1, t.RTC_Hours);
+            USART_puts(USART1, "]:");
+            USART_put_int(USART1, t.RTC_Minutes);
+            USART_puts(USART1, " (");
+            USART_put_unsigned_int(USART2, e);
+            USART_puts(USART1, " ______ ");
+
+            USART_put_unsigned_int(USART1, timer.epoch);
+
+             USART_puts(USART1, ")\r\n");
+*/
+//            USART_rtos_sputs(&packet, "\r\nCOOL:%d\r\n", 69);
+
+            USART_rtos_packet packet;
+
+            packet.USARTx_rtos = &USART1_rtos;
+            char msg[]="\r\nCOOL:%d\r\n";
+            char buffer[15];
+            packet.msg = buffer;
+
+            USART_rtos_sputs(&packet, msg, 69);
+
+            //USART_rtos_sputs(&packet, "%u %d:%d:%d (%u)\r\n", getSystemDay(), t.RTC_Hours, t.RTC_Minutes, t.RTC_Seconds, timer.epoch);
+            USART_rtos_wait_send(&packet);
+
+
+        }
+    }
+}
+
+
+void vInterruptTimer(void) {
+
+    RTC_TimeTypeDef t;
+
     portTickType xLastWake = xTaskGetTickCount();
 
 
     while(1) {
-        int i;
-        for(i=0; i<23; i++){
+        /*
+        USART_rtos_packet packet;
+        packet.USARTx_rtos = &USART1_rtos; 
+*/
+        vTaskDelayUntil(&xLastWake, ((1000*1) / portTICK_RATE_MS));
+
+        xLastWake = xTaskGetTickCount();
+        
+        Timer_node* cursor = timer_list_head;
+        Timer_node* c1 = NULL;// = cursor; 
+
+        while(cursor) { //problem is herefix logic for linked list
+            //RTC_GetTime(RTC_Format_BIN, &t);
+            getTime(&t);
+            //Timer_node* c1 = cursor->next; //ph
+            int flag_end = 0;
+
+/*
+            if (!(c1)) { //false
+                flag_end = 1;
+                c1 = cursor;
+            }
+*/
+
+            if (getEpoch(&t, getSystemDay()) > cursor->epoch) { //phs epoch
+
+                xSemaphoreGive(cursor->timer_mutex);
+
+                if (c1 == NULL/*timer_list_head*/) {
+                    timer_list_head = cursor->next;
+                    cursor = timer_list_head;
+                    //cursor = c1 = timer_list_head;
+                }
+                else {
+                    c1->next = cursor->next;
+                    cursor = cursor->next;
+                }
+
+                //cursor == inc
+                //c1 == inc
+                //head = inc
+        
+                /*
+                if (!(flag_end)) {
+                    cursor->next = cursor->next->next; //removes timer from list;
+                }
+                */
+
+                continue;
+            }
+            
             /*
-            USART_rtos_packet packet;
-            packet.USARTx_rtos = &USART1_rtos; 
+            USART_puts(USART1_rtos.id, "CURRENT EPOCH: ");
+            USART_put_unsigned_int(USART1_rtos.id, getEpoch(&t, DAY_COUNT));
+            USART_puts(USART1_rtos.id, "\r\n");
+
+            USART_puts(USART1_rtos.id, "TIMER EPOCH: ");
+            USART_put_unsigned_int(USART1_rtos.id, c1->epoch);
+            USART_puts(USART1_rtos.id, "\r\n");
+            */
+
+            /*
+            USART_puts(USART1, "TIMER ID: ");
+            USART_put_int(USART1, cursor->id);
+            USART_puts(USART1, "\r\n");
+
+            USART_puts(USART1, "TIMER EXECUTED COUNT: ");
+            USART_put_int(USART1, cursor->debug2);
+            USART_puts(USART1, "\r\n");
+
+
+            USART_puts(USART1, "TIMER EPOCH: ");
+            USART_put_unsigned_int(USART1, cursor->epoch);
+            USART_puts(USART1, "\r\n");
+
+            getTime(&t);
+            unsigned int e = getEpoch(&t, getSystemDay());
+            USART_puts(USART1, "CURRENT EPOCH: ");
+            USART_put_unsigned_int(USART1, e);
+            USART_puts(USART1, "\r\n--------\r\n");
 */
-            vTaskDelayUntil(&xLastWake, ((1000*3600) / portTICK_RATE_MS));
-            xLastWake = xTaskGetTickCount();
-            RTC_GetTime(RTC_Format_BIN, &t);
+            ///c1->next = cursor->next; //removes cursor from list
+            ///cursor->next = NULL;
 
-            USART_put_int(USART1, t.RTC_Hours);
-            USART_put(USART1, ':');
-            USART_put_int(USART1, t.RTC_Minutes);
-            USART_puts(USART1, " (");
-            USART_put_int(USART1, i);
-            USART_puts(USART1, ")\r\n");
+            ///c1 = cursor; //sets c1 as cursor -1 offset
+            ///cursor = c1->next;
 
+            
+            c1 = cursor;
+            cursor = cursor->next;
 
-           /* 
-            char buffer[60]; 
-            packet.msg = buffer;
-            USART_rtos_sputs(&packet, "HELLO%d\r\n", 69);
+            //cursor = cursor->next;
+            //cursor->next = NU
+        }
+/*
+        USART_put_int(USART1, t.RTC_Hours);
+        USART_put(USART1, ':');
+        USART_put_int(USART1, t.RTC_Minutes);
+        USART_puts(USART1, " (");
+        USART_puts(USART1, ")\r\n");
+
+*/
+       /* 
+        char buffer[60]; 
+        packet.msg = buffer;
+        USART_rtos_sputs(&packet, "HELLO%d\r\n", 69);
 */
 
-            //USART_rtos_sputs(&packet, "%d:%d (%d)\r\n", t.RTC_Hours, t.RTC_Minutes, i);
+        //USART_rtos_sputs(&packet, "%d:%d (%d)\r\n", t.RTC_Hours, t.RTC_Minutes, i);
 //            USART_rtos_wait_send(&packet);
 
 
-           
-            //USART_puts(USART1, "5\r\n");
+        //USART_puts(USART1, "5\r\n");
 
-        }
-        USART_puts(USART1, "=----DONE----=\r\n");
     }
 }
 
 int main(void){
 	//Call initx(); To Initialize USART & GPIO
-
+    
 	initx();
     USART1_Init();
     init_us_timer();
     vRTC_Init();
+    setTime(0, 0, 0);
 
-
+    setSystemDay(1); //sets it as first day 
+    timer_list_head = NULL;
     USART_rtos_init(&USART1_rtos, USART1);
     setup_output(&USART1_rtos);
+    //setup_debug_struct_output(&USART1_rtos); //FOR DEBUGGING
 
     //CLOCK_SetClockTo168MHz();
    // setSysTick();
@@ -885,7 +1017,6 @@ int main(void){
 
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);
 
-
     GPIO_InitTypeDef gpio_ppump;
 
     gpio_ppump.GPIO_Pin = GPIO_Pin_5; 
@@ -900,7 +1031,8 @@ int main(void){
 /*
     RTC_TimeTypeDef t;
     for(i=0; i<10; i++) {
-        RTC_GetTime(RTC_Format_BIN, &t);
+        //RTC_GetTime(RTC_Format_BIN, &t);
+        getTime(&t);
         USART_put_int(USART1, t.RTC_Seconds);
         USART_puts(USART1, "\r\n");
         delay_ms(1000);
@@ -944,8 +1076,8 @@ int main(void){
     gpio_ultrasonic.GPIO_Mode = GPIO_Mode_OUT;
     GPIO_Init(GPIOE, &gpio_ultrasonic);
 
-
-
+/*
+//UDS TEST 
     UDS_Module uds;
 
     uds.port_in = GPIOE;
@@ -965,6 +1097,7 @@ int main(void){
         USART_puts(USART1, "\r\n");
         delay_ms(1000);
     }
+    */
     /*
 
     
@@ -992,29 +1125,28 @@ int main(void){
     servo_set_degrees(&servo1, 90);
 */
 
+
     xTaskCreate(idle_blinky, (signed char*)"idle_blinky", 128, NULL, tskIDLE_PRIORITY, NULL);
+    xTaskCreate(vInterruptTimer, (signed char*)"vInterruptTimer", 128, NULL, tskIDLE_PRIORITY+15, NULL);
     xTaskCreate(vIncrementDay, (signed char*)"vIncrementDay", 128, NULL, tskIDLE_PRIORITY+10, NULL);
+
 
 
     vLight_parameters light_p;
     //ph_p.target_ph = 200;
 
-    USART_puts(USART1, "LOOK AT LINE 18 FOR TODO!\r\n");
+    USART_puts(USART1, "LOOK AT LINE 18 FOR NEWWWWW TODO!\r\n------------------------\r\n\r\n");
 
     //xTaskCreate(vLight_task, (signed char*)"vLight", 128, &light_p, tskIDLE_PRIORITY+1, NULL);
     //
 
-    xTaskCreate(vHydroponicSystem_Init, (signed char*)"vHydroponicSystem_Init", 256, NULL, tskIDLE_PRIORITY+10, NULL);
-    //xTaskCreate(vLightingSystem_Init, (signed char*)"vLightingSystem_Init", 64, NULL, tskIDLE_PRIORITY+10, NULL);
-    //xTaskCreate(vACSystem_Init, (signed char*)"vACSystem_Init", 64, NULL, tskIDLE_PRIORITY+10, NULL);
+    //xTaskCreate(vHydroponicSystem_Init, (signed char*)"vHydroponicSystem_Init", 256, NULL, tskIDLE_PRIORITY+9, NULL);
+    //xTaskCreate(vLightingSystem_Init, (signed char*)"vLightingSystem_Init", 64, NULL, tskIDLE_PRIORITY+9, NULL);
+    //xTaskCreate(vACSystem_Init, (signed char*)"vACSystem_Init", 64, NULL, tskIDLE_PRIORITY+9, NULL);
 
 
-    xTaskCreate(vPH_task, (signed char*)"vPH", 256, NULL, tskIDLE_PRIORITY+2, NULL);
+    xTaskCreate(vPH_task, (signed char*)"vPH", 256, NULL, tskIDLE_PRIORITY+5, NULL);
    
-
-
-
-
 	//xTaskCreate(UsartTask, (signed char*)"UsartTask", 128, NULL, tskIDLE_PRIORITY+1, NULL);
 
 	//Call Scheduler

@@ -1,0 +1,434 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m4
+   3              		.eabi_attribute 27, 3
+   4              		.fpu fpv4-sp-d16
+   5              		.eabi_attribute 20, 1
+   6              		.eabi_attribute 21, 1
+   7              		.eabi_attribute 23, 3
+   8              		.eabi_attribute 24, 1
+   9              		.eabi_attribute 25, 1
+  10              		.eabi_attribute 26, 1
+  11              		.eabi_attribute 30, 1
+  12              		.eabi_attribute 34, 1
+  13              		.eabi_attribute 18, 4
+  14              		.thumb
+  15              		.file	"hb_structs.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.getSystemDay,"ax",%progbits
+  20              		.align	2
+  21              		.global	getSystemDay
+  22              		.thumb
+  23              		.thumb_func
+  25              	getSystemDay:
+  26              	.LFB110:
+  27              		.file 1 "src/hb_structs.c"
+   1:src/hb_structs.c **** #include "hb_structs.h"
+   2:src/hb_structs.c **** /*
+   3:src/hb_structs.c **** USART_rtos *USARTOutput_rtos; 
+   4:src/hb_structs.c **** 
+   5:src/hb_structs.c **** void setup_debug_struct_output(USART_rtos *USARTx_rtos) {
+   6:src/hb_structs.c ****     USARTOutput_rtos = USARTx_rtos;
+   7:src/hb_structs.c **** }
+   8:src/hb_structs.c **** */
+   9:src/hb_structs.c **** 
+  10:src/hb_structs.c **** static unsigned int SYSTEM_DAY_COUNT; //private file var
+  11:src/hb_structs.c **** 
+  12:src/hb_structs.c **** unsigned getSystemDay() {
+  28              		.loc 1 12 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              		@ link register save eliminated.
+  13:src/hb_structs.c ****     return SYSTEM_DAY_COUNT;
+  33              		.loc 1 13 0
+  34 0000 40F20003 		movw	r3, #:lower16:.LANCHOR0
+  35 0004 C0F20003 		movt	r3, #:upper16:.LANCHOR0
+  14:src/hb_structs.c **** }
+  36              		.loc 1 14 0
+  37 0008 1868     		ldr	r0, [r3]
+  38 000a 7047     		bx	lr
+  39              		.cfi_endproc
+  40              	.LFE110:
+  42              		.section	.text.setSystemDay,"ax",%progbits
+  43              		.align	2
+  44              		.global	setSystemDay
+  45              		.thumb
+  46              		.thumb_func
+  48              	setSystemDay:
+  49              	.LFB111:
+  15:src/hb_structs.c **** 
+  16:src/hb_structs.c **** void setSystemDay(unsigned int day) {
+  50              		.loc 1 16 0
+  51              		.cfi_startproc
+  52              		@ args = 0, pretend = 0, frame = 0
+  53              		@ frame_needed = 0, uses_anonymous_args = 0
+  54              		@ link register save eliminated.
+  55              	.LVL0:
+  17:src/hb_structs.c ****     SYSTEM_DAY_COUNT = day;
+  56              		.loc 1 17 0
+  57 0000 40F20003 		movw	r3, #:lower16:.LANCHOR0
+  58 0004 C0F20003 		movt	r3, #:upper16:.LANCHOR0
+  59 0008 1860     		str	r0, [r3]
+  60 000a 7047     		bx	lr
+  61              		.cfi_endproc
+  62              	.LFE111:
+  64              		.section	.text.correctTimeChangeOffset,"ax",%progbits
+  65              		.align	2
+  66              		.global	correctTimeChangeOffset
+  67              		.thumb
+  68              		.thumb_func
+  70              	correctTimeChangeOffset:
+  71              	.LFB112:
+  18:src/hb_structs.c **** }
+  19:src/hb_structs.c **** 
+  20:src/hb_structs.c **** void correctTimeChangeOffset(unsigned int prev_epoch, Timer_node* timer_list_head) {
+  72              		.loc 1 20 0
+  73              		.cfi_startproc
+  74              		@ args = 0, pretend = 0, frame = 8
+  75              		@ frame_needed = 0, uses_anonymous_args = 0
+  76              	.LVL1:
+  77 0000 70B5     		push	{r4, r5, r6, lr}
+  78              	.LCFI0:
+  79              		.cfi_def_cfa_offset 16
+  80              		.cfi_offset 4, -16
+  81              		.cfi_offset 5, -12
+  82              		.cfi_offset 6, -8
+  83              		.cfi_offset 14, -4
+  84 0002 82B0     		sub	sp, sp, #8
+  85              	.LCFI1:
+  86              		.cfi_def_cfa_offset 24
+  87 0004 0546     		mov	r5, r0
+  88 0006 0C46     		mov	r4, r1
+  89              	.LVL2:
+  90              	.LBB2:
+  21:src/hb_structs.c ****     RTC_TimeTypeDef t;
+  22:src/hb_structs.c **** 
+  23:src/hb_structs.c **** 
+  24:src/hb_structs.c ****     Timer_node* cursor = timer_list_head;
+  25:src/hb_structs.c ****     while(cursor) {
+  26:src/hb_structs.c ****         RTC_GetTime(RTC_Format_BIN, &t);
+  91              		.loc 1 26 0
+  92 0008 0026     		movs	r6, #0
+  93              	.LBE2:
+  25:src/hb_structs.c ****         RTC_GetTime(RTC_Format_BIN, &t);
+  94              		.loc 1 25 0
+  95 000a 10E0     		b	.L4
+  96              	.LVL3:
+  97              	.L5:
+  98              	.LBB3:
+  99              		.loc 1 26 0
+ 100 000c 3046     		mov	r0, r6
+ 101 000e 01A9     		add	r1, sp, #4
+ 102 0010 FFF7FEFF 		bl	RTC_GetTime
+ 103              	.LVL4:
+  27:src/hb_structs.c ****         unsigned int current_epoch = getEpoch(&t, getSystemDay());
+ 104              		.loc 1 27 0
+ 105 0014 FFF7FEFF 		bl	getSystemDay
+ 106              	.LVL5:
+ 107 0018 0146     		mov	r1, r0
+ 108 001a 01A8     		add	r0, sp, #4
+ 109 001c FFF7FEFF 		bl	getEpoch
+ 110              	.LVL6:
+  28:src/hb_structs.c ****         unsigned int offset = 0;
+  29:src/hb_structs.c **** 
+  30:src/hb_structs.c ****         //gets the absolute offset
+  31:src/hb_structs.c ****         int missed = 0;
+  32:src/hb_structs.c ****         offset = cursor->epoch - prev_epoch; 
+ 111              		.loc 1 32 0
+ 112 0020 A368     		ldr	r3, [r4, #8]
+ 113 0022 5B1B     		subs	r3, r3, r5
+ 114              	.LVL7:
+  33:src/hb_structs.c ****         
+  34:src/hb_structs.c ****         //cursor->debug2 = cursor->epoch; //prev timer epoch
+  35:src/hb_structs.c ****         cursor->epoch = current_epoch + offset; //current timer epoch
+ 115              		.loc 1 35 0
+ 116 0024 0344     		add	r3, r3, r0
+ 117              	.LVL8:
+ 118 0026 A360     		str	r3, [r4, #8]
+ 119              	.LVL9:
+  36:src/hb_structs.c ****         cursor->debug =  prev_epoch; // prev epoch
+ 120              		.loc 1 36 0
+ 121 0028 2561     		str	r5, [r4, #16]
+  37:src/hb_structs.c ****         cursor->debug1 = current_epoch; //current epoch
+ 122              		.loc 1 37 0
+ 123 002a A061     		str	r0, [r4, #24]
+  38:src/hb_structs.c ****         cursor = cursor->next;
+ 124              		.loc 1 38 0
+ 125 002c 6468     		ldr	r4, [r4, #4]
+ 126              	.LVL10:
+ 127              	.L4:
+ 128              	.LBE3:
+  25:src/hb_structs.c ****         RTC_GetTime(RTC_Format_BIN, &t);
+ 129              		.loc 1 25 0 discriminator 1
+ 130 002e 002C     		cmp	r4, #0
+ 131 0030 ECD1     		bne	.L5
+  39:src/hb_structs.c ****     }
+  40:src/hb_structs.c **** }
+ 132              		.loc 1 40 0
+ 133 0032 02B0     		add	sp, sp, #8
+ 134              		@ sp needed
+ 135 0034 70BD     		pop	{r4, r5, r6, pc}
+ 136              		.cfi_endproc
+ 137              	.LFE112:
+ 139 0036 00BF     		.section	.text.FindTimerInterrupt,"ax",%progbits
+ 140              		.align	2
+ 141              		.global	FindTimerInterrupt
+ 142              		.thumb
+ 143              		.thumb_func
+ 145              	FindTimerInterrupt:
+ 146              	.LFB113:
+  41:src/hb_structs.c **** 
+  42:src/hb_structs.c **** Timer_node* FindTimerInterrupt(int id, Timer_node *timer_list_head) {
+ 147              		.loc 1 42 0
+ 148              		.cfi_startproc
+ 149              		@ args = 0, pretend = 0, frame = 0
+ 150              		@ frame_needed = 0, uses_anonymous_args = 0
+ 151              		@ link register save eliminated.
+ 152              	.LVL11:
+  43:src/hb_structs.c ****     Timer_node* cursor = timer_list_head;
+  44:src/hb_structs.c ****     while (cursor) {
+ 153              		.loc 1 44 0
+ 154 0000 03E0     		b	.L7
+ 155              	.LVL12:
+ 156              	.L9:
+  45:src/hb_structs.c ****         if (cursor->id == id) return cursor;
+ 157              		.loc 1 45 0
+ 158 0002 0B7B     		ldrb	r3, [r1, #12]	@ zero_extendqisi2
+ 159 0004 8342     		cmp	r3, r0
+ 160 0006 04D0     		beq	.L10
+  46:src/hb_structs.c ****         cursor = cursor->next;
+ 161              		.loc 1 46 0
+ 162 0008 4968     		ldr	r1, [r1, #4]
+ 163              	.LVL13:
+ 164              	.L7:
+  44:src/hb_structs.c ****         if (cursor->id == id) return cursor;
+ 165              		.loc 1 44 0 discriminator 1
+ 166 000a 0029     		cmp	r1, #0
+ 167 000c F9D1     		bne	.L9
+  47:src/hb_structs.c ****     }
+  48:src/hb_structs.c ****     return NULL;
+ 168              		.loc 1 48 0
+ 169 000e 0020     		movs	r0, #0
+ 170              	.LVL14:
+ 171 0010 7047     		bx	lr
+ 172              	.LVL15:
+ 173              	.L10:
+  45:src/hb_structs.c ****         cursor = cursor->next;
+ 174              		.loc 1 45 0
+ 175 0012 0846     		mov	r0, r1
+ 176              	.LVL16:
+  49:src/hb_structs.c **** }
+ 177              		.loc 1 49 0
+ 178 0014 7047     		bx	lr
+ 179              		.cfi_endproc
+ 180              	.LFE113:
+ 182 0016 00BF     		.section	.text.addTimerInterrupt,"ax",%progbits
+ 183              		.align	2
+ 184              		.global	addTimerInterrupt
+ 185              		.thumb
+ 186              		.thumb_func
+ 188              	addTimerInterrupt:
+ 189              	.LFB114:
+  50:src/hb_structs.c **** 
+  51:src/hb_structs.c **** int addTimerInterrupt(Timer_node *timer, Timer_node **timer_list_head) {
+ 190              		.loc 1 51 0
+ 191              		.cfi_startproc
+ 192              		@ args = 0, pretend = 0, frame = 0
+ 193              		@ frame_needed = 0, uses_anonymous_args = 0
+ 194              	.LVL17:
+ 195 0000 38B5     		push	{r3, r4, r5, lr}
+ 196              	.LCFI2:
+ 197              		.cfi_def_cfa_offset 16
+ 198              		.cfi_offset 3, -16
+ 199              		.cfi_offset 4, -12
+ 200              		.cfi_offset 5, -8
+ 201              		.cfi_offset 14, -4
+ 202 0002 0446     		mov	r4, r0
+ 203 0004 0D46     		mov	r5, r1
+  52:src/hb_structs.c ****     if (!timer->timer_mutex) timer->timer_mutex = xSemaphoreCreateMutex();
+ 204              		.loc 1 52 0
+ 205 0006 0368     		ldr	r3, [r0]
+ 206 0008 13B9     		cbnz	r3, .L12
+ 207              		.loc 1 52 0 is_stmt 0 discriminator 1
+ 208 000a FFF7FEFF 		bl	xQueueCreateMutex
+ 209              	.LVL18:
+ 210 000e 2060     		str	r0, [r4]
+ 211              	.L12:
+  53:src/hb_structs.c ****     if (xSemaphoreTake(timer->timer_mutex, portMAX_DELAY) == pdTRUE) {
+ 212              		.loc 1 53 0 is_stmt 1
+ 213 0010 2068     		ldr	r0, [r4]
+ 214 0012 0021     		movs	r1, #0
+ 215 0014 4FF0FF32 		mov	r2, #-1
+ 216 0018 0B46     		mov	r3, r1
+ 217 001a FFF7FEFF 		bl	xQueueGenericReceive
+ 218              	.LVL19:
+ 219 001e 0128     		cmp	r0, #1
+ 220 0020 1ED1     		bne	.L16
+ 221              	.LBB4:
+  54:src/hb_structs.c ****         Timer_node* cursor = *timer_list_head;
+ 222              		.loc 1 54 0
+ 223 0022 2A68     		ldr	r2, [r5]
+ 224              	.LVL20:
+  55:src/hb_structs.c ****         timer->next = NULL;//safety
+ 225              		.loc 1 55 0
+ 226 0024 0023     		movs	r3, #0
+ 227 0026 6360     		str	r3, [r4, #4]
+  56:src/hb_structs.c **** 
+  57:src/hb_structs.c ****         if (cursor == NULL) {
+ 228              		.loc 1 57 0
+ 229 0028 12B9     		cbnz	r2, .L18
+  58:src/hb_structs.c ****             *timer_list_head = timer; 
+ 230              		.loc 1 58 0
+ 231 002a 2C60     		str	r4, [r5]
+  59:src/hb_structs.c ****             return 1;
+ 232              		.loc 1 59 0
+ 233 002c 38BD     		pop	{r3, r4, r5, pc}
+ 234              	.LVL21:
+ 235              	.L17:
+  60:src/hb_structs.c ****         }
+  61:src/hb_structs.c **** 
+  62:src/hb_structs.c ****         while(cursor->next) cursor = cursor->next;
+ 236              		.loc 1 62 0
+ 237 002e 1A46     		mov	r2, r3
+ 238              	.LVL22:
+ 239              	.L18:
+ 240              		.loc 1 62 0 is_stmt 0 discriminator 1
+ 241 0030 5368     		ldr	r3, [r2, #4]
+ 242 0032 002B     		cmp	r3, #0
+ 243 0034 FBD1     		bne	.L17
+  63:src/hb_structs.c ****         cursor->next = timer;
+ 244              		.loc 1 63 0 is_stmt 1
+ 245 0036 5460     		str	r4, [r2, #4]
+  64:src/hb_structs.c **** 
+  65:src/hb_structs.c ****         int r = (xSemaphoreTake(timer->timer_mutex, portMAX_DELAY) == pdTRUE);
+ 246              		.loc 1 65 0
+ 247 0038 2068     		ldr	r0, [r4]
+ 248 003a 0021     		movs	r1, #0
+ 249 003c 4FF0FF32 		mov	r2, #-1
+ 250              	.LVL23:
+ 251 0040 0B46     		mov	r3, r1
+ 252 0042 FFF7FEFF 		bl	xQueueGenericReceive
+ 253              	.LVL24:
+ 254 0046 0128     		cmp	r0, #1
+ 255 0048 14BF     		ite	ne
+ 256 004a 0025     		movne	r5, #0
+ 257              	.LVL25:
+ 258 004c 0125     		moveq	r5, #1
+ 259              	.LVL26:
+  66:src/hb_structs.c ****         if (r) xSemaphoreGive(timer->timer_mutex);
+ 260              		.loc 1 66 0
+ 261 004e 2DB1     		cbz	r5, .L15
+ 262              		.loc 1 66 0 is_stmt 0 discriminator 1
+ 263 0050 2068     		ldr	r0, [r4]
+ 264 0052 0021     		movs	r1, #0
+ 265 0054 0A46     		mov	r2, r1
+ 266 0056 0B46     		mov	r3, r1
+ 267 0058 FFF7FEFF 		bl	xQueueGenericSend
+ 268              	.LVL27:
+ 269              	.L15:
+  67:src/hb_structs.c ****         return r;
+ 270              		.loc 1 67 0 is_stmt 1
+ 271 005c 2846     		mov	r0, r5
+ 272 005e 38BD     		pop	{r3, r4, r5, pc}
+ 273              	.LVL28:
+ 274              	.L16:
+ 275              	.LBE4:
+  68:src/hb_structs.c **** 
+  69:src/hb_structs.c ****     }
+  70:src/hb_structs.c **** 
+  71:src/hb_structs.c ****     return 0;
+ 276              		.loc 1 71 0
+ 277 0060 0020     		movs	r0, #0
+  72:src/hb_structs.c **** }
+ 278              		.loc 1 72 0
+ 279 0062 38BD     		pop	{r3, r4, r5, pc}
+ 280              		.cfi_endproc
+ 281              	.LFE114:
+ 283              		.section	.bss.SYSTEM_DAY_COUNT,"aw",%nobits
+ 284              		.align	2
+ 285              		.set	.LANCHOR0,. + 0
+ 288              	SYSTEM_DAY_COUNT:
+ 289 0000 00000000 		.space	4
+ 290              		.text
+ 291              	.Letext0:
+ 292              		.file 2 "/usr/include/newlib/machine/_default_types.h"
+ 293              		.file 3 "/usr/include/newlib/stdint.h"
+ 294              		.file 4 "libs/STM32F4xx_StdPeriph_Driver/inc/stm32f4xx_rtc.h"
+ 295              		.file 5 "FreeRTOS/Source/include/../../Source/portable/GCC/ARM_CM4F/portmacro.h"
+ 296              		.file 6 "FreeRTOS/Source/include/queue.h"
+ 297              		.file 7 "FreeRTOS/Source/include/semphr.h"
+ 298              		.file 8 "src/hb_structs.h"
+ 299              		.file 9 "src/hbfuncs.h"
+ 300              		.file 10 "libs/CMSIS/Include/core_cm4.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 hb_structs.c
+     /tmp/ccZev0VE.s:20     .text.getSystemDay:0000000000000000 $t
+     /tmp/ccZev0VE.s:25     .text.getSystemDay:0000000000000000 getSystemDay
+     /tmp/ccZev0VE.s:285    .bss.SYSTEM_DAY_COUNT:0000000000000000 .LANCHOR0
+     /tmp/ccZev0VE.s:43     .text.setSystemDay:0000000000000000 $t
+     /tmp/ccZev0VE.s:48     .text.setSystemDay:0000000000000000 setSystemDay
+     /tmp/ccZev0VE.s:65     .text.correctTimeChangeOffset:0000000000000000 $t
+     /tmp/ccZev0VE.s:70     .text.correctTimeChangeOffset:0000000000000000 correctTimeChangeOffset
+     /tmp/ccZev0VE.s:140    .text.FindTimerInterrupt:0000000000000000 $t
+     /tmp/ccZev0VE.s:145    .text.FindTimerInterrupt:0000000000000000 FindTimerInterrupt
+     /tmp/ccZev0VE.s:183    .text.addTimerInterrupt:0000000000000000 $t
+     /tmp/ccZev0VE.s:188    .text.addTimerInterrupt:0000000000000000 addTimerInterrupt
+     /tmp/ccZev0VE.s:284    .bss.SYSTEM_DAY_COUNT:0000000000000000 $d
+     /tmp/ccZev0VE.s:288    .bss.SYSTEM_DAY_COUNT:0000000000000000 SYSTEM_DAY_COUNT
+                     .debug_frame:0000000000000010 $d
+                           .group:0000000000000000 wm4.1.7402b5479d3fa4780665141f585fc0ee
+                           .group:0000000000000000 wm4.stddef.h.39.daafd3d79fe2f3a84d2d73d7d4e706f8
+                           .group:0000000000000000 wm4.projdefs.h.55.cdae9ead80b5a2ac004f41bb277aad45
+                           .group:0000000000000000 wm4.FreeRTOSConfig.h.55.a343614a17c4367a6359a1f530d6d32b
+                           .group:0000000000000000 wm4.stm32f4xx.h.48.a3308e16720c7afc3eb28e585e628ce6
+                           .group:0000000000000000 wm4.core_cm4.h.32.5f62939b60122629d60d85d0c4a14709
+                           .group:0000000000000000 wm4.features.h.22.6a4ca7cd053637cc1d0db6c16f39b2d7
+                           .group:0000000000000000 wm4._default_types.h.15.8b2cb27e528498f8ff711db085d6e489
+                           .group:0000000000000000 wm4.stdint.h.20.796e373797e732130a803d4c0338fa1b
+                           .group:0000000000000000 wm4.core_cmInstr.h.25.f50f886f2edf670cf199b35fd96f5c91
+                           .group:0000000000000000 wm4.core_cm4_simd.h.29.b4a3fdfb606cb3b26119424324d4b963
+                           .group:0000000000000000 wm4.core_cm4.h.153.5393ef7e6cebf34dd51ca528f9218ab3
+                           .group:0000000000000000 wm4.stm32f4xx.h.282.95bae448a91bccfbf24a6f9d95904bb8
+                           .group:0000000000000000 wm4.stm32f4xx_adc.h.102.2061aa73008746f3c2cc6ce8f635cad3
+                           .group:0000000000000000 wm4.stm32f4xx_can.h.25.87f18ca48b2692d39f76e87b1f07c953
+                           .group:0000000000000000 wm4.stm32f4xx_cryp.h.25.db1951c06ee684df97ea3a11aba6cb51
+                           .group:0000000000000000 wm4.stm32f4xx_dac.h.25.c43557a6416ea4dfa986c1209c2558d6
+                           .group:0000000000000000 wm4.stm32f4xx_dbgmcu.h.24.7aedfdcf091890b5cb96019bd29a2bfc
+                           .group:0000000000000000 wm4.stm32f4xx_dcmi.h.24.64883d9be802a535b1d7770d14da73e0
+                           .group:0000000000000000 wm4.stm32f4xx_dma.h.25.c1fa1d44ae0bc9c2b3a0d1d355d8c1e6
+                           .group:0000000000000000 wm4.stm32f4xx_exti.h.25.620998268d5d3d9042a8297fbe07d507
+                           .group:0000000000000000 wm4.stm32f4xx_flash.h.25.65d4f351b72ee41355279f70305f361a
+                           .group:0000000000000000 wm4.stm32f4xx_fsmc.h.25.b907ac7bd9bec46e02d06b137d53cfd8
+                           .group:0000000000000000 wm4.stm32f4xx_hash.h.25.633fb84f031cf2ab1bd834e536716dfa
+                           .group:0000000000000000 wm4.stm32f4xx_gpio.h.25.5bd1d790d742a307b55aea5fa8fcdae8
+                           .group:0000000000000000 wm4.stm32f4xx_i2c.h.25.8fcdb817a00a67d4624d79bab0d9275f
+                           .group:0000000000000000 wm4.stm32f4xx_iwdg.h.25.3013e8d2058415cb9d51af77f748a146
+                           .group:0000000000000000 wm4.stm32f4xx_pwr.h.25.48b68c1f3a894ab012f9c2a2c222f159
+                           .group:0000000000000000 wm4.stm32f4xx_rcc.h.24.c15e7c8dc065bb29146f29591b195c87
+                           .group:0000000000000000 wm4.stm32f4xx_rng.h.25.cdb5c5c07de6a48aedfde608da3f447e
+                           .group:0000000000000000 wm4.stm32f4xx_rtc.h.25.4809a79ad46ad97b4a01e735a96738eb
+                           .group:0000000000000000 wm4.stm32f4xx_sdio.h.25.406302aabae34eada94e5f2cde635a3e
+                           .group:0000000000000000 wm4.stm32f4xx_spi.h.25.46c61b79ff8408da93e2e90cf9b717d6
+                           .group:0000000000000000 wm4.stm32f4xx_syscfg.h.25.9d5caab5677661b69e959531364e23d7
+                           .group:0000000000000000 wm4.stm32f4xx_tim.h.25.948f7fc943f34bd206e29758e77ee0a2
+                           .group:0000000000000000 wm4.stm32f4xx_usart.h.25.b64697dad017ba547dd272c2cdb5846a
+                           .group:0000000000000000 wm4.stm32f4xx_wwdg.h.25.09d70b7849c6894ddf1e83c8e86b70e1
+                           .group:0000000000000000 wm4.misc.h.25.a0cb758c1f091b46f201b19cec9e63a1
+                           .group:0000000000000000 wm4.stm32f4xx.h.6913.da011404ccb203790556c86f10c46b18
+                           .group:0000000000000000 wm4.FreeRTOSConfig.h.74.fc794e36cd6c91c3b4695c74d78d9ccd
+                           .group:0000000000000000 wm4.portmacro.h.69.a7e264ae32accd81a6ffb6f75a8356fe
+                           .group:0000000000000000 wm4.portable.h.315.489c085dbd13c768c8594a7d23ef5545
+                           .group:0000000000000000 wm4.mpu_wrappers.h.55.46a4a008a193040c38098e9a5f07ff9d
+                           .group:0000000000000000 wm4.FreeRTOS.h.136.a1d4f27d190f434afd0502fdd510d30a
+                           .group:0000000000000000 wm4.queue.h.56.a4282b659085ac883e461fc7ab8aecd1
+                           .group:0000000000000000 wm4.semphr.h.65.53591bdf1c84eee2eae05897a780c325
+                           .group:0000000000000000 wm4.hbfuncs.h.2.e3da3dcc1ea881ecd2d374365b99900a
+
+UNDEFINED SYMBOLS
+RTC_GetTime
+getEpoch
+xQueueCreateMutex
+xQueueGenericReceive
+xQueueGenericSend

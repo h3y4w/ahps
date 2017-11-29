@@ -8,7 +8,7 @@
    8              		.eabi_attribute 24, 1
    9              		.eabi_attribute 25, 1
   10              		.eabi_attribute 26, 1
-  11              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 30, 1
   12              		.eabi_attribute 34, 1
   13              		.eabi_attribute 18, 4
   14              		.thumb
@@ -139,48 +139,33 @@
  113:libs/STM32F4xx_StdPeriph_Driver/src/misc.c **** {
   28              		.loc 1 113 0
   29              		.cfi_startproc
-  30              		@ args = 0, pretend = 0, frame = 8
-  31              		@ frame_needed = 1, uses_anonymous_args = 0
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
   32              		@ link register save eliminated.
-  33 0000 80B4     		push	{r7}
-  34              	.LCFI0:
-  35              		.cfi_def_cfa_offset 4
-  36              		.cfi_offset 7, -4
-  37 0002 83B0     		sub	sp, sp, #12
-  38              	.LCFI1:
-  39              		.cfi_def_cfa_offset 16
-  40 0004 00AF     		add	r7, sp, #0
-  41              	.LCFI2:
-  42              		.cfi_def_cfa_register 7
-  43 0006 7860     		str	r0, [r7, #4]
+  33              	.LVL0:
  114:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   /* Check the parameters */
  115:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   assert_param(IS_NVIC_PRIORITY_GROUP(NVIC_PriorityGroup));
  116:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   
  117:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   /* Set the PRIGROUP[10:8] bits according to NVIC_PriorityGroup value */
  118:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   SCB->AIRCR = AIRCR_VECTKEY_MASK | NVIC_PriorityGroup;
-  44              		.loc 1 118 0
-  45 0008 4FF46D43 		mov	r3, #60672
-  46 000c CEF20003 		movt	r3, 57344
-  47 0010 7A68     		ldr	r2, [r7, #4]
-  48 0012 42F0BF62 		orr	r2, r2, #100139008
-  49 0016 42F40032 		orr	r2, r2, #131072
-  50 001a DA60     		str	r2, [r3, #12]
+  34              		.loc 1 118 0
+  35 0000 40F0BF60 		orr	r0, r0, #100139008
+  36              	.LVL1:
+  37 0004 40F40030 		orr	r0, r0, #131072
+  38 0008 4FF46D43 		mov	r3, #60672
+  39 000c CEF20003 		movt	r3, 57344
+  40 0010 D860     		str	r0, [r3, #12]
+  41 0012 7047     		bx	lr
+  42              		.cfi_endproc
+  43              	.LFE110:
+  45              		.section	.text.NVIC_Init,"ax",%progbits
+  46              		.align	2
+  47              		.global	NVIC_Init
+  48              		.thumb
+  49              		.thumb_func
+  51              	NVIC_Init:
+  52              	.LFB111:
  119:libs/STM32F4xx_StdPeriph_Driver/src/misc.c **** }
-  51              		.loc 1 119 0
-  52 001c 0C37     		adds	r7, r7, #12
-  53 001e BD46     		mov	sp, r7
-  54              		@ sp needed
-  55 0020 5DF8047B 		ldr	r7, [sp], #4
-  56 0024 7047     		bx	lr
-  57              		.cfi_endproc
-  58              	.LFE110:
-  60 0026 00BF     		.section	.text.NVIC_Init,"ax",%progbits
-  61              		.align	2
-  62              		.global	NVIC_Init
-  63              		.thumb
-  64              		.thumb_func
-  66              	NVIC_Init:
-  67              	.LFB111:
  120:libs/STM32F4xx_StdPeriph_Driver/src/misc.c **** 
  121:libs/STM32F4xx_StdPeriph_Driver/src/misc.c **** /**
  122:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   * @brief  Initializes the NVIC peripheral according to the specified
@@ -193,30 +178,18 @@
  129:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   */
  130:libs/STM32F4xx_StdPeriph_Driver/src/misc.c **** void NVIC_Init(NVIC_InitTypeDef* NVIC_InitStruct)
  131:libs/STM32F4xx_StdPeriph_Driver/src/misc.c **** {
-  68              		.loc 1 131 0
-  69              		.cfi_startproc
-  70              		@ args = 0, pretend = 0, frame = 16
-  71              		@ frame_needed = 1, uses_anonymous_args = 0
-  72              		@ link register save eliminated.
-  73 0000 80B4     		push	{r7}
-  74              	.LCFI3:
-  75              		.cfi_def_cfa_offset 4
-  76              		.cfi_offset 7, -4
-  77 0002 85B0     		sub	sp, sp, #20
-  78              	.LCFI4:
-  79              		.cfi_def_cfa_offset 24
-  80 0004 00AF     		add	r7, sp, #0
-  81              	.LCFI5:
-  82              		.cfi_def_cfa_register 7
-  83 0006 7860     		str	r0, [r7, #4]
+  53              		.loc 1 131 0
+  54              		.cfi_startproc
+  55              		@ args = 0, pretend = 0, frame = 0
+  56              		@ frame_needed = 0, uses_anonymous_args = 0
+  57              		@ link register save eliminated.
+  58              	.LVL2:
+  59 0000 10B4     		push	{r4}
+  60              	.LCFI0:
+  61              		.cfi_def_cfa_offset 4
+  62              		.cfi_offset 4, -4
+  63              	.LVL3:
  132:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   uint8_t tmppriority = 0x00, tmppre = 0x00, tmpsub = 0x0F;
-  84              		.loc 1 132 0
-  85 0008 0023     		movs	r3, #0
-  86 000a FB73     		strb	r3, [r7, #15]
-  87 000c 0023     		movs	r3, #0
-  88 000e BB73     		strb	r3, [r7, #14]
-  89 0010 0F23     		movs	r3, #15
-  90 0012 7B73     		strb	r3, [r7, #13]
  133:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   
  134:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   /* Check the parameters */
  135:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   assert_param(IS_FUNCTIONAL_STATE(NVIC_InitStruct->NVIC_IRQChannelCmd));
@@ -224,131 +197,113 @@
  137:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   assert_param(IS_NVIC_SUB_PRIORITY(NVIC_InitStruct->NVIC_IRQChannelSubPriority));
  138:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****     
  139:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   if (NVIC_InitStruct->NVIC_IRQChannelCmd != DISABLE)
-  91              		.loc 1 139 0
-  92 0014 7B68     		ldr	r3, [r7, #4]
-  93 0016 DB78     		ldrb	r3, [r3, #3]	@ zero_extendqisi2
-  94 0018 002B     		cmp	r3, #0
-  95 001a 40D0     		beq	.L3
+  64              		.loc 1 139 0
+  65 0002 C378     		ldrb	r3, [r0, #3]	@ zero_extendqisi2
+  66 0004 4BB3     		cbz	r3, .L3
  140:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   {
  141:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****     /* Compute the Corresponding IRQ Priority --------------------------------*/    
  142:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****     tmppriority = (0x700 - ((SCB->AIRCR) & (uint32_t)0x700))>> 0x08;
-  96              		.loc 1 142 0
-  97 001c 4FF46D43 		mov	r3, #60672
-  98 0020 CEF20003 		movt	r3, 57344
-  99 0024 DB68     		ldr	r3, [r3, #12]
- 100 0026 DB43     		mvns	r3, r3
- 101 0028 03F4E063 		and	r3, r3, #1792
- 102 002c 1B0A     		lsrs	r3, r3, #8
- 103 002e FB73     		strb	r3, [r7, #15]
+  67              		.loc 1 142 0
+  68 0006 4FF46D43 		mov	r3, #60672
+  69 000a CEF20003 		movt	r3, 57344
+  70 000e DB68     		ldr	r3, [r3, #12]
+  71 0010 DB43     		mvns	r3, r3
+  72 0012 C3F30223 		ubfx	r3, r3, #8, #3
+  73              	.LVL4:
  143:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****     tmppre = (0x4 - tmppriority);
- 104              		.loc 1 143 0
- 105 0030 FB7B     		ldrb	r3, [r7, #15]
- 106 0032 C3F10403 		rsb	r3, r3, #4
- 107 0036 BB73     		strb	r3, [r7, #14]
+  74              		.loc 1 143 0
+  75 0016 C3F10402 		rsb	r2, r3, #4
+  76 001a D2B2     		uxtb	r2, r2
+  77              	.LVL5:
  144:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****     tmpsub = tmpsub >> tmppriority;
- 108              		.loc 1 144 0
- 109 0038 7A7B     		ldrb	r2, [r7, #13]	@ zero_extendqisi2
- 110 003a FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
- 111 003c 42FA03F3 		asr	r3, r2, r3
- 112 0040 7B73     		strb	r3, [r7, #13]
+  78              		.loc 1 144 0
+  79 001c 0F21     		movs	r1, #15
+  80 001e 41FA03F3 		asr	r3, r1, r3
+  81              	.LVL6:
  145:libs/STM32F4xx_StdPeriph_Driver/src/misc.c **** 
  146:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****     tmppriority = NVIC_InitStruct->NVIC_IRQChannelPreemptionPriority << tmppre;
- 113              		.loc 1 146 0
- 114 0042 7B68     		ldr	r3, [r7, #4]
- 115 0044 5B78     		ldrb	r3, [r3, #1]	@ zero_extendqisi2
- 116 0046 1A46     		mov	r2, r3
- 117 0048 BB7B     		ldrb	r3, [r7, #14]	@ zero_extendqisi2
- 118 004a 02FA03F3 		lsl	r3, r2, r3
- 119 004e FB73     		strb	r3, [r7, #15]
+  82              		.loc 1 146 0
+  83 0022 4178     		ldrb	r1, [r0, #1]	@ zero_extendqisi2
+  84 0024 01FA02F2 		lsl	r2, r1, r2
+  85              	.LVL7:
+  86 0028 D2B2     		uxtb	r2, r2
+  87              	.LVL8:
  147:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****     tmppriority |=  (uint8_t)(NVIC_InitStruct->NVIC_IRQChannelSubPriority & tmpsub);
- 120              		.loc 1 147 0
- 121 0050 7B68     		ldr	r3, [r7, #4]
- 122 0052 9A78     		ldrb	r2, [r3, #2]	@ zero_extendqisi2
- 123 0054 7B7B     		ldrb	r3, [r7, #13]
- 124 0056 1340     		ands	r3, r3, r2
- 125 0058 DAB2     		uxtb	r2, r3
- 126 005a FB7B     		ldrb	r3, [r7, #15]
- 127 005c 1343     		orrs	r3, r3, r2
- 128 005e FB73     		strb	r3, [r7, #15]
+  88              		.loc 1 147 0
+  89 002a 8478     		ldrb	r4, [r0, #2]	@ zero_extendqisi2
+  90 002c 03EA0401 		and	r1, r3, r4
+  91 0030 1143     		orrs	r1, r1, r2
+  92              	.LVL9:
  148:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****         
  149:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****     tmppriority = tmppriority << 0x04;
- 129              		.loc 1 149 0
- 130 0060 FB7B     		ldrb	r3, [r7, #15]
- 131 0062 1B01     		lsls	r3, r3, #4
- 132 0064 FB73     		strb	r3, [r7, #15]
+  93              		.loc 1 149 0
+  94 0032 0901     		lsls	r1, r1, #4
+  95              	.LVL10:
+  96 0034 C9B2     		uxtb	r1, r1
+  97              	.LVL11:
  150:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****         
  151:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****     NVIC->IP[NVIC_InitStruct->NVIC_IRQChannel] = tmppriority;
- 133              		.loc 1 151 0
- 134 0066 4FF46143 		mov	r3, #57600
- 135 006a CEF20003 		movt	r3, 57344
- 136 006e 7A68     		ldr	r2, [r7, #4]
- 137 0070 1278     		ldrb	r2, [r2]	@ zero_extendqisi2
- 138 0072 1344     		add	r3, r3, r2
- 139 0074 FA7B     		ldrb	r2, [r7, #15]
- 140 0076 83F80023 		strb	r2, [r3, #768]
+  98              		.loc 1 151 0
+  99 0036 0278     		ldrb	r2, [r0]	@ zero_extendqisi2
+ 100 0038 4FF46143 		mov	r3, #57600
+ 101              	.LVL12:
+ 102 003c CEF20003 		movt	r3, 57344
+ 103 0040 1A44     		add	r2, r2, r3
+ 104 0042 82F80013 		strb	r1, [r2, #768]
  152:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****     
  153:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****     /* Enable the Selected IRQ Channels --------------------------------------*/
  154:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****     NVIC->ISER[NVIC_InitStruct->NVIC_IRQChannel >> 0x05] =
- 141              		.loc 1 154 0
- 142 007a 4FF46143 		mov	r3, #57600
- 143 007e CEF20003 		movt	r3, 57344
- 144 0082 7A68     		ldr	r2, [r7, #4]
- 145 0084 1278     		ldrb	r2, [r2]	@ zero_extendqisi2
- 146 0086 5209     		lsrs	r2, r2, #5
- 147 0088 D2B2     		uxtb	r2, r2
+ 105              		.loc 1 154 0
+ 106 0046 0278     		ldrb	r2, [r0]	@ zero_extendqisi2
+ 107 0048 5109     		lsrs	r1, r2, #5
+ 108              	.LVL13:
  155:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****       (uint32_t)0x01 << (NVIC_InitStruct->NVIC_IRQChannel & (uint8_t)0x1F);
- 148              		.loc 1 155 0
- 149 008a 7968     		ldr	r1, [r7, #4]
- 150 008c 0978     		ldrb	r1, [r1]	@ zero_extendqisi2
- 151 008e 01F01F01 		and	r1, r1, #31
- 152 0092 0120     		movs	r0, #1
- 153 0094 00FA01F1 		lsl	r1, r0, r1
+ 109              		.loc 1 155 0
+ 110 004a 02F01F02 		and	r2, r2, #31
+ 111 004e 0120     		movs	r0, #1
+ 112              	.LVL14:
+ 113 0050 00FA02F2 		lsl	r2, r0, r2
  154:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****       (uint32_t)0x01 << (NVIC_InitStruct->NVIC_IRQChannel & (uint8_t)0x1F);
- 154              		.loc 1 154 0
- 155 0098 43F82210 		str	r1, [r3, r2, lsl #2]
- 156 009c 11E0     		b	.L2
- 157              	.L3:
+ 114              		.loc 1 154 0
+ 115 0054 43F82120 		str	r2, [r3, r1, lsl #2]
+ 116 0058 0CE0     		b	.L2
+ 117              	.LVL15:
+ 118              	.L3:
  156:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   }
  157:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   else
  158:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   {
  159:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****     /* Disable the Selected IRQ Channels -------------------------------------*/
  160:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****     NVIC->ICER[NVIC_InitStruct->NVIC_IRQChannel >> 0x05] =
- 158              		.loc 1 160 0
- 159 009e 4FF46143 		mov	r3, #57600
- 160 00a2 CEF20003 		movt	r3, 57344
- 161 00a6 7A68     		ldr	r2, [r7, #4]
- 162 00a8 1278     		ldrb	r2, [r2]	@ zero_extendqisi2
- 163 00aa 5209     		lsrs	r2, r2, #5
- 164 00ac D2B2     		uxtb	r2, r2
+ 119              		.loc 1 160 0
+ 120 005a 0378     		ldrb	r3, [r0]	@ zero_extendqisi2
+ 121 005c 5A09     		lsrs	r2, r3, #5
  161:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****       (uint32_t)0x01 << (NVIC_InitStruct->NVIC_IRQChannel & (uint8_t)0x1F);
- 165              		.loc 1 161 0
- 166 00ae 7968     		ldr	r1, [r7, #4]
- 167 00b0 0978     		ldrb	r1, [r1]	@ zero_extendqisi2
- 168 00b2 01F01F01 		and	r1, r1, #31
- 169 00b6 0120     		movs	r0, #1
- 170 00b8 00FA01F1 		lsl	r1, r0, r1
+ 122              		.loc 1 161 0
+ 123 005e 03F01F03 		and	r3, r3, #31
+ 124 0062 0121     		movs	r1, #1
+ 125 0064 9940     		lsls	r1, r1, r3
  160:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****       (uint32_t)0x01 << (NVIC_InitStruct->NVIC_IRQChannel & (uint8_t)0x1F);
- 171              		.loc 1 160 0
- 172 00bc 2032     		adds	r2, r2, #32
- 173 00be 43F82210 		str	r1, [r3, r2, lsl #2]
- 174              	.L2:
+ 126              		.loc 1 160 0
+ 127 0066 4FF46143 		mov	r3, #57600
+ 128 006a CEF20003 		movt	r3, 57344
+ 129 006e 2032     		adds	r2, r2, #32
+ 130 0070 43F82210 		str	r1, [r3, r2, lsl #2]
+ 131              	.LVL16:
+ 132              	.L2:
  162:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   }
  163:libs/STM32F4xx_StdPeriph_Driver/src/misc.c **** }
- 175              		.loc 1 163 0
- 176 00c2 1437     		adds	r7, r7, #20
- 177 00c4 BD46     		mov	sp, r7
- 178              		@ sp needed
- 179 00c6 5DF8047B 		ldr	r7, [sp], #4
- 180 00ca 7047     		bx	lr
- 181              		.cfi_endproc
- 182              	.LFE111:
- 184              		.section	.text.NVIC_SetVectorTable,"ax",%progbits
- 185              		.align	2
- 186              		.global	NVIC_SetVectorTable
- 187              		.thumb
- 188              		.thumb_func
- 190              	NVIC_SetVectorTable:
- 191              	.LFB112:
+ 133              		.loc 1 163 0
+ 134 0074 5DF8044B 		ldr	r4, [sp], #4
+ 135 0078 7047     		bx	lr
+ 136              		.cfi_endproc
+ 137              	.LFE111:
+ 139 007a 00BF     		.section	.text.NVIC_SetVectorTable,"ax",%progbits
+ 140              		.align	2
+ 141              		.global	NVIC_SetVectorTable
+ 142              		.thumb
+ 143              		.thumb_func
+ 145              	NVIC_SetVectorTable:
+ 146              	.LFB112:
  164:libs/STM32F4xx_StdPeriph_Driver/src/misc.c **** 
  165:libs/STM32F4xx_StdPeriph_Driver/src/misc.c **** /**
  166:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   * @brief  Sets the vector table location and Offset.
@@ -361,53 +316,37 @@
  173:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   */
  174:libs/STM32F4xx_StdPeriph_Driver/src/misc.c **** void NVIC_SetVectorTable(uint32_t NVIC_VectTab, uint32_t Offset)
  175:libs/STM32F4xx_StdPeriph_Driver/src/misc.c **** { 
- 192              		.loc 1 175 0
- 193              		.cfi_startproc
- 194              		@ args = 0, pretend = 0, frame = 8
- 195              		@ frame_needed = 1, uses_anonymous_args = 0
- 196              		@ link register save eliminated.
- 197 0000 80B4     		push	{r7}
- 198              	.LCFI6:
- 199              		.cfi_def_cfa_offset 4
- 200              		.cfi_offset 7, -4
- 201 0002 83B0     		sub	sp, sp, #12
- 202              	.LCFI7:
- 203              		.cfi_def_cfa_offset 16
- 204 0004 00AF     		add	r7, sp, #0
- 205              	.LCFI8:
- 206              		.cfi_def_cfa_register 7
- 207 0006 7860     		str	r0, [r7, #4]
- 208 0008 3960     		str	r1, [r7]
+ 147              		.loc 1 175 0
+ 148              		.cfi_startproc
+ 149              		@ args = 0, pretend = 0, frame = 0
+ 150              		@ frame_needed = 0, uses_anonymous_args = 0
+ 151              		@ link register save eliminated.
+ 152              	.LVL17:
  176:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   /* Check the parameters */
  177:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   assert_param(IS_NVIC_VECTTAB(NVIC_VectTab));
  178:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   assert_param(IS_NVIC_OFFSET(Offset));  
  179:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****    
  180:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   SCB->VTOR = NVIC_VectTab | (Offset & (uint32_t)0x1FFFFF80);
- 209              		.loc 1 180 0
- 210 000a 4FF46D43 		mov	r3, #60672
- 211 000e CEF20003 		movt	r3, 57344
- 212 0012 3A68     		ldr	r2, [r7]
- 213 0014 22F06042 		bic	r2, r2, #-536870912
- 214 0018 22F07F02 		bic	r2, r2, #127
- 215 001c 7968     		ldr	r1, [r7, #4]
- 216 001e 0A43     		orrs	r2, r2, r1
- 217 0020 9A60     		str	r2, [r3, #8]
+ 153              		.loc 1 180 0
+ 154 0000 21F06041 		bic	r1, r1, #-536870912
+ 155              	.LVL18:
+ 156 0004 21F07F01 		bic	r1, r1, #127
+ 157 0008 0843     		orrs	r0, r0, r1
+ 158              	.LVL19:
+ 159 000a 4FF46D43 		mov	r3, #60672
+ 160 000e CEF20003 		movt	r3, 57344
+ 161 0012 9860     		str	r0, [r3, #8]
+ 162 0014 7047     		bx	lr
+ 163              		.cfi_endproc
+ 164              	.LFE112:
+ 166 0016 00BF     		.section	.text.NVIC_SystemLPConfig,"ax",%progbits
+ 167              		.align	2
+ 168              		.global	NVIC_SystemLPConfig
+ 169              		.thumb
+ 170              		.thumb_func
+ 172              	NVIC_SystemLPConfig:
+ 173              	.LFB113:
  181:libs/STM32F4xx_StdPeriph_Driver/src/misc.c **** }
- 218              		.loc 1 181 0
- 219 0022 0C37     		adds	r7, r7, #12
- 220 0024 BD46     		mov	sp, r7
- 221              		@ sp needed
- 222 0026 5DF8047B 		ldr	r7, [sp], #4
- 223 002a 7047     		bx	lr
- 224              		.cfi_endproc
- 225              	.LFE112:
- 227              		.section	.text.NVIC_SystemLPConfig,"ax",%progbits
- 228              		.align	2
- 229              		.global	NVIC_SystemLPConfig
- 230              		.thumb
- 231              		.thumb_func
- 233              	NVIC_SystemLPConfig:
- 234              	.LFB113:
  182:libs/STM32F4xx_StdPeriph_Driver/src/misc.c **** 
  183:libs/STM32F4xx_StdPeriph_Driver/src/misc.c **** /**
  184:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   * @brief  Selects the condition for the system to enter low power mode.
@@ -421,79 +360,54 @@
  192:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   */
  193:libs/STM32F4xx_StdPeriph_Driver/src/misc.c **** void NVIC_SystemLPConfig(uint8_t LowPowerMode, FunctionalState NewState)
  194:libs/STM32F4xx_StdPeriph_Driver/src/misc.c **** {
- 235              		.loc 1 194 0
- 236              		.cfi_startproc
- 237              		@ args = 0, pretend = 0, frame = 8
- 238              		@ frame_needed = 1, uses_anonymous_args = 0
- 239              		@ link register save eliminated.
- 240 0000 80B4     		push	{r7}
- 241              	.LCFI9:
- 242              		.cfi_def_cfa_offset 4
- 243              		.cfi_offset 7, -4
- 244 0002 83B0     		sub	sp, sp, #12
- 245              	.LCFI10:
- 246              		.cfi_def_cfa_offset 16
- 247 0004 00AF     		add	r7, sp, #0
- 248              	.LCFI11:
- 249              		.cfi_def_cfa_register 7
- 250 0006 0246     		mov	r2, r0
- 251 0008 0B46     		mov	r3, r1
- 252 000a FA71     		strb	r2, [r7, #7]
- 253 000c BB71     		strb	r3, [r7, #6]
+ 174              		.loc 1 194 0
+ 175              		.cfi_startproc
+ 176              		@ args = 0, pretend = 0, frame = 0
+ 177              		@ frame_needed = 0, uses_anonymous_args = 0
+ 178              		@ link register save eliminated.
+ 179              	.LVL20:
  195:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   /* Check the parameters */
  196:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   assert_param(IS_NVIC_LP(LowPowerMode));
  197:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   assert_param(IS_FUNCTIONAL_STATE(NewState));  
  198:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   
  199:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   if (NewState != DISABLE)
- 254              		.loc 1 199 0
- 255 000e BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
- 256 0010 002B     		cmp	r3, #0
- 257 0012 0CD0     		beq	.L7
+ 180              		.loc 1 199 0
+ 181 0000 39B1     		cbz	r1, .L7
  200:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   {
  201:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****     SCB->SCR |= LowPowerMode;
- 258              		.loc 1 201 0
- 259 0014 4FF46D43 		mov	r3, #60672
- 260 0018 CEF20003 		movt	r3, 57344
- 261 001c 4FF46D42 		mov	r2, #60672
- 262 0020 CEF20002 		movt	r2, 57344
- 263 0024 1169     		ldr	r1, [r2, #16]
- 264 0026 FA79     		ldrb	r2, [r7, #7]	@ zero_extendqisi2
- 265 0028 0A43     		orrs	r2, r2, r1
- 266 002a 1A61     		str	r2, [r3, #16]
- 267 002c 0CE0     		b	.L6
- 268              	.L7:
+ 182              		.loc 1 201 0
+ 183 0002 4FF46D43 		mov	r3, #60672
+ 184 0006 CEF20003 		movt	r3, 57344
+ 185 000a 1A69     		ldr	r2, [r3, #16]
+ 186 000c 1043     		orrs	r0, r0, r2
+ 187              	.LVL21:
+ 188 000e 1861     		str	r0, [r3, #16]
+ 189 0010 7047     		bx	lr
+ 190              	.LVL22:
+ 191              	.L7:
  202:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   }
  203:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   else
  204:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   {
  205:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****     SCB->SCR &= (uint32_t)(~(uint32_t)LowPowerMode);
- 269              		.loc 1 205 0
- 270 002e 4FF46D43 		mov	r3, #60672
- 271 0032 CEF20003 		movt	r3, 57344
- 272 0036 4FF46D42 		mov	r2, #60672
- 273 003a CEF20002 		movt	r2, 57344
- 274 003e 1169     		ldr	r1, [r2, #16]
- 275 0040 FA79     		ldrb	r2, [r7, #7]	@ zero_extendqisi2
- 276 0042 D243     		mvns	r2, r2
- 277 0044 0A40     		ands	r2, r2, r1
- 278 0046 1A61     		str	r2, [r3, #16]
- 279              	.L6:
+ 192              		.loc 1 205 0
+ 193 0012 4FF46D43 		mov	r3, #60672
+ 194 0016 CEF20003 		movt	r3, 57344
+ 195 001a 1A69     		ldr	r2, [r3, #16]
+ 196 001c 22EA0000 		bic	r0, r2, r0
+ 197              	.LVL23:
+ 198 0020 1861     		str	r0, [r3, #16]
+ 199 0022 7047     		bx	lr
+ 200              		.cfi_endproc
+ 201              	.LFE113:
+ 203              		.section	.text.SysTick_CLKSourceConfig,"ax",%progbits
+ 204              		.align	2
+ 205              		.global	SysTick_CLKSourceConfig
+ 206              		.thumb
+ 207              		.thumb_func
+ 209              	SysTick_CLKSourceConfig:
+ 210              	.LFB114:
  206:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   }
  207:libs/STM32F4xx_StdPeriph_Driver/src/misc.c **** }
- 280              		.loc 1 207 0
- 281 0048 0C37     		adds	r7, r7, #12
- 282 004a BD46     		mov	sp, r7
- 283              		@ sp needed
- 284 004c 5DF8047B 		ldr	r7, [sp], #4
- 285 0050 7047     		bx	lr
- 286              		.cfi_endproc
- 287              	.LFE113:
- 289 0052 00BF     		.section	.text.SysTick_CLKSourceConfig,"ax",%progbits
- 290              		.align	2
- 291              		.global	SysTick_CLKSourceConfig
- 292              		.thumb
- 293              		.thumb_func
- 295              	SysTick_CLKSourceConfig:
- 296              	.LFB114:
  208:libs/STM32F4xx_StdPeriph_Driver/src/misc.c **** 
  209:libs/STM32F4xx_StdPeriph_Driver/src/misc.c **** /**
  210:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   * @brief  Configures the SysTick clock source.
@@ -505,83 +419,90 @@
  216:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   */
  217:libs/STM32F4xx_StdPeriph_Driver/src/misc.c **** void SysTick_CLKSourceConfig(uint32_t SysTick_CLKSource)
  218:libs/STM32F4xx_StdPeriph_Driver/src/misc.c **** {
- 297              		.loc 1 218 0
- 298              		.cfi_startproc
- 299              		@ args = 0, pretend = 0, frame = 8
- 300              		@ frame_needed = 1, uses_anonymous_args = 0
- 301              		@ link register save eliminated.
- 302 0000 80B4     		push	{r7}
- 303              	.LCFI12:
- 304              		.cfi_def_cfa_offset 4
- 305              		.cfi_offset 7, -4
- 306 0002 83B0     		sub	sp, sp, #12
- 307              	.LCFI13:
- 308              		.cfi_def_cfa_offset 16
- 309 0004 00AF     		add	r7, sp, #0
- 310              	.LCFI14:
- 311              		.cfi_def_cfa_register 7
- 312 0006 7860     		str	r0, [r7, #4]
+ 211              		.loc 1 218 0
+ 212              		.cfi_startproc
+ 213              		@ args = 0, pretend = 0, frame = 0
+ 214              		@ frame_needed = 0, uses_anonymous_args = 0
+ 215              		@ link register save eliminated.
+ 216              	.LVL24:
  219:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   /* Check the parameters */
  220:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   assert_param(IS_SYSTICK_CLK_SOURCE(SysTick_CLKSource));
  221:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   if (SysTick_CLKSource == SysTick_CLKSource_HCLK)
- 313              		.loc 1 221 0
- 314 0008 7B68     		ldr	r3, [r7, #4]
- 315 000a 042B     		cmp	r3, #4
- 316 000c 0CD1     		bne	.L10
+ 217              		.loc 1 221 0
+ 218 0000 0428     		cmp	r0, #4
  222:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   {
  223:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****     SysTick->CTRL |= SysTick_CLKSource_HCLK;
- 317              		.loc 1 223 0
- 318 000e 4EF21003 		movw	r3, #57360
- 319 0012 CEF20003 		movt	r3, 57344
- 320 0016 4EF21002 		movw	r2, #57360
- 321 001a CEF20002 		movt	r2, 57344
- 322 001e 1268     		ldr	r2, [r2]
- 323 0020 42F00402 		orr	r2, r2, #4
- 324 0024 1A60     		str	r2, [r3]
- 325 0026 0BE0     		b	.L9
- 326              	.L10:
+ 219              		.loc 1 223 0
+ 220 0002 4EF21003 		movw	r3, #57360
+ 221 0006 CEF20003 		movt	r3, 57344
+ 222 000a 1A68     		ldr	r2, [r3]
+ 223 000c 0CBF     		ite	eq
+ 224 000e 42F00402 		orreq	r2, r2, #4
  224:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   }
  225:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   else
  226:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   {
  227:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****     SysTick->CTRL &= SysTick_CLKSource_HCLK_Div8;
- 327              		.loc 1 227 0
- 328 0028 4EF21003 		movw	r3, #57360
- 329 002c CEF20003 		movt	r3, 57344
- 330 0030 4EF21002 		movw	r2, #57360
- 331 0034 CEF20002 		movt	r2, 57344
- 332 0038 1268     		ldr	r2, [r2]
- 333 003a 22F00402 		bic	r2, r2, #4
- 334 003e 1A60     		str	r2, [r3]
- 335              	.L9:
- 228:libs/STM32F4xx_StdPeriph_Driver/src/misc.c ****   }
- 229:libs/STM32F4xx_StdPeriph_Driver/src/misc.c **** }
- 336              		.loc 1 229 0
- 337 0040 0C37     		adds	r7, r7, #12
- 338 0042 BD46     		mov	sp, r7
- 339              		@ sp needed
- 340 0044 5DF8047B 		ldr	r7, [sp], #4
- 341 0048 7047     		bx	lr
- 342              		.cfi_endproc
- 343              	.LFE114:
- 345 004a 00BF     		.text
- 346              	.Letext0:
- 347              		.file 2 "/usr/include/newlib/machine/_default_types.h"
- 348              		.file 3 "/usr/include/newlib/stdint.h"
- 349              		.file 4 "libs/CMSIS/Include/core_cm4.h"
- 350              		.file 5 "libs/Device/STM32F4xx/Include/stm32f4xx.h"
- 351              		.file 6 "libs/STM32F4xx_StdPeriph_Driver/inc/misc.h"
+ 225              		.loc 1 227 0
+ 226 0012 22F00402 		bicne	r2, r2, #4
+ 227 0016 1A60     		str	r2, [r3]
+ 228 0018 7047     		bx	lr
+ 229              		.cfi_endproc
+ 230              	.LFE114:
+ 232 001a 00BF     		.text
+ 233              	.Letext0:
+ 234              		.file 2 "/usr/include/newlib/machine/_default_types.h"
+ 235              		.file 3 "/usr/include/newlib/stdint.h"
+ 236              		.file 4 "libs/CMSIS/Include/core_cm4.h"
+ 237              		.file 5 "libs/Device/STM32F4xx/Include/stm32f4xx.h"
+ 238              		.file 6 "libs/STM32F4xx_StdPeriph_Driver/inc/misc.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 misc.c
-     /tmp/ccLsRKDK.s:20     .text.NVIC_PriorityGroupConfig:0000000000000000 $t
-     /tmp/ccLsRKDK.s:25     .text.NVIC_PriorityGroupConfig:0000000000000000 NVIC_PriorityGroupConfig
-     /tmp/ccLsRKDK.s:61     .text.NVIC_Init:0000000000000000 $t
-     /tmp/ccLsRKDK.s:66     .text.NVIC_Init:0000000000000000 NVIC_Init
-     /tmp/ccLsRKDK.s:185    .text.NVIC_SetVectorTable:0000000000000000 $t
-     /tmp/ccLsRKDK.s:190    .text.NVIC_SetVectorTable:0000000000000000 NVIC_SetVectorTable
-     /tmp/ccLsRKDK.s:228    .text.NVIC_SystemLPConfig:0000000000000000 $t
-     /tmp/ccLsRKDK.s:233    .text.NVIC_SystemLPConfig:0000000000000000 NVIC_SystemLPConfig
-     /tmp/ccLsRKDK.s:290    .text.SysTick_CLKSourceConfig:0000000000000000 $t
-     /tmp/ccLsRKDK.s:295    .text.SysTick_CLKSourceConfig:0000000000000000 SysTick_CLKSourceConfig
+     /tmp/ccN6Vsmf.s:20     .text.NVIC_PriorityGroupConfig:0000000000000000 $t
+     /tmp/ccN6Vsmf.s:25     .text.NVIC_PriorityGroupConfig:0000000000000000 NVIC_PriorityGroupConfig
+     /tmp/ccN6Vsmf.s:46     .text.NVIC_Init:0000000000000000 $t
+     /tmp/ccN6Vsmf.s:51     .text.NVIC_Init:0000000000000000 NVIC_Init
+     /tmp/ccN6Vsmf.s:140    .text.NVIC_SetVectorTable:0000000000000000 $t
+     /tmp/ccN6Vsmf.s:145    .text.NVIC_SetVectorTable:0000000000000000 NVIC_SetVectorTable
+     /tmp/ccN6Vsmf.s:167    .text.NVIC_SystemLPConfig:0000000000000000 $t
+     /tmp/ccN6Vsmf.s:172    .text.NVIC_SystemLPConfig:0000000000000000 NVIC_SystemLPConfig
+     /tmp/ccN6Vsmf.s:204    .text.SysTick_CLKSourceConfig:0000000000000000 $t
+     /tmp/ccN6Vsmf.s:209    .text.SysTick_CLKSourceConfig:0000000000000000 SysTick_CLKSourceConfig
                      .debug_frame:0000000000000010 $d
+                           .group:0000000000000000 wm4.1.7402b5479d3fa4780665141f585fc0ee
+                           .group:0000000000000000 wm4.stm32f4xx.h.48.a3308e16720c7afc3eb28e585e628ce6
+                           .group:0000000000000000 wm4.core_cm4.h.32.5f62939b60122629d60d85d0c4a14709
+                           .group:0000000000000000 wm4.features.h.22.6a4ca7cd053637cc1d0db6c16f39b2d7
+                           .group:0000000000000000 wm4._default_types.h.15.8b2cb27e528498f8ff711db085d6e489
+                           .group:0000000000000000 wm4.stdint.h.20.796e373797e732130a803d4c0338fa1b
+                           .group:0000000000000000 wm4.core_cmInstr.h.25.f50f886f2edf670cf199b35fd96f5c91
+                           .group:0000000000000000 wm4.core_cm4_simd.h.29.b4a3fdfb606cb3b26119424324d4b963
+                           .group:0000000000000000 wm4.core_cm4.h.153.5393ef7e6cebf34dd51ca528f9218ab3
+                           .group:0000000000000000 wm4.stm32f4xx.h.282.95bae448a91bccfbf24a6f9d95904bb8
+                           .group:0000000000000000 wm4.stm32f4xx_adc.h.102.2061aa73008746f3c2cc6ce8f635cad3
+                           .group:0000000000000000 wm4.stm32f4xx_can.h.25.87f18ca48b2692d39f76e87b1f07c953
+                           .group:0000000000000000 wm4.stm32f4xx_cryp.h.25.db1951c06ee684df97ea3a11aba6cb51
+                           .group:0000000000000000 wm4.stm32f4xx_dac.h.25.c43557a6416ea4dfa986c1209c2558d6
+                           .group:0000000000000000 wm4.stm32f4xx_dbgmcu.h.24.7aedfdcf091890b5cb96019bd29a2bfc
+                           .group:0000000000000000 wm4.stm32f4xx_dcmi.h.24.64883d9be802a535b1d7770d14da73e0
+                           .group:0000000000000000 wm4.stm32f4xx_dma.h.25.c1fa1d44ae0bc9c2b3a0d1d355d8c1e6
+                           .group:0000000000000000 wm4.stm32f4xx_exti.h.25.620998268d5d3d9042a8297fbe07d507
+                           .group:0000000000000000 wm4.stm32f4xx_flash.h.25.65d4f351b72ee41355279f70305f361a
+                           .group:0000000000000000 wm4.stm32f4xx_fsmc.h.25.b907ac7bd9bec46e02d06b137d53cfd8
+                           .group:0000000000000000 wm4.stm32f4xx_hash.h.25.633fb84f031cf2ab1bd834e536716dfa
+                           .group:0000000000000000 wm4.stm32f4xx_gpio.h.25.5bd1d790d742a307b55aea5fa8fcdae8
+                           .group:0000000000000000 wm4.stm32f4xx_i2c.h.25.8fcdb817a00a67d4624d79bab0d9275f
+                           .group:0000000000000000 wm4.stm32f4xx_iwdg.h.25.3013e8d2058415cb9d51af77f748a146
+                           .group:0000000000000000 wm4.stm32f4xx_pwr.h.25.48b68c1f3a894ab012f9c2a2c222f159
+                           .group:0000000000000000 wm4.stm32f4xx_rcc.h.24.c15e7c8dc065bb29146f29591b195c87
+                           .group:0000000000000000 wm4.stm32f4xx_rng.h.25.cdb5c5c07de6a48aedfde608da3f447e
+                           .group:0000000000000000 wm4.stm32f4xx_rtc.h.25.4809a79ad46ad97b4a01e735a96738eb
+                           .group:0000000000000000 wm4.stm32f4xx_sdio.h.25.406302aabae34eada94e5f2cde635a3e
+                           .group:0000000000000000 wm4.stm32f4xx_spi.h.25.46c61b79ff8408da93e2e90cf9b717d6
+                           .group:0000000000000000 wm4.stm32f4xx_syscfg.h.25.9d5caab5677661b69e959531364e23d7
+                           .group:0000000000000000 wm4.stm32f4xx_tim.h.25.948f7fc943f34bd206e29758e77ee0a2
+                           .group:0000000000000000 wm4.stm32f4xx_usart.h.25.b64697dad017ba547dd272c2cdb5846a
+                           .group:0000000000000000 wm4.stm32f4xx_wwdg.h.25.09d70b7849c6894ddf1e83c8e86b70e1
+                           .group:0000000000000000 wm4.stm32f4xx.h.6913.da011404ccb203790556c86f10c46b18
+                           .group:0000000000000000 wm4.misc.h.80.738aeeb1a04362df829892c9dd922afe
 
 NO UNDEFINED SYMBOLS

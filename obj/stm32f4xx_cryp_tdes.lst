@@ -8,7 +8,7 @@
    8              		.eabi_attribute 24, 1
    9              		.eabi_attribute 25, 1
   10              		.eabi_attribute 26, 1
-  11              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 30, 1
   12              		.eabi_attribute 34, 1
   13              		.eabi_attribute 18, 4
   14              		.thumb
@@ -124,109 +124,95 @@
   98:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c **** {
   28              		.loc 1 98 0
   29              		.cfi_startproc
-  30              		@ args = 4, pretend = 0, frame = 136
-  31              		@ frame_needed = 1, uses_anonymous_args = 0
-  32 0000 90B5     		push	{r4, r7, lr}
-  33              	.LCFI0:
-  34              		.cfi_def_cfa_offset 12
-  35              		.cfi_offset 4, -12
-  36              		.cfi_offset 7, -8
-  37              		.cfi_offset 14, -4
-  38 0002 A3B0     		sub	sp, sp, #140
-  39              	.LCFI1:
-  40              		.cfi_def_cfa_offset 152
-  41 0004 00AF     		add	r7, sp, #0
-  42              	.LCFI2:
-  43              		.cfi_def_cfa_register 7
-  44 0006 B960     		str	r1, [r7, #8]
-  45 0008 7A60     		str	r2, [r7, #4]
-  46 000a 3B60     		str	r3, [r7]
-  47 000c 0346     		mov	r3, r0
-  48 000e FB73     		strb	r3, [r7, #15]
+  30              		@ args = 4, pretend = 0, frame = 48
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              	.LVL0:
+  33 0000 2DE9F047 		push	{r4, r5, r6, r7, r8, r9, r10, lr}
+  34              	.LCFI0:
+  35              		.cfi_def_cfa_offset 32
+  36              		.cfi_offset 4, -32
+  37              		.cfi_offset 5, -28
+  38              		.cfi_offset 6, -24
+  39              		.cfi_offset 7, -20
+  40              		.cfi_offset 8, -16
+  41              		.cfi_offset 9, -12
+  42              		.cfi_offset 10, -8
+  43              		.cfi_offset 14, -4
+  44 0004 8CB0     		sub	sp, sp, #48
+  45              	.LCFI1:
+  46              		.cfi_def_cfa_offset 80
+  47 0006 0646     		mov	r6, r0
+  48 0008 0C46     		mov	r4, r1
+  49 000a 9A46     		mov	r10, r3
   99:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   CRYP_InitTypeDef TDES_CRYP_InitStructure;
  100:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   CRYP_KeyInitTypeDef TDES_CRYP_KeyInitStructure;
  101:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   __IO uint32_t counter = 0;
-  49              		.loc 1 101 0
-  50 0010 0023     		movs	r3, #0
-  51 0012 7B61     		str	r3, [r7, #20]
+  50              		.loc 1 101 0
+  51 000c 0023     		movs	r3, #0
+  52              	.LVL1:
+  53 000e 0193     		str	r3, [sp, #4]
+  54              	.LVL2:
  102:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   uint32_t busystatus = 0;
-  52              		.loc 1 102 0
-  53 0014 0023     		movs	r3, #0
-  54 0016 7B67     		str	r3, [r7, #116]
  103:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   ErrorStatus status = SUCCESS;
-  55              		.loc 1 103 0
-  56 0018 0123     		movs	r3, #1
-  57 001a 87F88730 		strb	r3, [r7, #135]
  104:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   uint32_t keyaddr    = (uint32_t)Key;
-  58              		.loc 1 104 0
-  59 001e BB68     		ldr	r3, [r7, #8]
-  60 0020 3B67     		str	r3, [r7, #112]
  105:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   uint32_t inputaddr  = (uint32_t)Input;
-  61              		.loc 1 105 0
-  62 0022 7B68     		ldr	r3, [r7, #4]
-  63 0024 C7F88030 		str	r3, [r7, #128]
+  55              		.loc 1 105 0
+  56 0010 1546     		mov	r5, r2
+  57              	.LVL3:
  106:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   uint32_t outputaddr = (uint32_t)Output;
-  64              		.loc 1 106 0
-  65 0028 D7F89830 		ldr	r3, [r7, #152]
-  66 002c FB67     		str	r3, [r7, #124]
+  58              		.loc 1 106 0
+  59 0012 DDF85090 		ldr	r9, [sp, #80]
+  60              	.LVL4:
  107:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   uint32_t i = 0;
-  67              		.loc 1 107 0
-  68 002e 0023     		movs	r3, #0
-  69 0030 BB67     		str	r3, [r7, #120]
  108:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c **** 
  109:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   /* Crypto structures initialisation*/
  110:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   CRYP_KeyStructInit(&TDES_CRYP_KeyInitStructure);
-  70              		.loc 1 110 0
-  71 0032 07F11803 		add	r3, r7, #24
-  72 0036 1846     		mov	r0, r3
-  73 0038 FFF7FEFF 		bl	CRYP_KeyStructInit
+  61              		.loc 1 110 0
+  62 0016 02A8     		add	r0, sp, #8
+  63              	.LVL5:
+  64 0018 FFF7FEFF 		bl	CRYP_KeyStructInit
+  65              	.LVL6:
  111:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c **** 
  112:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   /* Crypto Init for Encryption process */
  113:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   if(Mode == MODE_ENCRYPT) /* TDES encryption */
-  74              		.loc 1 113 0
-  75 003c FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
-  76 003e 012B     		cmp	r3, #1
-  77 0040 02D1     		bne	.L2
+  66              		.loc 1 113 0
+  67 001c 012E     		cmp	r6, #1
  114:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   {
  115:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****      TDES_CRYP_InitStructure.CRYP_AlgoDir = CRYP_AlgoDir_Encrypt;
-  78              		.loc 1 115 0
-  79 0042 0023     		movs	r3, #0
-  80 0044 3B87     		strh	r3, [r7, #56]	@ movhi
-  81 0046 01E0     		b	.L3
-  82              	.L2:
+  68              		.loc 1 115 0
+  69 001e 0CBF     		ite	eq
+  70 0020 0023     		moveq	r3, #0
  116:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   }
  117:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   else /*if(Mode == MODE_DECRYPT)*/ /* TDES decryption */
  118:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   {
  119:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****      TDES_CRYP_InitStructure.CRYP_AlgoDir = CRYP_AlgoDir_Decrypt;
-  83              		.loc 1 119 0
-  84 0048 0423     		movs	r3, #4
-  85 004a 3B87     		strh	r3, [r7, #56]	@ movhi
-  86              	.L3:
+  71              		.loc 1 119 0
+  72 0022 0423     		movne	r3, #4
+  73 0024 ADF82830 		strh	r3, [sp, #40]	@ movhi
  120:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   }
  121:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c **** 
  122:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   TDES_CRYP_InitStructure.CRYP_AlgoMode = CRYP_AlgoMode_TDES_ECB;
-  87              		.loc 1 122 0
-  88 004c 0023     		movs	r3, #0
-  89 004e 7B87     		strh	r3, [r7, #58]	@ movhi
+  74              		.loc 1 122 0
+  75 0028 0023     		movs	r3, #0
+  76 002a ADF82A30 		strh	r3, [sp, #42]	@ movhi
  123:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   TDES_CRYP_InitStructure.CRYP_DataType = CRYP_DataType_8b;
-  90              		.loc 1 123 0
-  91 0050 8023     		movs	r3, #128
-  92 0052 BB87     		strh	r3, [r7, #60]	@ movhi
+  77              		.loc 1 123 0
+  78 002e 8023     		movs	r3, #128
+  79 0030 ADF82C30 		strh	r3, [sp, #44]	@ movhi
  124:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   CRYP_Init(&TDES_CRYP_InitStructure);
-  93              		.loc 1 124 0
-  94 0054 07F13803 		add	r3, r7, #56
-  95 0058 1846     		mov	r0, r3
-  96 005a FFF7FEFF 		bl	CRYP_Init
+  80              		.loc 1 124 0
+  81 0034 0AA8     		add	r0, sp, #40
+  82 0036 FFF7FEFF 		bl	CRYP_Init
+  83              	.LVL7:
  125:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c **** 
  126:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   /* Key Initialisation */
  127:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   TDES_CRYP_KeyInitStructure.CRYP_Key1Left = __REV(*(uint32_t*)(keyaddr));
-  97              		.loc 1 127 0
-  98 005e 3B6F     		ldr	r3, [r7, #112]
-  99 0060 1B68     		ldr	r3, [r3]
- 100 0062 FB66     		str	r3, [r7, #108]
- 101              	.LBB30:
- 102              	.LBB31:
- 103              		.file 2 "libs/CMSIS/Include/core_cmInstr.h"
+  84              		.loc 1 127 0
+  85 003a 2368     		ldr	r3, [r4]
+  86              	.LVL8:
+  87              	.LBB30:
+  88              	.LBB31:
+  89              		.file 2 "libs/CMSIS/Include/core_cmInstr.h"
    1:libs/CMSIS/Include/core_cmInstr.h **** /**************************************************************************//**
    2:libs/CMSIS/Include/core_cmInstr.h ****  * @file     core_cmInstr.h
    3:libs/CMSIS/Include/core_cmInstr.h ****  * @brief    CMSIS Cortex-M Core Instruction Access Header File
@@ -579,313 +565,264 @@
  350:libs/CMSIS/Include/core_cmInstr.h ****   uint32_t result;
  351:libs/CMSIS/Include/core_cmInstr.h ****   
  352:libs/CMSIS/Include/core_cmInstr.h ****   __ASM volatile ("rev %0, %1" : "=r" (result) : "r" (value) );
- 104              		.loc 2 352 0
- 105 0064 FB6E     		ldr	r3, [r7, #108]
- 106              	@ 352 "libs/CMSIS/Include/core_cmInstr.h" 1
- 107 0066 1BBA     		rev r3, r3
- 108              	@ 0 "" 2
- 109              		.thumb
- 110 0068 BB66     		str	r3, [r7, #104]
- 353:libs/CMSIS/Include/core_cmInstr.h ****   return(result);
- 111              		.loc 2 353 0
- 112 006a BB6E     		ldr	r3, [r7, #104]
- 113              	.LBE31:
- 114              	.LBE30:
- 115              		.loc 1 127 0
- 116 006c 3B62     		str	r3, [r7, #32]
+  90              		.loc 2 352 0
+  91              	@ 352 "libs/CMSIS/Include/core_cmInstr.h" 1
+  92 003c 1BBA     		rev r3, r3
+  93              	@ 0 "" 2
+  94              	.LVL9:
+  95              		.thumb
+  96              	.LBE31:
+  97              	.LBE30:
+  98              		.loc 1 127 0
+  99 003e 0493     		str	r3, [sp, #16]
+ 100              	.LVL10:
  128:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   keyaddr+=4;
- 117              		.loc 1 128 0
- 118 006e 3B6F     		ldr	r3, [r7, #112]
- 119 0070 0433     		adds	r3, r3, #4
- 120 0072 3B67     		str	r3, [r7, #112]
  129:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   TDES_CRYP_KeyInitStructure.CRYP_Key1Right= __REV(*(uint32_t*)(keyaddr));
- 121              		.loc 1 129 0
- 122 0074 3B6F     		ldr	r3, [r7, #112]
- 123 0076 1B68     		ldr	r3, [r3]
- 124 0078 7B66     		str	r3, [r7, #100]
- 125              	.LBB32:
- 126              	.LBB33:
- 352:libs/CMSIS/Include/core_cmInstr.h ****   return(result);
- 127              		.loc 2 352 0
- 128 007a 7B6E     		ldr	r3, [r7, #100]
- 129              	@ 352 "libs/CMSIS/Include/core_cmInstr.h" 1
- 130 007c 1BBA     		rev r3, r3
- 131              	@ 0 "" 2
- 132              		.thumb
- 133 007e 3B66     		str	r3, [r7, #96]
- 134              		.loc 2 353 0
- 135 0080 3B6E     		ldr	r3, [r7, #96]
- 136              	.LBE33:
- 137              	.LBE32:
- 138              		.loc 1 129 0
- 139 0082 7B62     		str	r3, [r7, #36]
+ 101              		.loc 1 129 0
+ 102 0040 6368     		ldr	r3, [r4, #4]
+ 103              	.LVL11:
+ 104              	.LBB32:
+ 105              	.LBB33:
+ 106              		.loc 2 352 0
+ 107              	@ 352 "libs/CMSIS/Include/core_cmInstr.h" 1
+ 108 0042 1BBA     		rev r3, r3
+ 109              	@ 0 "" 2
+ 110              	.LVL12:
+ 111              		.thumb
+ 112              	.LBE33:
+ 113              	.LBE32:
+ 114              		.loc 1 129 0
+ 115 0044 0593     		str	r3, [sp, #20]
+ 116              	.LVL13:
  130:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   keyaddr+=4;
- 140              		.loc 1 130 0
- 141 0084 3B6F     		ldr	r3, [r7, #112]
- 142 0086 0433     		adds	r3, r3, #4
- 143 0088 3B67     		str	r3, [r7, #112]
  131:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   TDES_CRYP_KeyInitStructure.CRYP_Key2Left = __REV(*(uint32_t*)(keyaddr));
- 144              		.loc 1 131 0
- 145 008a 3B6F     		ldr	r3, [r7, #112]
- 146 008c 1B68     		ldr	r3, [r3]
- 147 008e FB65     		str	r3, [r7, #92]
- 148              	.LBB34:
- 149              	.LBB35:
- 352:libs/CMSIS/Include/core_cmInstr.h ****   return(result);
- 150              		.loc 2 352 0
- 151 0090 FB6D     		ldr	r3, [r7, #92]
- 152              	@ 352 "libs/CMSIS/Include/core_cmInstr.h" 1
- 153 0092 1BBA     		rev r3, r3
- 154              	@ 0 "" 2
- 155              		.thumb
- 156 0094 BB65     		str	r3, [r7, #88]
- 157              		.loc 2 353 0
- 158 0096 BB6D     		ldr	r3, [r7, #88]
- 159              	.LBE35:
- 160              	.LBE34:
- 161              		.loc 1 131 0
- 162 0098 BB62     		str	r3, [r7, #40]
+ 117              		.loc 1 131 0
+ 118 0046 A368     		ldr	r3, [r4, #8]
+ 119              	.LVL14:
+ 120              	.LBB34:
+ 121              	.LBB35:
+ 122              		.loc 2 352 0
+ 123              	@ 352 "libs/CMSIS/Include/core_cmInstr.h" 1
+ 124 0048 1BBA     		rev r3, r3
+ 125              	@ 0 "" 2
+ 126              	.LVL15:
+ 127              		.thumb
+ 128              	.LBE35:
+ 129              	.LBE34:
+ 130              		.loc 1 131 0
+ 131 004a 0693     		str	r3, [sp, #24]
+ 132              	.LVL16:
  132:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   keyaddr+=4;
- 163              		.loc 1 132 0
- 164 009a 3B6F     		ldr	r3, [r7, #112]
- 165 009c 0433     		adds	r3, r3, #4
- 166 009e 3B67     		str	r3, [r7, #112]
  133:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   TDES_CRYP_KeyInitStructure.CRYP_Key2Right= __REV(*(uint32_t*)(keyaddr));
- 167              		.loc 1 133 0
- 168 00a0 3B6F     		ldr	r3, [r7, #112]
- 169 00a2 1B68     		ldr	r3, [r3]
- 170 00a4 7B65     		str	r3, [r7, #84]
- 171              	.LBB36:
- 172              	.LBB37:
- 352:libs/CMSIS/Include/core_cmInstr.h ****   return(result);
- 173              		.loc 2 352 0
- 174 00a6 7B6D     		ldr	r3, [r7, #84]
- 175              	@ 352 "libs/CMSIS/Include/core_cmInstr.h" 1
- 176 00a8 1BBA     		rev r3, r3
- 177              	@ 0 "" 2
- 178              		.thumb
- 179 00aa 3B65     		str	r3, [r7, #80]
- 180              		.loc 2 353 0
- 181 00ac 3B6D     		ldr	r3, [r7, #80]
- 182              	.LBE37:
- 183              	.LBE36:
- 184              		.loc 1 133 0
- 185 00ae FB62     		str	r3, [r7, #44]
+ 133              		.loc 1 133 0
+ 134 004c E368     		ldr	r3, [r4, #12]
+ 135              	.LVL17:
+ 136              	.LBB36:
+ 137              	.LBB37:
+ 138              		.loc 2 352 0
+ 139              	@ 352 "libs/CMSIS/Include/core_cmInstr.h" 1
+ 140 004e 1BBA     		rev r3, r3
+ 141              	@ 0 "" 2
+ 142              	.LVL18:
+ 143              		.thumb
+ 144              	.LBE37:
+ 145              	.LBE36:
+ 146              		.loc 1 133 0
+ 147 0050 0793     		str	r3, [sp, #28]
+ 148              	.LVL19:
  134:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   keyaddr+=4;
- 186              		.loc 1 134 0
- 187 00b0 3B6F     		ldr	r3, [r7, #112]
- 188 00b2 0433     		adds	r3, r3, #4
- 189 00b4 3B67     		str	r3, [r7, #112]
  135:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   TDES_CRYP_KeyInitStructure.CRYP_Key3Left = __REV(*(uint32_t*)(keyaddr));
- 190              		.loc 1 135 0
- 191 00b6 3B6F     		ldr	r3, [r7, #112]
- 192 00b8 1B68     		ldr	r3, [r3]
- 193 00ba FB64     		str	r3, [r7, #76]
- 194              	.LBB38:
- 195              	.LBB39:
- 352:libs/CMSIS/Include/core_cmInstr.h ****   return(result);
- 196              		.loc 2 352 0
- 197 00bc FB6C     		ldr	r3, [r7, #76]
- 198              	@ 352 "libs/CMSIS/Include/core_cmInstr.h" 1
- 199 00be 1BBA     		rev r3, r3
- 200              	@ 0 "" 2
- 201              		.thumb
- 202 00c0 BB64     		str	r3, [r7, #72]
- 203              		.loc 2 353 0
- 204 00c2 BB6C     		ldr	r3, [r7, #72]
- 205              	.LBE39:
- 206              	.LBE38:
- 207              		.loc 1 135 0
- 208 00c4 3B63     		str	r3, [r7, #48]
+ 149              		.loc 1 135 0
+ 150 0052 2369     		ldr	r3, [r4, #16]
+ 151              	.LVL20:
+ 152              	.LBB38:
+ 153              	.LBB39:
+ 154              		.loc 2 352 0
+ 155              	@ 352 "libs/CMSIS/Include/core_cmInstr.h" 1
+ 156 0054 1BBA     		rev r3, r3
+ 157              	@ 0 "" 2
+ 158              	.LVL21:
+ 159              		.thumb
+ 160              	.LBE39:
+ 161              	.LBE38:
+ 162              		.loc 1 135 0
+ 163 0056 0893     		str	r3, [sp, #32]
+ 164              	.LVL22:
  136:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   keyaddr+=4;
- 209              		.loc 1 136 0
- 210 00c6 3B6F     		ldr	r3, [r7, #112]
- 211 00c8 0433     		adds	r3, r3, #4
- 212 00ca 3B67     		str	r3, [r7, #112]
  137:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   TDES_CRYP_KeyInitStructure.CRYP_Key3Right= __REV(*(uint32_t*)(keyaddr));
- 213              		.loc 1 137 0
- 214 00cc 3B6F     		ldr	r3, [r7, #112]
- 215 00ce 1B68     		ldr	r3, [r3]
- 216 00d0 7B64     		str	r3, [r7, #68]
- 217              	.LBB40:
- 218              	.LBB41:
- 352:libs/CMSIS/Include/core_cmInstr.h ****   return(result);
- 219              		.loc 2 352 0
- 220 00d2 7B6C     		ldr	r3, [r7, #68]
- 221              	@ 352 "libs/CMSIS/Include/core_cmInstr.h" 1
- 222 00d4 1BBA     		rev r3, r3
- 223              	@ 0 "" 2
- 224              		.thumb
- 225 00d6 3B64     		str	r3, [r7, #64]
- 226              		.loc 2 353 0
- 227 00d8 3B6C     		ldr	r3, [r7, #64]
- 228              	.LBE41:
- 229              	.LBE40:
- 230              		.loc 1 137 0
- 231 00da 7B63     		str	r3, [r7, #52]
+ 165              		.loc 1 137 0
+ 166 0058 6369     		ldr	r3, [r4, #20]
+ 167              	.LVL23:
+ 168              	.LBB40:
+ 169              	.LBB41:
+ 170              		.loc 2 352 0
+ 171              	@ 352 "libs/CMSIS/Include/core_cmInstr.h" 1
+ 172 005a 1BBA     		rev r3, r3
+ 173              	@ 0 "" 2
+ 174              	.LVL24:
+ 175              		.thumb
+ 176              	.LBE41:
+ 177              	.LBE40:
+ 178              		.loc 1 137 0
+ 179 005c 0993     		str	r3, [sp, #36]
  138:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   CRYP_KeyInit(& TDES_CRYP_KeyInitStructure);
- 232              		.loc 1 138 0
- 233 00dc 07F11803 		add	r3, r7, #24
- 234 00e0 1846     		mov	r0, r3
- 235 00e2 FFF7FEFF 		bl	CRYP_KeyInit
+ 180              		.loc 1 138 0
+ 181 005e 02A8     		add	r0, sp, #8
+ 182 0060 FFF7FEFF 		bl	CRYP_KeyInit
+ 183              	.LVL25:
  139:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c **** 
  140:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   /* Flush IN/OUT FIFO */
  141:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   CRYP_FIFOFlush();
- 236              		.loc 1 141 0
- 237 00e6 FFF7FEFF 		bl	CRYP_FIFOFlush
+ 184              		.loc 1 141 0
+ 185 0064 FFF7FEFF 		bl	CRYP_FIFOFlush
+ 186              	.LVL26:
  142:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c **** 
  143:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   /* Enable Crypto processor */
  144:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   CRYP_Cmd(ENABLE);
- 238              		.loc 1 144 0
- 239 00ea 0120     		movs	r0, #1
- 240 00ec FFF7FEFF 		bl	CRYP_Cmd
+ 187              		.loc 1 144 0
+ 188 0068 0120     		movs	r0, #1
+ 189 006a FFF7FEFF 		bl	CRYP_Cmd
+ 190              	.LVL27:
  145:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c **** 
  146:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   for(i=0; ((i<Ilength) && (status != ERROR)); i+=8)
- 241              		.loc 1 146 0
- 242 00f0 0023     		movs	r3, #0
- 243 00f2 BB67     		str	r3, [r7, #120]
- 244 00f4 40E0     		b	.L10
- 245              	.L16:
+ 191              		.loc 1 146 0
+ 192 006e 0026     		movs	r6, #0
+ 103:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   uint32_t keyaddr    = (uint32_t)Key;
+ 193              		.loc 1 103 0
+ 194 0070 0127     		movs	r7, #1
  147:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   {
  148:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****     /* Write the Input block in the Input FIFO */
  149:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****     CRYP_DataIn(*(uint32_t*)(inputaddr));
- 246              		.loc 1 149 0
- 247 00f6 D7F88030 		ldr	r3, [r7, #128]
- 248 00fa 1B68     		ldr	r3, [r3]
- 249 00fc 1846     		mov	r0, r3
- 250 00fe FFF7FEFF 		bl	CRYP_DataIn
  150:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****     inputaddr+=4;
- 251              		.loc 1 150 0
- 252 0102 D7F88030 		ldr	r3, [r7, #128]
- 253 0106 0433     		adds	r3, r3, #4
- 254 0108 C7F88030 		str	r3, [r7, #128]
  151:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****     CRYP_DataIn(*(uint32_t*)(inputaddr));
- 255              		.loc 1 151 0
- 256 010c D7F88030 		ldr	r3, [r7, #128]
- 257 0110 1B68     		ldr	r3, [r3]
- 258 0112 1846     		mov	r0, r3
- 259 0114 FFF7FEFF 		bl	CRYP_DataIn
  152:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****     inputaddr+=4;
- 260              		.loc 1 152 0
- 261 0118 D7F88030 		ldr	r3, [r7, #128]
- 262 011c 0433     		adds	r3, r3, #4
- 263 011e C7F88030 		str	r3, [r7, #128]
  153:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c **** 
  154:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****     /* Wait until the complete message has been processed */
  155:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****     counter = 0;
- 264              		.loc 1 155 0
- 265 0122 0023     		movs	r3, #0
- 266 0124 7B61     		str	r3, [r7, #20]
- 267              	.L12:
+ 195              		.loc 1 155 0
+ 196 0072 B046     		mov	r8, r6
  156:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****     do
  157:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****     {
  158:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****       busystatus = CRYP_GetFlagStatus(CRYP_FLAG_BUSY);
- 268              		.loc 1 158 0 discriminator 1
- 269 0126 1020     		movs	r0, #16
- 270 0128 FFF7FEFF 		bl	CRYP_GetFlagStatus
- 271 012c 0346     		mov	r3, r0
- 272 012e 7B67     		str	r3, [r7, #116]
+ 197              		.loc 1 158 0
+ 198 0074 1024     		movs	r4, #16
+ 199              	.LVL28:
+ 146:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   {
+ 200              		.loc 1 146 0
+ 201 0076 23E0     		b	.L4
+ 202              	.LVL29:
+ 203              	.L8:
+ 149:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****     inputaddr+=4;
+ 204              		.loc 1 149 0
+ 205 0078 2868     		ldr	r0, [r5]
+ 206 007a FFF7FEFF 		bl	CRYP_DataIn
+ 207              	.LVL30:
+ 151:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****     inputaddr+=4;
+ 208              		.loc 1 151 0
+ 209 007e 6868     		ldr	r0, [r5, #4]
+ 210 0080 FFF7FEFF 		bl	CRYP_DataIn
+ 211              	.LVL31:
+ 152:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c **** 
+ 212              		.loc 1 152 0
+ 213 0084 0835     		adds	r5, r5, #8
+ 214              	.LVL32:
+ 155:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****     do
+ 215              		.loc 1 155 0
+ 216 0086 CDF80480 		str	r8, [sp, #4]
+ 217              	.L6:
+ 218              		.loc 1 158 0 discriminator 1
+ 219 008a 2046     		mov	r0, r4
+ 220 008c FFF7FEFF 		bl	CRYP_GetFlagStatus
+ 221              	.LVL33:
+ 222 0090 0246     		mov	r2, r0
+ 223              	.LVL34:
  159:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****       counter++;
- 273              		.loc 1 159 0 discriminator 1
- 274 0130 7B69     		ldr	r3, [r7, #20]
- 275 0132 0133     		adds	r3, r3, #1
- 276 0134 7B61     		str	r3, [r7, #20]
+ 224              		.loc 1 159 0 discriminator 1
+ 225 0092 019B     		ldr	r3, [sp, #4]
+ 226 0094 0133     		adds	r3, r3, #1
+ 227 0096 0193     		str	r3, [sp, #4]
  160:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****     }while ((counter != TDESBUSY_TIMEOUT) && (busystatus != RESET));
- 277              		.loc 1 160 0 discriminator 1
- 278 0136 7B69     		ldr	r3, [r7, #20]
- 279 0138 B3F5803F 		cmp	r3, #65536
- 280 013c 02D0     		beq	.L11
- 281 013e 7B6F     		ldr	r3, [r7, #116]
- 282 0140 002B     		cmp	r3, #0
- 283 0142 F0D1     		bne	.L12
- 284              	.L11:
+ 228              		.loc 1 160 0 discriminator 1
+ 229 0098 019B     		ldr	r3, [sp, #4]
+ 230 009a B3F5803F 		cmp	r3, #65536
+ 231 009e 01D0     		beq	.L5
+ 232 00a0 0028     		cmp	r0, #0
+ 233 00a2 F2D1     		bne	.L6
+ 234              	.L5:
  161:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c **** 
  162:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****     if (busystatus != RESET)
- 285              		.loc 1 162 0
- 286 0144 7B6F     		ldr	r3, [r7, #116]
- 287 0146 002B     		cmp	r3, #0
- 288 0148 03D0     		beq	.L13
+ 235              		.loc 1 162 0
+ 236 00a4 52B9     		cbnz	r2, .L9
  163:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****     {
  164:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****        status = ERROR;
- 289              		.loc 1 164 0
- 290 014a 0023     		movs	r3, #0
- 291 014c 87F88730 		strb	r3, [r7, #135]
- 292 0150 0FE0     		b	.L14
- 293              	.L13:
  165:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****     }
  166:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****     else
  167:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****     {
  168:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c **** 
  169:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****       /* Read the Output block from the Output FIFO */
  170:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****       *(uint32_t*)(outputaddr) = CRYP_DataOut();
- 294              		.loc 1 170 0
- 295 0152 FC6F     		ldr	r4, [r7, #124]
- 296 0154 FFF7FEFF 		bl	CRYP_DataOut
- 297 0158 0346     		mov	r3, r0
- 298 015a 2360     		str	r3, [r4]
+ 237              		.loc 1 170 0
+ 238 00a6 FFF7FEFF 		bl	CRYP_DataOut
+ 239              	.LVL35:
+ 240 00aa C9F80000 		str	r0, [r9]
+ 241              	.LVL36:
  171:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****       outputaddr+=4;
- 299              		.loc 1 171 0
- 300 015c FB6F     		ldr	r3, [r7, #124]
- 301 015e 0433     		adds	r3, r3, #4
- 302 0160 FB67     		str	r3, [r7, #124]
  172:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****       *(uint32_t*)(outputaddr) = CRYP_DataOut();
- 303              		.loc 1 172 0
- 304 0162 FC6F     		ldr	r4, [r7, #124]
- 305 0164 FFF7FEFF 		bl	CRYP_DataOut
- 306 0168 0346     		mov	r3, r0
- 307 016a 2360     		str	r3, [r4]
+ 242              		.loc 1 172 0
+ 243 00ae FFF7FEFF 		bl	CRYP_DataOut
+ 244              	.LVL37:
+ 245 00b2 C9F80400 		str	r0, [r9, #4]
  173:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****       outputaddr+=4;
- 308              		.loc 1 173 0
- 309 016c FB6F     		ldr	r3, [r7, #124]
- 310 016e 0433     		adds	r3, r3, #4
- 311 0170 FB67     		str	r3, [r7, #124]
- 312              	.L14:
+ 246              		.loc 1 173 0
+ 247 00b6 09F10809 		add	r9, r9, #8
+ 248              	.LVL38:
+ 249 00ba 00E0     		b	.L7
+ 250              	.LVL39:
+ 251              	.L9:
+ 164:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****     }
+ 252              		.loc 1 164 0
+ 253 00bc 4746     		mov	r7, r8
+ 254              	.LVL40:
+ 255              	.L7:
  146:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   {
- 313              		.loc 1 146 0
- 314 0172 BB6F     		ldr	r3, [r7, #120]
- 315 0174 0833     		adds	r3, r3, #8
- 316 0176 BB67     		str	r3, [r7, #120]
- 317              	.L10:
+ 256              		.loc 1 146 0
+ 257 00be 0836     		adds	r6, r6, #8
+ 258              	.LVL41:
+ 259              	.L4:
  146:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   {
- 318              		.loc 1 146 0 is_stmt 0 discriminator 1
- 319 0178 BA6F     		ldr	r2, [r7, #120]
- 320 017a 3B68     		ldr	r3, [r7]
- 321 017c 9A42     		cmp	r2, r3
- 322 017e 03D2     		bcs	.L15
- 146:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   {
- 323              		.loc 1 146 0 discriminator 2
- 324 0180 97F88730 		ldrb	r3, [r7, #135]	@ zero_extendqisi2
- 325 0184 002B     		cmp	r3, #0
- 326 0186 B6D1     		bne	.L16
- 327              	.L15:
+ 260              		.loc 1 146 0 is_stmt 0 discriminator 1
+ 261 00c0 5645     		cmp	r6, r10
+ 262 00c2 2CBF     		ite	cs
+ 263 00c4 0023     		movcs	r3, #0
+ 264 00c6 07F00103 		andcc	r3, r7, #1
+ 265 00ca 002B     		cmp	r3, #0
+ 266 00cc D4D1     		bne	.L8
  174:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****     }
  175:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   }
  176:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c **** 
  177:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   /* Disable Crypto */
  178:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   CRYP_Cmd(DISABLE);
- 328              		.loc 1 178 0 is_stmt 1
- 329 0188 0020     		movs	r0, #0
- 330 018a FFF7FEFF 		bl	CRYP_Cmd
+ 267              		.loc 1 178 0 is_stmt 1
+ 268 00ce 0020     		movs	r0, #0
+ 269 00d0 FFF7FEFF 		bl	CRYP_Cmd
+ 270              	.LVL42:
  179:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c **** 
  180:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   return status; 
- 331              		.loc 1 180 0
- 332 018e 97F88730 		ldrb	r3, [r7, #135]	@ zero_extendqisi2
  181:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c **** }
- 333              		.loc 1 181 0
- 334 0192 1846     		mov	r0, r3
- 335 0194 8C37     		adds	r7, r7, #140
- 336 0196 BD46     		mov	sp, r7
- 337              		@ sp needed
- 338 0198 90BD     		pop	{r4, r7, pc}
- 339              		.cfi_endproc
- 340              	.LFE110:
- 342 019a 00BF     		.section	.text.CRYP_TDES_CBC,"ax",%progbits
- 343              		.align	2
- 344              		.global	CRYP_TDES_CBC
- 345              		.thumb
- 346              		.thumb_func
- 348              	CRYP_TDES_CBC:
- 349              	.LFB111:
+ 271              		.loc 1 181 0
+ 272 00d4 3846     		mov	r0, r7
+ 273 00d6 0CB0     		add	sp, sp, #48
+ 274              		@ sp needed
+ 275 00d8 BDE8F087 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 276              		.cfi_endproc
+ 277              	.LFE110:
+ 279              		.section	.text.CRYP_TDES_CBC,"ax",%progbits
+ 280              		.align	2
+ 281              		.global	CRYP_TDES_CBC
+ 282              		.thumb
+ 283              		.thumb_func
+ 285              	CRYP_TDES_CBC:
+ 286              	.LFB111:
  182:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c **** 
  183:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c **** /**
  184:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   * @brief  Encrypt and decrypt using TDES in CBC Mode
@@ -905,483 +842,443 @@
  198:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c **** ErrorStatus CRYP_TDES_CBC(uint8_t Mode, uint8_t Key[24], uint8_t InitVectors[8],
  199:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****                           uint8_t *Input, uint32_t Ilength, uint8_t *Output)
  200:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c **** {
- 350              		.loc 1 200 0
- 351              		.cfi_startproc
- 352              		@ args = 8, pretend = 0, frame = 168
- 353              		@ frame_needed = 1, uses_anonymous_args = 0
- 354 0000 90B5     		push	{r4, r7, lr}
- 355              	.LCFI3:
- 356              		.cfi_def_cfa_offset 12
- 357              		.cfi_offset 4, -12
- 358              		.cfi_offset 7, -8
- 359              		.cfi_offset 14, -4
- 360 0002 ABB0     		sub	sp, sp, #172
- 361              	.LCFI4:
- 362              		.cfi_def_cfa_offset 184
- 363 0004 00AF     		add	r7, sp, #0
- 364              	.LCFI5:
- 365              		.cfi_def_cfa_register 7
- 366 0006 B960     		str	r1, [r7, #8]
- 367 0008 7A60     		str	r2, [r7, #4]
- 368 000a 3B60     		str	r3, [r7]
- 369 000c 0346     		mov	r3, r0
- 370 000e FB73     		strb	r3, [r7, #15]
+ 287              		.loc 1 200 0
+ 288              		.cfi_startproc
+ 289              		@ args = 8, pretend = 0, frame = 64
+ 290              		@ frame_needed = 0, uses_anonymous_args = 0
+ 291              	.LVL43:
+ 292 0000 2DE9F047 		push	{r4, r5, r6, r7, r8, r9, r10, lr}
+ 293              	.LCFI2:
+ 294              		.cfi_def_cfa_offset 32
+ 295              		.cfi_offset 4, -32
+ 296              		.cfi_offset 5, -28
+ 297              		.cfi_offset 6, -24
+ 298              		.cfi_offset 7, -20
+ 299              		.cfi_offset 8, -16
+ 300              		.cfi_offset 9, -12
+ 301              		.cfi_offset 10, -8
+ 302              		.cfi_offset 14, -4
+ 303 0004 90B0     		sub	sp, sp, #64
+ 304              	.LCFI3:
+ 305              		.cfi_def_cfa_offset 96
+ 306 0006 0746     		mov	r7, r0
+ 307 0008 0C46     		mov	r4, r1
+ 308 000a 1646     		mov	r6, r2
+ 309 000c DDF860A0 		ldr	r10, [sp, #96]
  201:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   CRYP_InitTypeDef TDES_CRYP_InitStructure;
  202:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   CRYP_KeyInitTypeDef TDES_CRYP_KeyInitStructure;
  203:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   CRYP_IVInitTypeDef TDES_CRYP_IVInitStructure;
  204:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   __IO uint32_t counter = 0;
- 371              		.loc 1 204 0
- 372 0010 0023     		movs	r3, #0
- 373 0012 3B61     		str	r3, [r7, #16]
+ 310              		.loc 1 204 0
+ 311 0010 0022     		movs	r2, #0
+ 312              	.LVL44:
+ 313 0012 0192     		str	r2, [sp, #4]
+ 314              	.LVL45:
  205:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   uint32_t busystatus = 0;
- 374              		.loc 1 205 0
- 375 0014 0023     		movs	r3, #0
- 376 0016 C7F89430 		str	r3, [r7, #148]
  206:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   ErrorStatus status = SUCCESS;
- 377              		.loc 1 206 0
- 378 001a 0123     		movs	r3, #1
- 379 001c 87F8A730 		strb	r3, [r7, #167]
  207:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   uint32_t keyaddr    = (uint32_t)Key;
- 380              		.loc 1 207 0
- 381 0020 BB68     		ldr	r3, [r7, #8]
- 382 0022 C7F89030 		str	r3, [r7, #144]
  208:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   uint32_t inputaddr  = (uint32_t)Input;
- 383              		.loc 1 208 0
- 384 0026 3B68     		ldr	r3, [r7]
- 385 0028 C7F8A030 		str	r3, [r7, #160]
+ 315              		.loc 1 208 0
+ 316 0014 1D46     		mov	r5, r3
+ 317              	.LVL46:
  209:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   uint32_t outputaddr = (uint32_t)Output;
- 386              		.loc 1 209 0
- 387 002c D7F8BC30 		ldr	r3, [r7, #188]
- 388 0030 C7F89C30 		str	r3, [r7, #156]
+ 318              		.loc 1 209 0
+ 319 0016 DDF86490 		ldr	r9, [sp, #100]
+ 320              	.LVL47:
  210:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   uint32_t ivaddr     = (uint32_t)InitVectors;
- 389              		.loc 1 210 0
- 390 0034 7B68     		ldr	r3, [r7, #4]
- 391 0036 C7F88C30 		str	r3, [r7, #140]
  211:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   uint32_t i = 0;
- 392              		.loc 1 211 0
- 393 003a 0023     		movs	r3, #0
- 394 003c C7F89830 		str	r3, [r7, #152]
  212:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c **** 
  213:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   /* Crypto structures initialisation*/
  214:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   CRYP_KeyStructInit(&TDES_CRYP_KeyInitStructure);
- 395              		.loc 1 214 0
- 396 0040 07F12403 		add	r3, r7, #36
- 397 0044 1846     		mov	r0, r3
- 398 0046 FFF7FEFF 		bl	CRYP_KeyStructInit
+ 321              		.loc 1 214 0
+ 322 001a 06A8     		add	r0, sp, #24
+ 323              	.LVL48:
+ 324 001c FFF7FEFF 		bl	CRYP_KeyStructInit
+ 325              	.LVL49:
  215:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c **** 
  216:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   /* Crypto Init for Encryption process */
  217:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   if(Mode == MODE_ENCRYPT) /* TDES encryption */
- 399              		.loc 1 217 0
- 400 004a FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
- 401 004c 012B     		cmp	r3, #1
- 402 004e 03D1     		bne	.L19
+ 326              		.loc 1 217 0
+ 327 0020 012F     		cmp	r7, #1
  218:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   {
  219:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****     TDES_CRYP_InitStructure.CRYP_AlgoDir = CRYP_AlgoDir_Encrypt;
- 403              		.loc 1 219 0
- 404 0050 0023     		movs	r3, #0
- 405 0052 A7F84430 		strh	r3, [r7, #68]	@ movhi
- 406 0056 02E0     		b	.L20
- 407              	.L19:
+ 328              		.loc 1 219 0
+ 329 0022 0CBF     		ite	eq
+ 330 0024 0023     		moveq	r3, #0
  220:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   }
  221:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   else
  222:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   {
  223:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****     TDES_CRYP_InitStructure.CRYP_AlgoDir = CRYP_AlgoDir_Decrypt;
- 408              		.loc 1 223 0
- 409 0058 0423     		movs	r3, #4
- 410 005a A7F84430 		strh	r3, [r7, #68]	@ movhi
- 411              	.L20:
+ 331              		.loc 1 223 0
+ 332 0026 0423     		movne	r3, #4
+ 333 0028 ADF83830 		strh	r3, [sp, #56]	@ movhi
  224:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   }
  225:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   TDES_CRYP_InitStructure.CRYP_AlgoMode = CRYP_AlgoMode_TDES_CBC;
- 412              		.loc 1 225 0
- 413 005e 0823     		movs	r3, #8
- 414 0060 A7F84630 		strh	r3, [r7, #70]	@ movhi
+ 334              		.loc 1 225 0
+ 335 002c 0823     		movs	r3, #8
+ 336 002e ADF83A30 		strh	r3, [sp, #58]	@ movhi
  226:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   TDES_CRYP_InitStructure.CRYP_DataType = CRYP_DataType_8b;
- 415              		.loc 1 226 0
- 416 0064 8023     		movs	r3, #128
- 417 0066 A7F84830 		strh	r3, [r7, #72]	@ movhi
+ 337              		.loc 1 226 0
+ 338 0032 8023     		movs	r3, #128
+ 339 0034 ADF83C30 		strh	r3, [sp, #60]	@ movhi
  227:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c **** 
  228:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   CRYP_Init(&TDES_CRYP_InitStructure);
- 418              		.loc 1 228 0
- 419 006a 07F14403 		add	r3, r7, #68
- 420 006e 1846     		mov	r0, r3
- 421 0070 FFF7FEFF 		bl	CRYP_Init
+ 340              		.loc 1 228 0
+ 341 0038 0EA8     		add	r0, sp, #56
+ 342 003a FFF7FEFF 		bl	CRYP_Init
+ 343              	.LVL50:
  229:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c **** 
  230:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   /* Key Initialisation */
  231:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   TDES_CRYP_KeyInitStructure.CRYP_Key1Left = __REV(*(uint32_t*)(keyaddr));
- 422              		.loc 1 231 0
- 423 0074 D7F89030 		ldr	r3, [r7, #144]
- 424 0078 1B68     		ldr	r3, [r3]
- 425 007a C7F88830 		str	r3, [r7, #136]
- 426              	.LBB42:
- 427              	.LBB43:
- 352:libs/CMSIS/Include/core_cmInstr.h ****   return(result);
- 428              		.loc 2 352 0
- 429 007e D7F88830 		ldr	r3, [r7, #136]
- 430              	@ 352 "libs/CMSIS/Include/core_cmInstr.h" 1
- 431 0082 1BBA     		rev r3, r3
- 432              	@ 0 "" 2
- 433              		.thumb
- 434 0084 C7F88430 		str	r3, [r7, #132]
- 435              		.loc 2 353 0
- 436 0088 D7F88430 		ldr	r3, [r7, #132]
- 437              	.LBE43:
- 438              	.LBE42:
- 439              		.loc 1 231 0
- 440 008c FB62     		str	r3, [r7, #44]
+ 344              		.loc 1 231 0
+ 345 003e 2368     		ldr	r3, [r4]
+ 346              	.LVL51:
+ 347              	.LBB42:
+ 348              	.LBB43:
+ 349              		.loc 2 352 0
+ 350              	@ 352 "libs/CMSIS/Include/core_cmInstr.h" 1
+ 351 0040 1BBA     		rev r3, r3
+ 352              	@ 0 "" 2
+ 353              	.LVL52:
+ 354              		.thumb
+ 355              	.LBE43:
+ 356              	.LBE42:
+ 357              		.loc 1 231 0
+ 358 0042 0893     		str	r3, [sp, #32]
+ 359              	.LVL53:
  232:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   keyaddr+=4;
- 441              		.loc 1 232 0
- 442 008e D7F89030 		ldr	r3, [r7, #144]
- 443 0092 0433     		adds	r3, r3, #4
- 444 0094 C7F89030 		str	r3, [r7, #144]
  233:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   TDES_CRYP_KeyInitStructure.CRYP_Key1Right= __REV(*(uint32_t*)(keyaddr));
- 445              		.loc 1 233 0
- 446 0098 D7F89030 		ldr	r3, [r7, #144]
- 447 009c 1B68     		ldr	r3, [r3]
- 448 009e C7F88030 		str	r3, [r7, #128]
- 449              	.LBB44:
- 450              	.LBB45:
- 352:libs/CMSIS/Include/core_cmInstr.h ****   return(result);
- 451              		.loc 2 352 0
- 452 00a2 D7F88030 		ldr	r3, [r7, #128]
- 453              	@ 352 "libs/CMSIS/Include/core_cmInstr.h" 1
- 454 00a6 1BBA     		rev r3, r3
- 455              	@ 0 "" 2
- 456              		.thumb
- 457 00a8 FB67     		str	r3, [r7, #124]
- 458              		.loc 2 353 0
- 459 00aa FB6F     		ldr	r3, [r7, #124]
- 460              	.LBE45:
- 461              	.LBE44:
- 462              		.loc 1 233 0
- 463 00ac 3B63     		str	r3, [r7, #48]
+ 360              		.loc 1 233 0
+ 361 0044 6368     		ldr	r3, [r4, #4]
+ 362              	.LVL54:
+ 363              	.LBB44:
+ 364              	.LBB45:
+ 365              		.loc 2 352 0
+ 366              	@ 352 "libs/CMSIS/Include/core_cmInstr.h" 1
+ 367 0046 1BBA     		rev r3, r3
+ 368              	@ 0 "" 2
+ 369              	.LVL55:
+ 370              		.thumb
+ 371              	.LBE45:
+ 372              	.LBE44:
+ 373              		.loc 1 233 0
+ 374 0048 0993     		str	r3, [sp, #36]
+ 375              	.LVL56:
  234:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   keyaddr+=4;
- 464              		.loc 1 234 0
- 465 00ae D7F89030 		ldr	r3, [r7, #144]
- 466 00b2 0433     		adds	r3, r3, #4
- 467 00b4 C7F89030 		str	r3, [r7, #144]
  235:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   TDES_CRYP_KeyInitStructure.CRYP_Key2Left = __REV(*(uint32_t*)(keyaddr));
- 468              		.loc 1 235 0
- 469 00b8 D7F89030 		ldr	r3, [r7, #144]
- 470 00bc 1B68     		ldr	r3, [r3]
- 471 00be BB67     		str	r3, [r7, #120]
- 472              	.LBB46:
- 473              	.LBB47:
- 352:libs/CMSIS/Include/core_cmInstr.h ****   return(result);
- 474              		.loc 2 352 0
- 475 00c0 BB6F     		ldr	r3, [r7, #120]
- 476              	@ 352 "libs/CMSIS/Include/core_cmInstr.h" 1
- 477 00c2 1BBA     		rev r3, r3
- 478              	@ 0 "" 2
- 479              		.thumb
- 480 00c4 7B67     		str	r3, [r7, #116]
- 481              		.loc 2 353 0
- 482 00c6 7B6F     		ldr	r3, [r7, #116]
- 483              	.LBE47:
- 484              	.LBE46:
- 485              		.loc 1 235 0
- 486 00c8 7B63     		str	r3, [r7, #52]
+ 376              		.loc 1 235 0
+ 377 004a A368     		ldr	r3, [r4, #8]
+ 378              	.LVL57:
+ 379              	.LBB46:
+ 380              	.LBB47:
+ 381              		.loc 2 352 0
+ 382              	@ 352 "libs/CMSIS/Include/core_cmInstr.h" 1
+ 383 004c 1BBA     		rev r3, r3
+ 384              	@ 0 "" 2
+ 385              	.LVL58:
+ 386              		.thumb
+ 387              	.LBE47:
+ 388              	.LBE46:
+ 389              		.loc 1 235 0
+ 390 004e 0A93     		str	r3, [sp, #40]
+ 391              	.LVL59:
  236:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   keyaddr+=4;
- 487              		.loc 1 236 0
- 488 00ca D7F89030 		ldr	r3, [r7, #144]
- 489 00ce 0433     		adds	r3, r3, #4
- 490 00d0 C7F89030 		str	r3, [r7, #144]
  237:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   TDES_CRYP_KeyInitStructure.CRYP_Key2Right= __REV(*(uint32_t*)(keyaddr));
- 491              		.loc 1 237 0
- 492 00d4 D7F89030 		ldr	r3, [r7, #144]
- 493 00d8 1B68     		ldr	r3, [r3]
- 494 00da 3B67     		str	r3, [r7, #112]
- 495              	.LBB48:
- 496              	.LBB49:
- 352:libs/CMSIS/Include/core_cmInstr.h ****   return(result);
- 497              		.loc 2 352 0
- 498 00dc 3B6F     		ldr	r3, [r7, #112]
- 499              	@ 352 "libs/CMSIS/Include/core_cmInstr.h" 1
- 500 00de 1BBA     		rev r3, r3
- 501              	@ 0 "" 2
- 502              		.thumb
- 503 00e0 FB66     		str	r3, [r7, #108]
- 504              		.loc 2 353 0
- 505 00e2 FB6E     		ldr	r3, [r7, #108]
- 506              	.LBE49:
- 507              	.LBE48:
- 508              		.loc 1 237 0
- 509 00e4 BB63     		str	r3, [r7, #56]
+ 392              		.loc 1 237 0
+ 393 0050 E368     		ldr	r3, [r4, #12]
+ 394              	.LVL60:
+ 395              	.LBB48:
+ 396              	.LBB49:
+ 397              		.loc 2 352 0
+ 398              	@ 352 "libs/CMSIS/Include/core_cmInstr.h" 1
+ 399 0052 1BBA     		rev r3, r3
+ 400              	@ 0 "" 2
+ 401              	.LVL61:
+ 402              		.thumb
+ 403              	.LBE49:
+ 404              	.LBE48:
+ 405              		.loc 1 237 0
+ 406 0054 0B93     		str	r3, [sp, #44]
+ 407              	.LVL62:
  238:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   keyaddr+=4;
- 510              		.loc 1 238 0
- 511 00e6 D7F89030 		ldr	r3, [r7, #144]
- 512 00ea 0433     		adds	r3, r3, #4
- 513 00ec C7F89030 		str	r3, [r7, #144]
  239:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   TDES_CRYP_KeyInitStructure.CRYP_Key3Left = __REV(*(uint32_t*)(keyaddr));
- 514              		.loc 1 239 0
- 515 00f0 D7F89030 		ldr	r3, [r7, #144]
- 516 00f4 1B68     		ldr	r3, [r3]
- 517 00f6 BB66     		str	r3, [r7, #104]
- 518              	.LBB50:
- 519              	.LBB51:
- 352:libs/CMSIS/Include/core_cmInstr.h ****   return(result);
- 520              		.loc 2 352 0
- 521 00f8 BB6E     		ldr	r3, [r7, #104]
- 522              	@ 352 "libs/CMSIS/Include/core_cmInstr.h" 1
- 523 00fa 1BBA     		rev r3, r3
- 524              	@ 0 "" 2
- 525              		.thumb
- 526 00fc 7B66     		str	r3, [r7, #100]
- 527              		.loc 2 353 0
- 528 00fe 7B6E     		ldr	r3, [r7, #100]
- 529              	.LBE51:
- 530              	.LBE50:
- 531              		.loc 1 239 0
- 532 0100 FB63     		str	r3, [r7, #60]
+ 408              		.loc 1 239 0
+ 409 0056 2369     		ldr	r3, [r4, #16]
+ 410              	.LVL63:
+ 411              	.LBB50:
+ 412              	.LBB51:
+ 413              		.loc 2 352 0
+ 414              	@ 352 "libs/CMSIS/Include/core_cmInstr.h" 1
+ 415 0058 1BBA     		rev r3, r3
+ 416              	@ 0 "" 2
+ 417              	.LVL64:
+ 418              		.thumb
+ 419              	.LBE51:
+ 420              	.LBE50:
+ 421              		.loc 1 239 0
+ 422 005a 0C93     		str	r3, [sp, #48]
+ 423              	.LVL65:
  240:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   keyaddr+=4;
- 533              		.loc 1 240 0
- 534 0102 D7F89030 		ldr	r3, [r7, #144]
- 535 0106 0433     		adds	r3, r3, #4
- 536 0108 C7F89030 		str	r3, [r7, #144]
  241:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   TDES_CRYP_KeyInitStructure.CRYP_Key3Right= __REV(*(uint32_t*)(keyaddr));
- 537              		.loc 1 241 0
- 538 010c D7F89030 		ldr	r3, [r7, #144]
- 539 0110 1B68     		ldr	r3, [r3]
- 540 0112 3B66     		str	r3, [r7, #96]
- 541              	.LBB52:
- 542              	.LBB53:
- 352:libs/CMSIS/Include/core_cmInstr.h ****   return(result);
- 543              		.loc 2 352 0
- 544 0114 3B6E     		ldr	r3, [r7, #96]
- 545              	@ 352 "libs/CMSIS/Include/core_cmInstr.h" 1
- 546 0116 1BBA     		rev r3, r3
- 547              	@ 0 "" 2
- 548              		.thumb
- 549 0118 FB65     		str	r3, [r7, #92]
- 550              		.loc 2 353 0
- 551 011a FB6D     		ldr	r3, [r7, #92]
- 552              	.LBE53:
- 553              	.LBE52:
- 554              		.loc 1 241 0
- 555 011c 3B64     		str	r3, [r7, #64]
+ 424              		.loc 1 241 0
+ 425 005c 6369     		ldr	r3, [r4, #20]
+ 426              	.LVL66:
+ 427              	.LBB52:
+ 428              	.LBB53:
+ 429              		.loc 2 352 0
+ 430              	@ 352 "libs/CMSIS/Include/core_cmInstr.h" 1
+ 431 005e 1BBA     		rev r3, r3
+ 432              	@ 0 "" 2
+ 433              	.LVL67:
+ 434              		.thumb
+ 435              	.LBE53:
+ 436              	.LBE52:
+ 437              		.loc 1 241 0
+ 438 0060 0D93     		str	r3, [sp, #52]
  242:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   CRYP_KeyInit(& TDES_CRYP_KeyInitStructure);
- 556              		.loc 1 242 0
- 557 011e 07F12403 		add	r3, r7, #36
- 558 0122 1846     		mov	r0, r3
- 559 0124 FFF7FEFF 		bl	CRYP_KeyInit
+ 439              		.loc 1 242 0
+ 440 0062 06A8     		add	r0, sp, #24
+ 441 0064 FFF7FEFF 		bl	CRYP_KeyInit
+ 442              	.LVL68:
  243:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c **** 
  244:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   /* Initialization Vectors */
  245:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   TDES_CRYP_IVInitStructure.CRYP_IV0Left = __REV(*(uint32_t*)(ivaddr));
- 560              		.loc 1 245 0
- 561 0128 D7F88C30 		ldr	r3, [r7, #140]
- 562 012c 1B68     		ldr	r3, [r3]
- 563 012e BB65     		str	r3, [r7, #88]
- 564              	.LBB54:
- 565              	.LBB55:
- 352:libs/CMSIS/Include/core_cmInstr.h ****   return(result);
- 566              		.loc 2 352 0
- 567 0130 BB6D     		ldr	r3, [r7, #88]
- 568              	@ 352 "libs/CMSIS/Include/core_cmInstr.h" 1
- 569 0132 1BBA     		rev r3, r3
- 570              	@ 0 "" 2
- 571              		.thumb
- 572 0134 7B65     		str	r3, [r7, #84]
- 573              		.loc 2 353 0
- 574 0136 7B6D     		ldr	r3, [r7, #84]
- 575              	.LBE55:
- 576              	.LBE54:
- 577              		.loc 1 245 0
- 578 0138 7B61     		str	r3, [r7, #20]
+ 443              		.loc 1 245 0
+ 444 0068 3368     		ldr	r3, [r6]
+ 445              	.LVL69:
+ 446              	.LBB54:
+ 447              	.LBB55:
+ 448              		.loc 2 352 0
+ 449              	@ 352 "libs/CMSIS/Include/core_cmInstr.h" 1
+ 450 006a 1BBA     		rev r3, r3
+ 451              	@ 0 "" 2
+ 452              	.LVL70:
+ 453              		.thumb
+ 454              	.LBE55:
+ 455              	.LBE54:
+ 456              		.loc 1 245 0
+ 457 006c 0293     		str	r3, [sp, #8]
+ 458              	.LVL71:
  246:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   ivaddr+=4;
- 579              		.loc 1 246 0
- 580 013a D7F88C30 		ldr	r3, [r7, #140]
- 581 013e 0433     		adds	r3, r3, #4
- 582 0140 C7F88C30 		str	r3, [r7, #140]
  247:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   TDES_CRYP_IVInitStructure.CRYP_IV0Right= __REV(*(uint32_t*)(ivaddr));
- 583              		.loc 1 247 0
- 584 0144 D7F88C30 		ldr	r3, [r7, #140]
- 585 0148 1B68     		ldr	r3, [r3]
- 586 014a 3B65     		str	r3, [r7, #80]
- 587              	.LBB56:
- 588              	.LBB57:
- 352:libs/CMSIS/Include/core_cmInstr.h ****   return(result);
- 589              		.loc 2 352 0
- 590 014c 3B6D     		ldr	r3, [r7, #80]
- 591              	@ 352 "libs/CMSIS/Include/core_cmInstr.h" 1
- 592 014e 1BBA     		rev r3, r3
- 593              	@ 0 "" 2
- 594              		.thumb
- 595 0150 FB64     		str	r3, [r7, #76]
- 596              		.loc 2 353 0
- 597 0152 FB6C     		ldr	r3, [r7, #76]
- 598              	.LBE57:
- 599              	.LBE56:
- 600              		.loc 1 247 0
- 601 0154 BB61     		str	r3, [r7, #24]
+ 459              		.loc 1 247 0
+ 460 006e 7368     		ldr	r3, [r6, #4]
+ 461              	.LVL72:
+ 462              	.LBB56:
+ 463              	.LBB57:
+ 464              		.loc 2 352 0
+ 465              	@ 352 "libs/CMSIS/Include/core_cmInstr.h" 1
+ 466 0070 1BBA     		rev r3, r3
+ 467              	@ 0 "" 2
+ 468              	.LVL73:
+ 469              		.thumb
+ 470              	.LBE57:
+ 471              	.LBE56:
+ 472              		.loc 1 247 0
+ 473 0072 0393     		str	r3, [sp, #12]
  248:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   CRYP_IVInit(&TDES_CRYP_IVInitStructure);
- 602              		.loc 1 248 0
- 603 0156 07F11403 		add	r3, r7, #20
- 604 015a 1846     		mov	r0, r3
- 605 015c FFF7FEFF 		bl	CRYP_IVInit
+ 474              		.loc 1 248 0
+ 475 0074 02A8     		add	r0, sp, #8
+ 476              	.LVL74:
+ 477 0076 FFF7FEFF 		bl	CRYP_IVInit
+ 478              	.LVL75:
  249:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c **** 
  250:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   /* Flush IN/OUT FIFO */
  251:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   CRYP_FIFOFlush();
- 606              		.loc 1 251 0
- 607 0160 FFF7FEFF 		bl	CRYP_FIFOFlush
+ 479              		.loc 1 251 0
+ 480 007a FFF7FEFF 		bl	CRYP_FIFOFlush
+ 481              	.LVL76:
  252:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c **** 
  253:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   /* Enable Crypto processor */
  254:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   CRYP_Cmd(ENABLE);
- 608              		.loc 1 254 0
- 609 0164 0120     		movs	r0, #1
- 610 0166 FFF7FEFF 		bl	CRYP_Cmd
+ 482              		.loc 1 254 0
+ 483 007e 0120     		movs	r0, #1
+ 484 0080 FFF7FEFF 		bl	CRYP_Cmd
+ 485              	.LVL77:
  255:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c **** 
  256:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   for(i=0; ((i<Ilength) && (status != ERROR)); i+=8)
- 611              		.loc 1 256 0
- 612 016a 0023     		movs	r3, #0
- 613 016c C7F89830 		str	r3, [r7, #152]
- 614 0170 4BE0     		b	.L29
- 615              	.L35:
+ 486              		.loc 1 256 0
+ 487 0084 0026     		movs	r6, #0
+ 488              	.LVL78:
+ 206:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   uint32_t keyaddr    = (uint32_t)Key;
+ 489              		.loc 1 206 0
+ 490 0086 0127     		movs	r7, #1
  257:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   {
  258:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****     /* Write the Input block in the Input FIFO */
  259:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****     CRYP_DataIn(*(uint32_t*)(inputaddr));
- 616              		.loc 1 259 0
- 617 0172 D7F8A030 		ldr	r3, [r7, #160]
- 618 0176 1B68     		ldr	r3, [r3]
- 619 0178 1846     		mov	r0, r3
- 620 017a FFF7FEFF 		bl	CRYP_DataIn
  260:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****     inputaddr+=4;
- 621              		.loc 1 260 0
- 622 017e D7F8A030 		ldr	r3, [r7, #160]
- 623 0182 0433     		adds	r3, r3, #4
- 624 0184 C7F8A030 		str	r3, [r7, #160]
  261:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****     CRYP_DataIn(*(uint32_t*)(inputaddr));
- 625              		.loc 1 261 0
- 626 0188 D7F8A030 		ldr	r3, [r7, #160]
- 627 018c 1B68     		ldr	r3, [r3]
- 628 018e 1846     		mov	r0, r3
- 629 0190 FFF7FEFF 		bl	CRYP_DataIn
  262:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****     inputaddr+=4;
- 630              		.loc 1 262 0
- 631 0194 D7F8A030 		ldr	r3, [r7, #160]
- 632 0198 0433     		adds	r3, r3, #4
- 633 019a C7F8A030 		str	r3, [r7, #160]
  263:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c **** 
  264:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****     /* Wait until the complete message has been processed */
  265:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****     counter = 0;
- 634              		.loc 1 265 0
- 635 019e 0023     		movs	r3, #0
- 636 01a0 3B61     		str	r3, [r7, #16]
- 637              	.L31:
+ 491              		.loc 1 265 0
+ 492 0088 B046     		mov	r8, r6
  266:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****     do
  267:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****     {
  268:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****       busystatus = CRYP_GetFlagStatus(CRYP_FLAG_BUSY);
- 638              		.loc 1 268 0 discriminator 1
- 639 01a2 1020     		movs	r0, #16
- 640 01a4 FFF7FEFF 		bl	CRYP_GetFlagStatus
- 641 01a8 0346     		mov	r3, r0
- 642 01aa C7F89430 		str	r3, [r7, #148]
+ 493              		.loc 1 268 0
+ 494 008a 1024     		movs	r4, #16
+ 495              	.LVL79:
+ 256:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   {
+ 496              		.loc 1 256 0
+ 497 008c 23E0     		b	.L14
+ 498              	.LVL80:
+ 499              	.L18:
+ 259:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****     inputaddr+=4;
+ 500              		.loc 1 259 0
+ 501 008e 2868     		ldr	r0, [r5]
+ 502 0090 FFF7FEFF 		bl	CRYP_DataIn
+ 503              	.LVL81:
+ 261:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****     inputaddr+=4;
+ 504              		.loc 1 261 0
+ 505 0094 6868     		ldr	r0, [r5, #4]
+ 506 0096 FFF7FEFF 		bl	CRYP_DataIn
+ 507              	.LVL82:
+ 262:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c **** 
+ 508              		.loc 1 262 0
+ 509 009a 0835     		adds	r5, r5, #8
+ 510              	.LVL83:
+ 265:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****     do
+ 511              		.loc 1 265 0
+ 512 009c CDF80480 		str	r8, [sp, #4]
+ 513              	.L16:
+ 514              		.loc 1 268 0 discriminator 1
+ 515 00a0 2046     		mov	r0, r4
+ 516 00a2 FFF7FEFF 		bl	CRYP_GetFlagStatus
+ 517              	.LVL84:
+ 518 00a6 0246     		mov	r2, r0
+ 519              	.LVL85:
  269:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****       counter++;
- 643              		.loc 1 269 0 discriminator 1
- 644 01ae 3B69     		ldr	r3, [r7, #16]
- 645 01b0 0133     		adds	r3, r3, #1
- 646 01b2 3B61     		str	r3, [r7, #16]
+ 520              		.loc 1 269 0 discriminator 1
+ 521 00a8 019B     		ldr	r3, [sp, #4]
+ 522 00aa 0133     		adds	r3, r3, #1
+ 523 00ac 0193     		str	r3, [sp, #4]
  270:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****     }while ((counter != TDESBUSY_TIMEOUT) && (busystatus != RESET));
- 647              		.loc 1 270 0 discriminator 1
- 648 01b4 3B69     		ldr	r3, [r7, #16]
- 649 01b6 B3F5803F 		cmp	r3, #65536
- 650 01ba 03D0     		beq	.L30
- 651 01bc D7F89430 		ldr	r3, [r7, #148]
- 652 01c0 002B     		cmp	r3, #0
- 653 01c2 EED1     		bne	.L31
- 654              	.L30:
+ 524              		.loc 1 270 0 discriminator 1
+ 525 00ae 019B     		ldr	r3, [sp, #4]
+ 526 00b0 B3F5803F 		cmp	r3, #65536
+ 527 00b4 01D0     		beq	.L15
+ 528 00b6 0028     		cmp	r0, #0
+ 529 00b8 F2D1     		bne	.L16
+ 530              	.L15:
  271:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c **** 
  272:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****     if (busystatus != RESET)
- 655              		.loc 1 272 0
- 656 01c4 D7F89430 		ldr	r3, [r7, #148]
- 657 01c8 002B     		cmp	r3, #0
- 658 01ca 03D0     		beq	.L32
+ 531              		.loc 1 272 0
+ 532 00ba 52B9     		cbnz	r2, .L19
  273:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****    {
  274:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****        status = ERROR;
- 659              		.loc 1 274 0
- 660 01cc 0023     		movs	r3, #0
- 661 01ce 87F8A730 		strb	r3, [r7, #167]
- 662 01d2 15E0     		b	.L33
- 663              	.L32:
  275:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****     }
  276:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****     else
  277:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****     {
  278:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c **** 
  279:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****       /* Read the Output block from the Output FIFO */
  280:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****       *(uint32_t*)(outputaddr) = CRYP_DataOut();
- 664              		.loc 1 280 0
- 665 01d4 D7F89C40 		ldr	r4, [r7, #156]
- 666 01d8 FFF7FEFF 		bl	CRYP_DataOut
- 667 01dc 0346     		mov	r3, r0
- 668 01de 2360     		str	r3, [r4]
+ 533              		.loc 1 280 0
+ 534 00bc FFF7FEFF 		bl	CRYP_DataOut
+ 535              	.LVL86:
+ 536 00c0 C9F80000 		str	r0, [r9]
+ 537              	.LVL87:
  281:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****       outputaddr+=4;
- 669              		.loc 1 281 0
- 670 01e0 D7F89C30 		ldr	r3, [r7, #156]
- 671 01e4 0433     		adds	r3, r3, #4
- 672 01e6 C7F89C30 		str	r3, [r7, #156]
  282:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****       *(uint32_t*)(outputaddr) = CRYP_DataOut();
- 673              		.loc 1 282 0
- 674 01ea D7F89C40 		ldr	r4, [r7, #156]
- 675 01ee FFF7FEFF 		bl	CRYP_DataOut
- 676 01f2 0346     		mov	r3, r0
- 677 01f4 2360     		str	r3, [r4]
+ 538              		.loc 1 282 0
+ 539 00c4 FFF7FEFF 		bl	CRYP_DataOut
+ 540              	.LVL88:
+ 541 00c8 C9F80400 		str	r0, [r9, #4]
  283:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****       outputaddr+=4;
- 678              		.loc 1 283 0
- 679 01f6 D7F89C30 		ldr	r3, [r7, #156]
- 680 01fa 0433     		adds	r3, r3, #4
- 681 01fc C7F89C30 		str	r3, [r7, #156]
- 682              	.L33:
+ 542              		.loc 1 283 0
+ 543 00cc 09F10809 		add	r9, r9, #8
+ 544              	.LVL89:
+ 545 00d0 00E0     		b	.L17
+ 546              	.LVL90:
+ 547              	.L19:
+ 274:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****     }
+ 548              		.loc 1 274 0
+ 549 00d2 4746     		mov	r7, r8
+ 550              	.LVL91:
+ 551              	.L17:
  256:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   {
- 683              		.loc 1 256 0
- 684 0200 D7F89830 		ldr	r3, [r7, #152]
- 685 0204 0833     		adds	r3, r3, #8
- 686 0206 C7F89830 		str	r3, [r7, #152]
- 687              	.L29:
+ 552              		.loc 1 256 0
+ 553 00d4 0836     		adds	r6, r6, #8
+ 554              	.LVL92:
+ 555              	.L14:
  256:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   {
- 688              		.loc 1 256 0 is_stmt 0 discriminator 1
- 689 020a D7F89820 		ldr	r2, [r7, #152]
- 690 020e D7F8B830 		ldr	r3, [r7, #184]
- 691 0212 9A42     		cmp	r2, r3
- 692 0214 03D2     		bcs	.L34
- 256:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   {
- 693              		.loc 1 256 0 discriminator 2
- 694 0216 97F8A730 		ldrb	r3, [r7, #167]	@ zero_extendqisi2
- 695 021a 002B     		cmp	r3, #0
- 696 021c A9D1     		bne	.L35
- 697              	.L34:
+ 556              		.loc 1 256 0 is_stmt 0 discriminator 1
+ 557 00d6 5645     		cmp	r6, r10
+ 558 00d8 2CBF     		ite	cs
+ 559 00da 0023     		movcs	r3, #0
+ 560 00dc 07F00103 		andcc	r3, r7, #1
+ 561 00e0 002B     		cmp	r3, #0
+ 562 00e2 D4D1     		bne	.L18
  284:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****     }
  285:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   }
  286:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c **** 
  287:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   /* Disable Crypto */
  288:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   CRYP_Cmd(DISABLE);
- 698              		.loc 1 288 0 is_stmt 1
- 699 021e 0020     		movs	r0, #0
- 700 0220 FFF7FEFF 		bl	CRYP_Cmd
+ 563              		.loc 1 288 0 is_stmt 1
+ 564 00e4 0020     		movs	r0, #0
+ 565 00e6 FFF7FEFF 		bl	CRYP_Cmd
+ 566              	.LVL93:
  289:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c **** 
  290:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c ****   return status; 
- 701              		.loc 1 290 0
- 702 0224 97F8A730 		ldrb	r3, [r7, #167]	@ zero_extendqisi2
  291:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_cryp_tdes.c **** }
- 703              		.loc 1 291 0
- 704 0228 1846     		mov	r0, r3
- 705 022a AC37     		adds	r7, r7, #172
- 706 022c BD46     		mov	sp, r7
- 707              		@ sp needed
- 708 022e 90BD     		pop	{r4, r7, pc}
- 709              		.cfi_endproc
- 710              	.LFE111:
- 712              		.text
- 713              	.Letext0:
- 714              		.file 3 "/usr/include/newlib/machine/_default_types.h"
- 715              		.file 4 "/usr/include/newlib/stdint.h"
- 716              		.file 5 "libs/Device/STM32F4xx/Include/stm32f4xx.h"
- 717              		.file 6 "libs/STM32F4xx_StdPeriph_Driver/inc/stm32f4xx_cryp.h"
- 718              		.file 7 "libs/CMSIS/Include/core_cm4.h"
+ 567              		.loc 1 291 0
+ 568 00ea 3846     		mov	r0, r7
+ 569 00ec 10B0     		add	sp, sp, #64
+ 570              		@ sp needed
+ 571 00ee BDE8F087 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 572              		.cfi_endproc
+ 573              	.LFE111:
+ 575 00f2 00BF     		.text
+ 576              	.Letext0:
+ 577              		.file 3 "/usr/include/newlib/machine/_default_types.h"
+ 578              		.file 4 "/usr/include/newlib/stdint.h"
+ 579              		.file 5 "libs/Device/STM32F4xx/Include/stm32f4xx.h"
+ 580              		.file 6 "libs/STM32F4xx_StdPeriph_Driver/inc/stm32f4xx_cryp.h"
+ 581              		.file 7 "libs/CMSIS/Include/core_cm4.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 stm32f4xx_cryp_tdes.c
-     /tmp/ccP4zIta.s:20     .text.CRYP_TDES_ECB:0000000000000000 $t
-     /tmp/ccP4zIta.s:25     .text.CRYP_TDES_ECB:0000000000000000 CRYP_TDES_ECB
-     /tmp/ccP4zIta.s:343    .text.CRYP_TDES_CBC:0000000000000000 $t
-     /tmp/ccP4zIta.s:348    .text.CRYP_TDES_CBC:0000000000000000 CRYP_TDES_CBC
+     /tmp/ccUudzF1.s:20     .text.CRYP_TDES_ECB:0000000000000000 $t
+     /tmp/ccUudzF1.s:25     .text.CRYP_TDES_ECB:0000000000000000 CRYP_TDES_ECB
+     /tmp/ccUudzF1.s:280    .text.CRYP_TDES_CBC:0000000000000000 $t
+     /tmp/ccUudzF1.s:285    .text.CRYP_TDES_CBC:0000000000000000 CRYP_TDES_CBC
                      .debug_frame:0000000000000010 $d
+                           .group:0000000000000000 wm4.1.7402b5479d3fa4780665141f585fc0ee
+                           .group:0000000000000000 wm4.stm32f4xx.h.48.a3308e16720c7afc3eb28e585e628ce6
+                           .group:0000000000000000 wm4.core_cm4.h.32.5f62939b60122629d60d85d0c4a14709
+                           .group:0000000000000000 wm4.features.h.22.6a4ca7cd053637cc1d0db6c16f39b2d7
+                           .group:0000000000000000 wm4._default_types.h.15.8b2cb27e528498f8ff711db085d6e489
+                           .group:0000000000000000 wm4.stdint.h.20.796e373797e732130a803d4c0338fa1b
+                           .group:0000000000000000 wm4.core_cmInstr.h.25.f50f886f2edf670cf199b35fd96f5c91
+                           .group:0000000000000000 wm4.core_cm4_simd.h.29.b4a3fdfb606cb3b26119424324d4b963
+                           .group:0000000000000000 wm4.core_cm4.h.153.5393ef7e6cebf34dd51ca528f9218ab3
+                           .group:0000000000000000 wm4.stm32f4xx.h.282.95bae448a91bccfbf24a6f9d95904bb8
+                           .group:0000000000000000 wm4.stm32f4xx_adc.h.102.2061aa73008746f3c2cc6ce8f635cad3
+                           .group:0000000000000000 wm4.stm32f4xx_can.h.25.87f18ca48b2692d39f76e87b1f07c953
+                           .group:0000000000000000 wm4.stm32f4xx_dac.h.25.c43557a6416ea4dfa986c1209c2558d6
+                           .group:0000000000000000 wm4.stm32f4xx_dbgmcu.h.24.7aedfdcf091890b5cb96019bd29a2bfc
+                           .group:0000000000000000 wm4.stm32f4xx_dcmi.h.24.64883d9be802a535b1d7770d14da73e0
+                           .group:0000000000000000 wm4.stm32f4xx_dma.h.25.c1fa1d44ae0bc9c2b3a0d1d355d8c1e6
+                           .group:0000000000000000 wm4.stm32f4xx_exti.h.25.620998268d5d3d9042a8297fbe07d507
+                           .group:0000000000000000 wm4.stm32f4xx_flash.h.25.65d4f351b72ee41355279f70305f361a
+                           .group:0000000000000000 wm4.stm32f4xx_fsmc.h.25.b907ac7bd9bec46e02d06b137d53cfd8
+                           .group:0000000000000000 wm4.stm32f4xx_hash.h.25.633fb84f031cf2ab1bd834e536716dfa
+                           .group:0000000000000000 wm4.stm32f4xx_gpio.h.25.5bd1d790d742a307b55aea5fa8fcdae8
+                           .group:0000000000000000 wm4.stm32f4xx_i2c.h.25.8fcdb817a00a67d4624d79bab0d9275f
+                           .group:0000000000000000 wm4.stm32f4xx_iwdg.h.25.3013e8d2058415cb9d51af77f748a146
+                           .group:0000000000000000 wm4.stm32f4xx_pwr.h.25.48b68c1f3a894ab012f9c2a2c222f159
+                           .group:0000000000000000 wm4.stm32f4xx_rcc.h.24.c15e7c8dc065bb29146f29591b195c87
+                           .group:0000000000000000 wm4.stm32f4xx_rng.h.25.cdb5c5c07de6a48aedfde608da3f447e
+                           .group:0000000000000000 wm4.stm32f4xx_rtc.h.25.4809a79ad46ad97b4a01e735a96738eb
+                           .group:0000000000000000 wm4.stm32f4xx_sdio.h.25.406302aabae34eada94e5f2cde635a3e
+                           .group:0000000000000000 wm4.stm32f4xx_spi.h.25.46c61b79ff8408da93e2e90cf9b717d6
+                           .group:0000000000000000 wm4.stm32f4xx_syscfg.h.25.9d5caab5677661b69e959531364e23d7
+                           .group:0000000000000000 wm4.stm32f4xx_tim.h.25.948f7fc943f34bd206e29758e77ee0a2
+                           .group:0000000000000000 wm4.stm32f4xx_usart.h.25.b64697dad017ba547dd272c2cdb5846a
+                           .group:0000000000000000 wm4.stm32f4xx_wwdg.h.25.09d70b7849c6894ddf1e83c8e86b70e1
+                           .group:0000000000000000 wm4.misc.h.25.a0cb758c1f091b46f201b19cec9e63a1
+                           .group:0000000000000000 wm4.stm32f4xx.h.6913.da011404ccb203790556c86f10c46b18
+                           .group:0000000000000000 wm4.stm32f4xx_cryp.h.119.d9dc2f059ca5f1650f6b9481919a2fab
 
 UNDEFINED SYMBOLS
 CRYP_KeyStructInit

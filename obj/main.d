@@ -35,8 +35,9 @@ obj/src/main.o: src/main.c FreeRTOS/Source/include/FreeRTOS.h \
  FreeRTOS/Source/include/../../Source/portable/GCC/ARM_CM4F/portmacro.h \
  FreeRTOS/Source/include/mpu_wrappers.h FreeRTOS/Source/include/task.h \
  FreeRTOS/Source/include/list.h FreeRTOS/Source/include/semphr.h \
- FreeRTOS/Source/include/queue.h src/clock.h src/module.h \
- src/command_parser.h src/usart_rtos.h src/hbconfig.h
+ FreeRTOS/Source/include/queue.h src/clock.h src/command_parser.h \
+ src/usart_rtos.h src/hbconfig.h src/hb_structs.h src/module.h \
+ src/hbfuncs.h
 
 FreeRTOS/Source/include/FreeRTOS.h:
 
@@ -128,10 +129,14 @@ FreeRTOS/Source/include/queue.h:
 
 src/clock.h:
 
-src/module.h:
-
 src/command_parser.h:
 
 src/usart_rtos.h:
 
 src/hbconfig.h:
+
+src/hb_structs.h:
+
+src/module.h:
+
+src/hbfuncs.h:

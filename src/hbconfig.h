@@ -4,3 +4,5 @@
 #define UDS_PHUP_PORT_OUT GPIOD
 
 
+#define USART1_GPIO_PIN GPIO_PIN_7
+

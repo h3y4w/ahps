@@ -1,0 +1,457 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m4
+   3              		.eabi_attribute 27, 3
+   4              		.fpu fpv4-sp-d16
+   5              		.eabi_attribute 20, 1
+   6              		.eabi_attribute 21, 1
+   7              		.eabi_attribute 23, 3
+   8              		.eabi_attribute 24, 1
+   9              		.eabi_attribute 25, 1
+  10              		.eabi_attribute 26, 1
+  11              		.eabi_attribute 30, 1
+  12              		.eabi_attribute 34, 1
+  13              		.eabi_attribute 18, 4
+  14              		.thumb
+  15              		.file	"hbfuncs.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.setTime,"ax",%progbits
+  20              		.align	2
+  21              		.global	setTime
+  22              		.thumb
+  23              		.thumb_func
+  25              	setTime:
+  26              	.LFB110:
+  27              		.file 1 "src/hbfuncs.c"
+   1:src/hbfuncs.c **** #include "FreeRTOS.h"
+   2:src/hbfuncs.c **** #include "task.h"
+   3:src/hbfuncs.c **** #include "hb_structs.h"
+   4:src/hbfuncs.c **** 
+   5:src/hbfuncs.c **** extern Timer_node* timer_list_head;
+   6:src/hbfuncs.c **** 
+   7:src/hbfuncs.c **** void setTime(int hours, int minutes, int seconds) {
+  28              		.loc 1 7 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 8
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              	.LVL0:
+  33 0000 70B5     		push	{r4, r5, r6, lr}
+  34              	.LCFI0:
+  35              		.cfi_def_cfa_offset 16
+  36              		.cfi_offset 4, -16
+  37              		.cfi_offset 5, -12
+  38              		.cfi_offset 6, -8
+  39              		.cfi_offset 14, -4
+  40 0002 82B0     		sub	sp, sp, #8
+  41              	.LCFI1:
+  42              		.cfi_def_cfa_offset 24
+  43 0004 0446     		mov	r4, r0
+  44 0006 0D46     		mov	r5, r1
+  45 0008 1646     		mov	r6, r2
+   8:src/hbfuncs.c ****     RTC_TimeTypeDef RTC_TimeStructure;
+   9:src/hbfuncs.c **** 
+  10:src/hbfuncs.c ****     RTC_EnterInitMode();
+  46              		.loc 1 10 0
+  47 000a FFF7FEFF 		bl	RTC_EnterInitMode
+  48              	.LVL1:
+  11:src/hbfuncs.c **** 
+  12:src/hbfuncs.c ****     //debug
+  13:src/hbfuncs.c ****     if (timer_list_head)
+  49              		.loc 1 13 0
+  50 000e 40F20003 		movw	r3, #:lower16:timer_list_head
+  51 0012 C0F20003 		movt	r3, #:upper16:timer_list_head
+  52 0016 1B68     		ldr	r3, [r3]
+  53 0018 13B1     		cbz	r3, .L2
+  14:src/hbfuncs.c ****         timer_list_head->debug3 = (unsigned) RTC_TimeStructure.RTC_Hours;
+  54              		.loc 1 14 0
+  55 001a 9DF80420 		ldrb	r2, [sp, #4]	@ zero_extendqisi2
+  56 001e 1A62     		str	r2, [r3, #32]
+  57              	.L2:
+  15:src/hbfuncs.c **** 
+  16:src/hbfuncs.c ****     RTC_TimeStructure.RTC_Seconds = DEC_2_HEX(seconds);
+  58              		.loc 1 16 0
+  59 0020 46F26763 		movw	r3, #26215
+  60 0024 C6F26663 		movt	r3, 26214
+  61 0028 83FB0621 		smull	r2, r1, r3, r6
+  62 002c F217     		asrs	r2, r6, #31
+  63 002e C2EBA102 		rsb	r2, r2, r1, asr #2
+  64 0032 02EB8201 		add	r1, r2, r2, lsl #2
+  65 0036 A6EB4106 		sub	r6, r6, r1, lsl #1
+  66              	.LVL2:
+  67 003a 06EB0212 		add	r2, r6, r2, lsl #4
+  68 003e 8DF80620 		strb	r2, [sp, #6]
+  17:src/hbfuncs.c ****     RTC_TimeStructure.RTC_Minutes = DEC_2_HEX(minutes);//0x01;
+  69              		.loc 1 17 0
+  70 0042 83FB0521 		smull	r2, r1, r3, r5
+  71 0046 EA17     		asrs	r2, r5, #31
+  72 0048 C2EBA102 		rsb	r2, r2, r1, asr #2
+  73 004c 02EB8201 		add	r1, r2, r2, lsl #2
+  74 0050 A5EB4105 		sub	r5, r5, r1, lsl #1
+  75              	.LVL3:
+  76 0054 05EB0212 		add	r2, r5, r2, lsl #4
+  77 0058 8DF80520 		strb	r2, [sp, #5]
+  18:src/hbfuncs.c ****     RTC_TimeStructure.RTC_Hours = DEC_2_HEX(hours);//0x01;
+  78              		.loc 1 18 0
+  79 005c 83FB0423 		smull	r2, r3, r3, r4
+  80 0060 E217     		asrs	r2, r4, #31
+  81 0062 C2EBA303 		rsb	r3, r2, r3, asr #2
+  82 0066 03EB8302 		add	r2, r3, r3, lsl #2
+  83 006a A4EB4204 		sub	r4, r4, r2, lsl #1
+  84              	.LVL4:
+  85 006e 04EB0313 		add	r3, r4, r3, lsl #4
+  86 0072 8DF80430 		strb	r3, [sp, #4]
+  19:src/hbfuncs.c ****     RTC_TimeStructure.RTC_H12 = RTC_H12_AM;
+  87              		.loc 1 19 0
+  88 0076 0023     		movs	r3, #0
+  89 0078 8DF80730 		strb	r3, [sp, #7]
+  20:src/hbfuncs.c ****     RTC_SetTime(RTC_Format_BCD,&RTC_TimeStructure);
+  90              		.loc 1 20 0
+  91 007c 0120     		movs	r0, #1
+  92 007e 01A9     		add	r1, sp, #4
+  93 0080 FFF7FEFF 		bl	RTC_SetTime
+  94              	.LVL5:
+  21:src/hbfuncs.c **** 
+  22:src/hbfuncs.c **** 
+  23:src/hbfuncs.c ****     RTC_ExitInitMode();
+  95              		.loc 1 23 0
+  96 0084 FFF7FEFF 		bl	RTC_ExitInitMode
+  97              	.LVL6:
+  24:src/hbfuncs.c **** }
+  98              		.loc 1 24 0
+  99 0088 02B0     		add	sp, sp, #8
+ 100              		@ sp needed
+ 101 008a 70BD     		pop	{r4, r5, r6, pc}
+ 102              		.cfi_endproc
+ 103              	.LFE110:
+ 105              		.section	.text.setDate,"ax",%progbits
+ 106              		.align	2
+ 107              		.global	setDate
+ 108              		.thumb
+ 109              		.thumb_func
+ 111              	setDate:
+ 112              	.LFB112:
+  25:src/hbfuncs.c **** 
+  26:src/hbfuncs.c **** //for future: dont pass the previous epoch  but rather create it within function
+  27:src/hbfuncs.c **** //Also prevent other tasks interrupting
+  28:src/hbfuncs.c **** void setTimeSafely(int hours, int minutes, int seconds, unsigned prev_epoch) { //sets time safely f
+  29:src/hbfuncs.c ****     RTC_TimeTypeDef t;
+  30:src/hbfuncs.c ****     taskENTER_CRITICAL();
+  31:src/hbfuncs.c **** 
+  32:src/hbfuncs.c ****     getTime(&t);
+  33:src/hbfuncs.c ****     unsigned int c = getEpoch(&t, getSystemDay());
+  34:src/hbfuncs.c **** 
+  35:src/hbfuncs.c ****     setTime(hours, minutes, seconds);
+  36:src/hbfuncs.c ****     if (timer_list_head) correctTimeChangeOffset(c, timer_list_head);
+  37:src/hbfuncs.c ****     taskEXIT_CRITICAL();
+  38:src/hbfuncs.c **** 
+  39:src/hbfuncs.c **** } 
+  40:src/hbfuncs.c **** 
+  41:src/hbfuncs.c **** 
+  42:src/hbfuncs.c **** void setDate(int month, int day, int year) {
+ 113              		.loc 1 42 0
+ 114              		.cfi_startproc
+ 115              		@ args = 0, pretend = 0, frame = 8
+ 116              		@ frame_needed = 0, uses_anonymous_args = 0
+ 117              	.LVL7:
+ 118 0000 70B5     		push	{r4, r5, r6, lr}
+ 119              	.LCFI2:
+ 120              		.cfi_def_cfa_offset 16
+ 121              		.cfi_offset 4, -16
+ 122              		.cfi_offset 5, -12
+ 123              		.cfi_offset 6, -8
+ 124              		.cfi_offset 14, -4
+ 125 0002 82B0     		sub	sp, sp, #8
+ 126              	.LCFI3:
+ 127              		.cfi_def_cfa_offset 24
+ 128 0004 0546     		mov	r5, r0
+ 129 0006 0E46     		mov	r6, r1
+ 130 0008 1446     		mov	r4, r2
+  43:src/hbfuncs.c ****     RTC_DateTypeDef RTC_DateStructure;
+  44:src/hbfuncs.c **** 
+  45:src/hbfuncs.c ****     RTC_EnterInitMode();
+ 131              		.loc 1 45 0
+ 132 000a FFF7FEFF 		bl	RTC_EnterInitMode
+ 133              	.LVL8:
+  46:src/hbfuncs.c **** 
+  47:src/hbfuncs.c ****     RTC_DateStructure.RTC_Date = day;
+ 134              		.loc 1 47 0
+ 135 000e 8DF80660 		strb	r6, [sp, #6]
+  48:src/hbfuncs.c ****     RTC_DateStructure.RTC_Month = month;
+ 136              		.loc 1 48 0
+ 137 0012 8DF80550 		strb	r5, [sp, #5]
+  49:src/hbfuncs.c ****     RTC_DateStructure.RTC_WeekDay= RTC_Weekday_Thursday;
+ 138              		.loc 1 49 0
+ 139 0016 0423     		movs	r3, #4
+ 140 0018 8DF80430 		strb	r3, [sp, #4]
+  50:src/hbfuncs.c ****     RTC_DateStructure.RTC_Year = year;
+ 141              		.loc 1 50 0
+ 142 001c 8DF80740 		strb	r4, [sp, #7]
+  51:src/hbfuncs.c ****     RTC_SetDate(RTC_Format_BCD,&RTC_DateStructure);
+ 143              		.loc 1 51 0
+ 144 0020 0120     		movs	r0, #1
+ 145 0022 0DEB0301 		add	r1, sp, r3
+ 146 0026 FFF7FEFF 		bl	RTC_SetDate
+ 147              	.LVL9:
+  52:src/hbfuncs.c **** 
+  53:src/hbfuncs.c ****     RTC_ExitInitMode();
+ 148              		.loc 1 53 0
+ 149 002a FFF7FEFF 		bl	RTC_ExitInitMode
+ 150              	.LVL10:
+  54:src/hbfuncs.c **** 
+  55:src/hbfuncs.c **** }
+ 151              		.loc 1 55 0
+ 152 002e 02B0     		add	sp, sp, #8
+ 153              		@ sp needed
+ 154 0030 70BD     		pop	{r4, r5, r6, pc}
+ 155              		.cfi_endproc
+ 156              	.LFE112:
+ 158 0032 00BF     		.section	.text.getTime,"ax",%progbits
+ 159              		.align	2
+ 160              		.global	getTime
+ 161              		.thumb
+ 162              		.thumb_func
+ 164              	getTime:
+ 165              	.LFB113:
+  56:src/hbfuncs.c **** 
+  57:src/hbfuncs.c **** void getTime(RTC_TimeTypeDef *time) {
+ 166              		.loc 1 57 0
+ 167              		.cfi_startproc
+ 168              		@ args = 0, pretend = 0, frame = 0
+ 169              		@ frame_needed = 0, uses_anonymous_args = 0
+ 170              	.LVL11:
+ 171 0000 08B5     		push	{r3, lr}
+ 172              	.LCFI4:
+ 173              		.cfi_def_cfa_offset 8
+ 174              		.cfi_offset 3, -8
+ 175              		.cfi_offset 14, -4
+ 176 0002 0146     		mov	r1, r0
+  58:src/hbfuncs.c ****     RTC_GetTime(RTC_Format_BIN, time);
+ 177              		.loc 1 58 0
+ 178 0004 0020     		movs	r0, #0
+ 179              	.LVL12:
+ 180 0006 FFF7FEFF 		bl	RTC_GetTime
+ 181              	.LVL13:
+ 182 000a 08BD     		pop	{r3, pc}
+ 183              		.cfi_endproc
+ 184              	.LFE113:
+ 186              		.section	.text.getEpoch,"ax",%progbits
+ 187              		.align	2
+ 188              		.global	getEpoch
+ 189              		.thumb
+ 190              		.thumb_func
+ 192              	getEpoch:
+ 193              	.LFB114:
+  59:src/hbfuncs.c **** /*
+  60:src/hbfuncs.c ****     time->RTC_Hours = time->RTC_Hours;
+  61:src/hbfuncs.c ****     time->RTC_Minutes = time->RTC_Minutes;
+  62:src/hbfuncs.c ****     time->RTC_Seconds = time->RTC_Seconds;
+  63:src/hbfuncs.c ****     */
+  64:src/hbfuncs.c **** }
+  65:src/hbfuncs.c **** 
+  66:src/hbfuncs.c **** 
+  67:src/hbfuncs.c **** unsigned getEpoch(RTC_TimeTypeDef *time, int days) {
+ 194              		.loc 1 67 0
+ 195              		.cfi_startproc
+ 196              		@ args = 0, pretend = 0, frame = 0
+ 197              		@ frame_needed = 0, uses_anonymous_args = 0
+ 198              		@ link register save eliminated.
+ 199              	.LVL14:
+ 200 0000 10B4     		push	{r4}
+ 201              	.LCFI5:
+ 202              		.cfi_def_cfa_offset 4
+ 203              		.cfi_offset 4, -4
+  68:src/hbfuncs.c **** 
+  69:src/hbfuncs.c ****     unsigned int epoch = days * 86400;
+ 204              		.loc 1 69 0
+ 205 0002 4FF4A343 		mov	r3, #20864
+ 206 0006 C0F20103 		movt	r3, 1
+ 207              	.LVL15:
+  70:src/hbfuncs.c ****     epoch += time->RTC_Hours * 3600;
+ 208              		.loc 1 70 0
+ 209 000a 0278     		ldrb	r2, [r0]	@ zero_extendqisi2
+ 210 000c 4FF46164 		mov	r4, #3600
+ 211 0010 04FB02F2 		mul	r2, r4, r2
+ 212 0014 03FB0121 		mla	r1, r3, r1, r2
+ 213              	.LVL16:
+  71:src/hbfuncs.c ****     epoch += time->RTC_Minutes * 60;
+ 214              		.loc 1 71 0
+ 215 0018 4278     		ldrb	r2, [r0, #1]	@ zero_extendqisi2
+ 216 001a C2EB0212 		rsb	r2, r2, r2, lsl #4
+ 217 001e 01EB8202 		add	r2, r1, r2, lsl #2
+ 218              	.LVL17:
+  72:src/hbfuncs.c ****     epoch += time->RTC_Seconds;
+ 219              		.loc 1 72 0
+ 220 0022 8078     		ldrb	r0, [r0, #2]	@ zero_extendqisi2
+ 221              	.LVL18:
+  73:src/hbfuncs.c ****     return epoch;
+  74:src/hbfuncs.c **** }
+ 222              		.loc 1 74 0
+ 223 0024 1044     		add	r0, r0, r2
+ 224              	.LVL19:
+ 225 0026 5DF8044B 		ldr	r4, [sp], #4
+ 226 002a 7047     		bx	lr
+ 227              		.cfi_endproc
+ 228              	.LFE114:
+ 230              		.section	.text.setTimeSafely,"ax",%progbits
+ 231              		.align	2
+ 232              		.global	setTimeSafely
+ 233              		.thumb
+ 234              		.thumb_func
+ 236              	setTimeSafely:
+ 237              	.LFB111:
+  28:src/hbfuncs.c ****     RTC_TimeTypeDef t;
+ 238              		.loc 1 28 0
+ 239              		.cfi_startproc
+ 240              		@ args = 0, pretend = 0, frame = 8
+ 241              		@ frame_needed = 0, uses_anonymous_args = 0
+ 242              	.LVL20:
+ 243 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+ 244              	.LCFI6:
+ 245              		.cfi_def_cfa_offset 20
+ 246              		.cfi_offset 4, -20
+ 247              		.cfi_offset 5, -16
+ 248              		.cfi_offset 6, -12
+ 249              		.cfi_offset 7, -8
+ 250              		.cfi_offset 14, -4
+ 251 0002 83B0     		sub	sp, sp, #12
+ 252              	.LCFI7:
+ 253              		.cfi_def_cfa_offset 32
+ 254 0004 0646     		mov	r6, r0
+ 255 0006 0D46     		mov	r5, r1
+ 256 0008 1446     		mov	r4, r2
+  30:src/hbfuncs.c **** 
+ 257              		.loc 1 30 0
+ 258 000a FFF7FEFF 		bl	vPortEnterCritical
+ 259              	.LVL21:
+  32:src/hbfuncs.c ****     unsigned int c = getEpoch(&t, getSystemDay());
+ 260              		.loc 1 32 0
+ 261 000e 01A8     		add	r0, sp, #4
+ 262 0010 FFF7FEFF 		bl	getTime
+ 263              	.LVL22:
+  33:src/hbfuncs.c **** 
+ 264              		.loc 1 33 0
+ 265 0014 FFF7FEFF 		bl	getSystemDay
+ 266              	.LVL23:
+ 267 0018 0146     		mov	r1, r0
+ 268 001a 01A8     		add	r0, sp, #4
+ 269 001c FFF7FEFF 		bl	getEpoch
+ 270              	.LVL24:
+ 271 0020 0746     		mov	r7, r0
+ 272              	.LVL25:
+  35:src/hbfuncs.c ****     if (timer_list_head) correctTimeChangeOffset(c, timer_list_head);
+ 273              		.loc 1 35 0
+ 274 0022 3046     		mov	r0, r6
+ 275              	.LVL26:
+ 276 0024 2946     		mov	r1, r5
+ 277 0026 2246     		mov	r2, r4
+ 278 0028 FFF7FEFF 		bl	setTime
+ 279              	.LVL27:
+  36:src/hbfuncs.c ****     taskEXIT_CRITICAL();
+ 280              		.loc 1 36 0
+ 281 002c 40F20003 		movw	r3, #:lower16:timer_list_head
+ 282 0030 C0F20003 		movt	r3, #:upper16:timer_list_head
+ 283 0034 1968     		ldr	r1, [r3]
+ 284 0036 11B1     		cbz	r1, .L7
+  36:src/hbfuncs.c ****     taskEXIT_CRITICAL();
+ 285              		.loc 1 36 0 is_stmt 0 discriminator 1
+ 286 0038 3846     		mov	r0, r7
+ 287 003a FFF7FEFF 		bl	correctTimeChangeOffset
+ 288              	.LVL28:
+ 289              	.L7:
+  37:src/hbfuncs.c **** 
+ 290              		.loc 1 37 0 is_stmt 1
+ 291 003e FFF7FEFF 		bl	vPortExitCritical
+ 292              	.LVL29:
+  39:src/hbfuncs.c **** 
+ 293              		.loc 1 39 0
+ 294 0042 03B0     		add	sp, sp, #12
+ 295              		@ sp needed
+ 296 0044 F0BD     		pop	{r4, r5, r6, r7, pc}
+ 297              		.cfi_endproc
+ 298              	.LFE111:
+ 300 0046 00BF     		.text
+ 301              	.Letext0:
+ 302              		.file 2 "/usr/include/newlib/machine/_default_types.h"
+ 303              		.file 3 "/usr/include/newlib/stdint.h"
+ 304              		.file 4 "libs/Device/STM32F4xx/Include/stm32f4xx.h"
+ 305              		.file 5 "libs/STM32F4xx_StdPeriph_Driver/inc/stm32f4xx_rtc.h"
+ 306              		.file 6 "FreeRTOS/Source/include/queue.h"
+ 307              		.file 7 "FreeRTOS/Source/include/semphr.h"
+ 308              		.file 8 "src/hb_structs.h"
+ 309              		.file 9 "libs/CMSIS/Include/core_cm4.h"
+ 310              		.file 10 "FreeRTOS/Source/include/../../Source/portable/GCC/ARM_CM4F/portmacro.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 hbfuncs.c
+     /tmp/ccEdP9Ar.s:20     .text.setTime:0000000000000000 $t
+     /tmp/ccEdP9Ar.s:25     .text.setTime:0000000000000000 setTime
+     /tmp/ccEdP9Ar.s:106    .text.setDate:0000000000000000 $t
+     /tmp/ccEdP9Ar.s:111    .text.setDate:0000000000000000 setDate
+     /tmp/ccEdP9Ar.s:159    .text.getTime:0000000000000000 $t
+     /tmp/ccEdP9Ar.s:164    .text.getTime:0000000000000000 getTime
+     /tmp/ccEdP9Ar.s:187    .text.getEpoch:0000000000000000 $t
+     /tmp/ccEdP9Ar.s:192    .text.getEpoch:0000000000000000 getEpoch
+     /tmp/ccEdP9Ar.s:231    .text.setTimeSafely:0000000000000000 $t
+     /tmp/ccEdP9Ar.s:236    .text.setTimeSafely:0000000000000000 setTimeSafely
+                     .debug_frame:0000000000000010 $d
+                           .group:0000000000000000 wm4.1.7402b5479d3fa4780665141f585fc0ee
+                           .group:0000000000000000 wm4.stddef.h.39.daafd3d79fe2f3a84d2d73d7d4e706f8
+                           .group:0000000000000000 wm4.projdefs.h.55.cdae9ead80b5a2ac004f41bb277aad45
+                           .group:0000000000000000 wm4.FreeRTOSConfig.h.55.a343614a17c4367a6359a1f530d6d32b
+                           .group:0000000000000000 wm4.stm32f4xx.h.48.a3308e16720c7afc3eb28e585e628ce6
+                           .group:0000000000000000 wm4.core_cm4.h.32.5f62939b60122629d60d85d0c4a14709
+                           .group:0000000000000000 wm4.features.h.22.6a4ca7cd053637cc1d0db6c16f39b2d7
+                           .group:0000000000000000 wm4._default_types.h.15.8b2cb27e528498f8ff711db085d6e489
+                           .group:0000000000000000 wm4.stdint.h.20.796e373797e732130a803d4c0338fa1b
+                           .group:0000000000000000 wm4.core_cmInstr.h.25.f50f886f2edf670cf199b35fd96f5c91
+                           .group:0000000000000000 wm4.core_cm4_simd.h.29.b4a3fdfb606cb3b26119424324d4b963
+                           .group:0000000000000000 wm4.core_cm4.h.153.5393ef7e6cebf34dd51ca528f9218ab3
+                           .group:0000000000000000 wm4.stm32f4xx.h.282.95bae448a91bccfbf24a6f9d95904bb8
+                           .group:0000000000000000 wm4.stm32f4xx_adc.h.102.2061aa73008746f3c2cc6ce8f635cad3
+                           .group:0000000000000000 wm4.stm32f4xx_can.h.25.87f18ca48b2692d39f76e87b1f07c953
+                           .group:0000000000000000 wm4.stm32f4xx_cryp.h.25.db1951c06ee684df97ea3a11aba6cb51
+                           .group:0000000000000000 wm4.stm32f4xx_dac.h.25.c43557a6416ea4dfa986c1209c2558d6
+                           .group:0000000000000000 wm4.stm32f4xx_dbgmcu.h.24.7aedfdcf091890b5cb96019bd29a2bfc
+                           .group:0000000000000000 wm4.stm32f4xx_dcmi.h.24.64883d9be802a535b1d7770d14da73e0
+                           .group:0000000000000000 wm4.stm32f4xx_dma.h.25.c1fa1d44ae0bc9c2b3a0d1d355d8c1e6
+                           .group:0000000000000000 wm4.stm32f4xx_exti.h.25.620998268d5d3d9042a8297fbe07d507
+                           .group:0000000000000000 wm4.stm32f4xx_flash.h.25.65d4f351b72ee41355279f70305f361a
+                           .group:0000000000000000 wm4.stm32f4xx_fsmc.h.25.b907ac7bd9bec46e02d06b137d53cfd8
+                           .group:0000000000000000 wm4.stm32f4xx_hash.h.25.633fb84f031cf2ab1bd834e536716dfa
+                           .group:0000000000000000 wm4.stm32f4xx_gpio.h.25.5bd1d790d742a307b55aea5fa8fcdae8
+                           .group:0000000000000000 wm4.stm32f4xx_i2c.h.25.8fcdb817a00a67d4624d79bab0d9275f
+                           .group:0000000000000000 wm4.stm32f4xx_iwdg.h.25.3013e8d2058415cb9d51af77f748a146
+                           .group:0000000000000000 wm4.stm32f4xx_pwr.h.25.48b68c1f3a894ab012f9c2a2c222f159
+                           .group:0000000000000000 wm4.stm32f4xx_rcc.h.24.c15e7c8dc065bb29146f29591b195c87
+                           .group:0000000000000000 wm4.stm32f4xx_rng.h.25.cdb5c5c07de6a48aedfde608da3f447e
+                           .group:0000000000000000 wm4.stm32f4xx_rtc.h.25.4809a79ad46ad97b4a01e735a96738eb
+                           .group:0000000000000000 wm4.stm32f4xx_sdio.h.25.406302aabae34eada94e5f2cde635a3e
+                           .group:0000000000000000 wm4.stm32f4xx_spi.h.25.46c61b79ff8408da93e2e90cf9b717d6
+                           .group:0000000000000000 wm4.stm32f4xx_syscfg.h.25.9d5caab5677661b69e959531364e23d7
+                           .group:0000000000000000 wm4.stm32f4xx_tim.h.25.948f7fc943f34bd206e29758e77ee0a2
+                           .group:0000000000000000 wm4.stm32f4xx_usart.h.25.b64697dad017ba547dd272c2cdb5846a
+                           .group:0000000000000000 wm4.stm32f4xx_wwdg.h.25.09d70b7849c6894ddf1e83c8e86b70e1
+                           .group:0000000000000000 wm4.misc.h.25.a0cb758c1f091b46f201b19cec9e63a1
+                           .group:0000000000000000 wm4.stm32f4xx.h.6913.da011404ccb203790556c86f10c46b18
+                           .group:0000000000000000 wm4.FreeRTOSConfig.h.74.fc794e36cd6c91c3b4695c74d78d9ccd
+                           .group:0000000000000000 wm4.portmacro.h.69.a7e264ae32accd81a6ffb6f75a8356fe
+                           .group:0000000000000000 wm4.portable.h.315.489c085dbd13c768c8594a7d23ef5545
+                           .group:0000000000000000 wm4.mpu_wrappers.h.55.46a4a008a193040c38098e9a5f07ff9d
+                           .group:0000000000000000 wm4.FreeRTOS.h.136.a1d4f27d190f434afd0502fdd510d30a
+                           .group:0000000000000000 wm4.list.h.84.e713c47e239b06424d7c93968625e34d
+                           .group:0000000000000000 wm4.task.h.73.ea72fb74b80a9cae261e97c6a9e3f3a7
+                           .group:0000000000000000 wm4.queue.h.56.a4282b659085ac883e461fc7ab8aecd1
+                           .group:0000000000000000 wm4.semphr.h.65.53591bdf1c84eee2eae05897a780c325
+                           .group:0000000000000000 wm4.hbfuncs.h.2.e3da3dcc1ea881ecd2d374365b99900a
+
+UNDEFINED SYMBOLS
+RTC_EnterInitMode
+timer_list_head
+RTC_SetTime
+RTC_ExitInitMode
+RTC_SetDate
+RTC_GetTime
+vPortEnterCritical
+getSystemDay
+correctTimeChangeOffset
+vPortExitCritical

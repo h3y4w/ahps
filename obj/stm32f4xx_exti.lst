@@ -8,7 +8,7 @@
    8              		.eabi_attribute 24, 1
    9              		.eabi_attribute 25, 1
   10              		.eabi_attribute 26, 1
-  11              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 30, 1
   12              		.eabi_attribute 34, 1
   13              		.eabi_attribute 18, 4
   14              		.thumb
@@ -131,61 +131,39 @@
   28              		.loc 1 104 0
   29              		.cfi_startproc
   30              		@ args = 0, pretend = 0, frame = 0
-  31              		@ frame_needed = 1, uses_anonymous_args = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
   32              		@ link register save eliminated.
-  33 0000 80B4     		push	{r7}
-  34              	.LCFI0:
-  35              		.cfi_def_cfa_offset 4
-  36              		.cfi_offset 7, -4
-  37 0002 00AF     		add	r7, sp, #0
-  38              	.LCFI1:
-  39              		.cfi_def_cfa_register 7
  105:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   EXTI->IMR = 0x00000000;
-  40              		.loc 1 105 0
-  41 0004 4FF47053 		mov	r3, #15360
-  42 0008 C4F20103 		movt	r3, 16385
-  43 000c 0022     		movs	r2, #0
-  44 000e 1A60     		str	r2, [r3]
+  33              		.loc 1 105 0
+  34 0000 4FF47053 		mov	r3, #15360
+  35 0004 C4F20103 		movt	r3, 16385
+  36 0008 0022     		movs	r2, #0
+  37 000a 1A60     		str	r2, [r3]
  106:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   EXTI->EMR = 0x00000000;
-  45              		.loc 1 106 0
-  46 0010 4FF47053 		mov	r3, #15360
-  47 0014 C4F20103 		movt	r3, 16385
-  48 0018 0022     		movs	r2, #0
-  49 001a 5A60     		str	r2, [r3, #4]
+  38              		.loc 1 106 0
+  39 000c 5A60     		str	r2, [r3, #4]
  107:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   EXTI->RTSR = 0x00000000;
-  50              		.loc 1 107 0
-  51 001c 4FF47053 		mov	r3, #15360
-  52 0020 C4F20103 		movt	r3, 16385
-  53 0024 0022     		movs	r2, #0
-  54 0026 9A60     		str	r2, [r3, #8]
+  40              		.loc 1 107 0
+  41 000e 9A60     		str	r2, [r3, #8]
  108:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   EXTI->FTSR = 0x00000000;
-  55              		.loc 1 108 0
-  56 0028 4FF47053 		mov	r3, #15360
-  57 002c C4F20103 		movt	r3, 16385
-  58 0030 0022     		movs	r2, #0
-  59 0032 DA60     		str	r2, [r3, #12]
+  42              		.loc 1 108 0
+  43 0010 DA60     		str	r2, [r3, #12]
  109:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   EXTI->PR = 0x007FFFFF;
-  60              		.loc 1 109 0
-  61 0034 4FF47053 		mov	r3, #15360
-  62 0038 C4F20103 		movt	r3, 16385
-  63 003c 4FF6FF72 		movw	r2, #65535
-  64 0040 C0F27F02 		movt	r2, 127
-  65 0044 5A61     		str	r2, [r3, #20]
+  44              		.loc 1 109 0
+  45 0012 4FF6FF72 		movw	r2, #65535
+  46 0016 C0F27F02 		movt	r2, 127
+  47 001a 5A61     		str	r2, [r3, #20]
+  48 001c 7047     		bx	lr
+  49              		.cfi_endproc
+  50              	.LFE110:
+  52 001e 00BF     		.section	.text.EXTI_Init,"ax",%progbits
+  53              		.align	2
+  54              		.global	EXTI_Init
+  55              		.thumb
+  56              		.thumb_func
+  58              	EXTI_Init:
+  59              	.LFB111:
  110:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c **** }
-  66              		.loc 1 110 0
-  67 0046 BD46     		mov	sp, r7
-  68              		@ sp needed
-  69 0048 5DF8047B 		ldr	r7, [sp], #4
-  70 004c 7047     		bx	lr
-  71              		.cfi_endproc
-  72              	.LFE110:
-  74 004e 00BF     		.section	.text.EXTI_Init,"ax",%progbits
-  75              		.align	2
-  76              		.global	EXTI_Init
-  77              		.thumb
-  78              		.thumb_func
-  80              	EXTI_Init:
-  81              	.LFB111:
  111:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c **** 
  112:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c **** /**
  113:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   * @brief  Initializes the EXTI peripheral according to the specified
@@ -196,26 +174,18 @@
  118:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   */
  119:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c **** void EXTI_Init(EXTI_InitTypeDef* EXTI_InitStruct)
  120:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c **** {
-  82              		.loc 1 120 0
-  83              		.cfi_startproc
-  84              		@ args = 0, pretend = 0, frame = 16
-  85              		@ frame_needed = 1, uses_anonymous_args = 0
-  86              		@ link register save eliminated.
-  87 0000 80B4     		push	{r7}
-  88              	.LCFI2:
-  89              		.cfi_def_cfa_offset 4
-  90              		.cfi_offset 7, -4
-  91 0002 85B0     		sub	sp, sp, #20
-  92              	.LCFI3:
-  93              		.cfi_def_cfa_offset 24
-  94 0004 00AF     		add	r7, sp, #0
-  95              	.LCFI4:
-  96              		.cfi_def_cfa_register 7
-  97 0006 7860     		str	r0, [r7, #4]
+  60              		.loc 1 120 0
+  61              		.cfi_startproc
+  62              		@ args = 0, pretend = 0, frame = 0
+  63              		@ frame_needed = 0, uses_anonymous_args = 0
+  64              		@ link register save eliminated.
+  65              	.LVL0:
+  66 0000 10B4     		push	{r4}
+  67              	.LCFI0:
+  68              		.cfi_def_cfa_offset 4
+  69              		.cfi_offset 4, -4
+  70              	.LVL1:
  121:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   uint32_t tmp = 0;
-  98              		.loc 1 121 0
-  99 0008 0023     		movs	r3, #0
- 100 000a FB60     		str	r3, [r7, #12]
  122:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c **** 
  123:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   /* Check the parameters */
  124:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   assert_param(IS_EXTI_MODE(EXTI_InitStruct->EXTI_Mode));
@@ -224,189 +194,136 @@
  127:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   assert_param(IS_FUNCTIONAL_STATE(EXTI_InitStruct->EXTI_LineCmd));
  128:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c **** 
  129:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   tmp = (uint32_t)EXTI_BASE;
- 101              		.loc 1 129 0
- 102 000c 4FF47053 		mov	r3, #15360
- 103 0010 C4F20103 		movt	r3, 16385
- 104 0014 FB60     		str	r3, [r7, #12]
  130:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****      
  131:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   if (EXTI_InitStruct->EXTI_LineCmd != DISABLE)
- 105              		.loc 1 131 0
- 106 0016 7B68     		ldr	r3, [r7, #4]
- 107 0018 9B79     		ldrb	r3, [r3, #6]	@ zero_extendqisi2
- 108 001a 002B     		cmp	r3, #0
- 109 001c 74D0     		beq	.L3
+  71              		.loc 1 131 0
+  72 0002 8379     		ldrb	r3, [r0, #6]	@ zero_extendqisi2
+  73 0004 002B     		cmp	r3, #0
+  74 0006 39D0     		beq	.L3
  132:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   {
  133:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****     /* Clear EXTI line configuration */
  134:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****     EXTI->IMR &= ~EXTI_InitStruct->EXTI_Line;
- 110              		.loc 1 134 0
- 111 001e 4FF47053 		mov	r3, #15360
- 112 0022 C4F20103 		movt	r3, 16385
- 113 0026 4FF47052 		mov	r2, #15360
- 114 002a C4F20102 		movt	r2, 16385
- 115 002e 1168     		ldr	r1, [r2]
- 116 0030 7A68     		ldr	r2, [r7, #4]
- 117 0032 1268     		ldr	r2, [r2]
- 118 0034 D243     		mvns	r2, r2
- 119 0036 0A40     		ands	r2, r2, r1
- 120 0038 1A60     		str	r2, [r3]
+  75              		.loc 1 134 0
+  76 0008 4FF47053 		mov	r3, #15360
+  77 000c C4F20103 		movt	r3, 16385
+  78 0010 1968     		ldr	r1, [r3]
+  79 0012 0268     		ldr	r2, [r0]
+  80 0014 21EA0202 		bic	r2, r1, r2
+  81 0018 1A60     		str	r2, [r3]
  135:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****     EXTI->EMR &= ~EXTI_InitStruct->EXTI_Line;
- 121              		.loc 1 135 0
- 122 003a 4FF47053 		mov	r3, #15360
- 123 003e C4F20103 		movt	r3, 16385
- 124 0042 4FF47052 		mov	r2, #15360
- 125 0046 C4F20102 		movt	r2, 16385
- 126 004a 5168     		ldr	r1, [r2, #4]
- 127 004c 7A68     		ldr	r2, [r7, #4]
- 128 004e 1268     		ldr	r2, [r2]
- 129 0050 D243     		mvns	r2, r2
- 130 0052 0A40     		ands	r2, r2, r1
- 131 0054 5A60     		str	r2, [r3, #4]
+  82              		.loc 1 135 0
+  83 001a 5968     		ldr	r1, [r3, #4]
+  84 001c 0268     		ldr	r2, [r0]
+  85 001e 21EA0202 		bic	r2, r1, r2
+  86 0022 5A60     		str	r2, [r3, #4]
  136:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****     
  137:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****     tmp += EXTI_InitStruct->EXTI_Mode;
- 132              		.loc 1 137 0
- 133 0056 7B68     		ldr	r3, [r7, #4]
- 134 0058 1B79     		ldrb	r3, [r3, #4]	@ zero_extendqisi2
- 135 005a FA68     		ldr	r2, [r7, #12]
- 136 005c 1344     		add	r3, r3, r2
- 137 005e FB60     		str	r3, [r7, #12]
+  87              		.loc 1 137 0
+  88 0024 0279     		ldrb	r2, [r0, #4]	@ zero_extendqisi2
+  89 0026 02F18042 		add	r2, r2, #1073741824
+  90 002a 02F59E32 		add	r2, r2, #80896
+  91              	.LVL2:
  138:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c **** 
  139:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****     *(__IO uint32_t *) tmp |= EXTI_InitStruct->EXTI_Line;
- 138              		.loc 1 139 0
- 139 0060 FB68     		ldr	r3, [r7, #12]
- 140 0062 FA68     		ldr	r2, [r7, #12]
- 141 0064 1168     		ldr	r1, [r2]
- 142 0066 7A68     		ldr	r2, [r7, #4]
- 143 0068 1268     		ldr	r2, [r2]
- 144 006a 0A43     		orrs	r2, r2, r1
- 145 006c 1A60     		str	r2, [r3]
+  92              		.loc 1 139 0
+  93 002e 1468     		ldr	r4, [r2]
+  94 0030 0168     		ldr	r1, [r0]
+  95 0032 2143     		orrs	r1, r1, r4
+  96 0034 1160     		str	r1, [r2]
  140:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c **** 
  141:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****     /* Clear Rising Falling edge configuration */
  142:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****     EXTI->RTSR &= ~EXTI_InitStruct->EXTI_Line;
- 146              		.loc 1 142 0
- 147 006e 4FF47053 		mov	r3, #15360
- 148 0072 C4F20103 		movt	r3, 16385
- 149 0076 4FF47052 		mov	r2, #15360
- 150 007a C4F20102 		movt	r2, 16385
- 151 007e 9168     		ldr	r1, [r2, #8]
- 152 0080 7A68     		ldr	r2, [r7, #4]
- 153 0082 1268     		ldr	r2, [r2]
- 154 0084 D243     		mvns	r2, r2
- 155 0086 0A40     		ands	r2, r2, r1
- 156 0088 9A60     		str	r2, [r3, #8]
+  97              		.loc 1 142 0
+  98 0036 9968     		ldr	r1, [r3, #8]
+  99 0038 0268     		ldr	r2, [r0]
+ 100              	.LVL3:
+ 101 003a 21EA0202 		bic	r2, r1, r2
+ 102 003e 9A60     		str	r2, [r3, #8]
  143:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****     EXTI->FTSR &= ~EXTI_InitStruct->EXTI_Line;
- 157              		.loc 1 143 0
- 158 008a 4FF47053 		mov	r3, #15360
- 159 008e C4F20103 		movt	r3, 16385
- 160 0092 4FF47052 		mov	r2, #15360
- 161 0096 C4F20102 		movt	r2, 16385
- 162 009a D168     		ldr	r1, [r2, #12]
- 163 009c 7A68     		ldr	r2, [r7, #4]
- 164 009e 1268     		ldr	r2, [r2]
- 165 00a0 D243     		mvns	r2, r2
- 166 00a2 0A40     		ands	r2, r2, r1
- 167 00a4 DA60     		str	r2, [r3, #12]
+ 103              		.loc 1 143 0
+ 104 0040 D968     		ldr	r1, [r3, #12]
+ 105 0042 0268     		ldr	r2, [r0]
+ 106 0044 21EA0202 		bic	r2, r1, r2
+ 107 0048 DA60     		str	r2, [r3, #12]
  144:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****     
  145:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****     /* Select the trigger for the selected external interrupts */
  146:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****     if (EXTI_InitStruct->EXTI_Trigger == EXTI_Trigger_Rising_Falling)
- 168              		.loc 1 146 0
- 169 00a6 7B68     		ldr	r3, [r7, #4]
- 170 00a8 5B79     		ldrb	r3, [r3, #5]	@ zero_extendqisi2
- 171 00aa 102B     		cmp	r3, #16
- 172 00ac 1AD1     		bne	.L4
+ 108              		.loc 1 146 0
+ 109 004a 4379     		ldrb	r3, [r0, #5]	@ zero_extendqisi2
+ 110 004c 102B     		cmp	r3, #16
+ 111 004e 0CD1     		bne	.L4
  147:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****     {
  148:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****       /* Rising Falling edge */
  149:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****       EXTI->RTSR |= EXTI_InitStruct->EXTI_Line;
- 173              		.loc 1 149 0
- 174 00ae 4FF47053 		mov	r3, #15360
- 175 00b2 C4F20103 		movt	r3, 16385
- 176 00b6 4FF47052 		mov	r2, #15360
- 177 00ba C4F20102 		movt	r2, 16385
- 178 00be 9168     		ldr	r1, [r2, #8]
- 179 00c0 7A68     		ldr	r2, [r7, #4]
- 180 00c2 1268     		ldr	r2, [r2]
- 181 00c4 0A43     		orrs	r2, r2, r1
- 182 00c6 9A60     		str	r2, [r3, #8]
+ 112              		.loc 1 149 0
+ 113 0050 4FF47053 		mov	r3, #15360
+ 114 0054 C4F20103 		movt	r3, 16385
+ 115 0058 9968     		ldr	r1, [r3, #8]
+ 116 005a 0268     		ldr	r2, [r0]
+ 117 005c 0A43     		orrs	r2, r2, r1
+ 118 005e 9A60     		str	r2, [r3, #8]
  150:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****       EXTI->FTSR |= EXTI_InitStruct->EXTI_Line;
- 183              		.loc 1 150 0
- 184 00c8 4FF47053 		mov	r3, #15360
- 185 00cc C4F20103 		movt	r3, 16385
- 186 00d0 4FF47052 		mov	r2, #15360
- 187 00d4 C4F20102 		movt	r2, 16385
- 188 00d8 D168     		ldr	r1, [r2, #12]
- 189 00da 7A68     		ldr	r2, [r7, #4]
- 190 00dc 1268     		ldr	r2, [r2]
- 191 00de 0A43     		orrs	r2, r2, r1
- 192 00e0 DA60     		str	r2, [r3, #12]
- 193 00e2 1EE0     		b	.L2
- 194              	.L4:
+ 119              		.loc 1 150 0
+ 120 0060 D968     		ldr	r1, [r3, #12]
+ 121 0062 0268     		ldr	r2, [r0]
+ 122 0064 0A43     		orrs	r2, r2, r1
+ 123 0066 DA60     		str	r2, [r3, #12]
+ 124 0068 12E0     		b	.L2
+ 125              	.L4:
+ 126              	.LVL4:
  151:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****     }
  152:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****     else
  153:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****     {
  154:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****       tmp = (uint32_t)EXTI_BASE;
- 195              		.loc 1 154 0
- 196 00e4 4FF47053 		mov	r3, #15360
- 197 00e8 C4F20103 		movt	r3, 16385
- 198 00ec FB60     		str	r3, [r7, #12]
  155:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****       tmp += EXTI_InitStruct->EXTI_Trigger;
- 199              		.loc 1 155 0
- 200 00ee 7B68     		ldr	r3, [r7, #4]
- 201 00f0 5B79     		ldrb	r3, [r3, #5]	@ zero_extendqisi2
- 202 00f2 FA68     		ldr	r2, [r7, #12]
- 203 00f4 1344     		add	r3, r3, r2
- 204 00f6 FB60     		str	r3, [r7, #12]
+ 127              		.loc 1 155 0
+ 128 006a 03F18043 		add	r3, r3, #1073741824
+ 129 006e 03F59E33 		add	r3, r3, #80896
+ 130              	.LVL5:
  156:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c **** 
  157:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****       *(__IO uint32_t *) tmp |= EXTI_InitStruct->EXTI_Line;
- 205              		.loc 1 157 0
- 206 00f8 FB68     		ldr	r3, [r7, #12]
- 207 00fa FA68     		ldr	r2, [r7, #12]
- 208 00fc 1168     		ldr	r1, [r2]
- 209 00fe 7A68     		ldr	r2, [r7, #4]
- 210 0100 1268     		ldr	r2, [r2]
- 211 0102 0A43     		orrs	r2, r2, r1
- 212 0104 1A60     		str	r2, [r3]
- 213 0106 0CE0     		b	.L2
- 214              	.L3:
+ 131              		.loc 1 157 0
+ 132 0072 1968     		ldr	r1, [r3]
+ 133 0074 0268     		ldr	r2, [r0]
+ 134 0076 0A43     		orrs	r2, r2, r1
+ 135 0078 1A60     		str	r2, [r3]
+ 136 007a 09E0     		b	.L2
+ 137              	.LVL6:
+ 138              	.L3:
  158:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****     }
  159:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   }
  160:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   else
  161:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   {
  162:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****     tmp += EXTI_InitStruct->EXTI_Mode;
- 215              		.loc 1 162 0
- 216 0108 7B68     		ldr	r3, [r7, #4]
- 217 010a 1B79     		ldrb	r3, [r3, #4]	@ zero_extendqisi2
- 218 010c FA68     		ldr	r2, [r7, #12]
- 219 010e 1344     		add	r3, r3, r2
- 220 0110 FB60     		str	r3, [r7, #12]
+ 139              		.loc 1 162 0
+ 140 007c 0379     		ldrb	r3, [r0, #4]	@ zero_extendqisi2
+ 141 007e 03F18043 		add	r3, r3, #1073741824
+ 142 0082 03F59E33 		add	r3, r3, #80896
+ 143              	.LVL7:
  163:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c **** 
  164:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****     /* Disable the selected external lines */
  165:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****     *(__IO uint32_t *) tmp &= ~EXTI_InitStruct->EXTI_Line;
- 221              		.loc 1 165 0
- 222 0112 FB68     		ldr	r3, [r7, #12]
- 223 0114 FA68     		ldr	r2, [r7, #12]
- 224 0116 1168     		ldr	r1, [r2]
- 225 0118 7A68     		ldr	r2, [r7, #4]
- 226 011a 1268     		ldr	r2, [r2]
- 227 011c D243     		mvns	r2, r2
- 228 011e 0A40     		ands	r2, r2, r1
- 229 0120 1A60     		str	r2, [r3]
- 230              	.L2:
+ 144              		.loc 1 165 0
+ 145 0086 1A68     		ldr	r2, [r3]
+ 146 0088 0168     		ldr	r1, [r0]
+ 147 008a 22EA0102 		bic	r2, r2, r1
+ 148 008e 1A60     		str	r2, [r3]
+ 149              	.LVL8:
+ 150              	.L2:
  166:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   }
  167:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c **** }
- 231              		.loc 1 167 0
- 232 0122 1437     		adds	r7, r7, #20
- 233 0124 BD46     		mov	sp, r7
- 234              		@ sp needed
- 235 0126 5DF8047B 		ldr	r7, [sp], #4
- 236 012a 7047     		bx	lr
- 237              		.cfi_endproc
- 238              	.LFE111:
- 240              		.section	.text.EXTI_StructInit,"ax",%progbits
- 241              		.align	2
- 242              		.global	EXTI_StructInit
- 243              		.thumb
- 244              		.thumb_func
- 246              	EXTI_StructInit:
- 247              	.LFB112:
+ 151              		.loc 1 167 0
+ 152 0090 5DF8044B 		ldr	r4, [sp], #4
+ 153 0094 7047     		bx	lr
+ 154              		.cfi_endproc
+ 155              	.LFE111:
+ 157 0096 00BF     		.section	.text.EXTI_StructInit,"ax",%progbits
+ 158              		.align	2
+ 159              		.global	EXTI_StructInit
+ 160              		.thumb
+ 161              		.thumb_func
+ 163              	EXTI_StructInit:
+ 164              	.LFB112:
  168:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c **** 
  169:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c **** /**
  170:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   * @brief  Fills each EXTI_InitStruct member with its reset value.
@@ -416,58 +333,37 @@
  174:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   */
  175:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c **** void EXTI_StructInit(EXTI_InitTypeDef* EXTI_InitStruct)
  176:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c **** {
- 248              		.loc 1 176 0
- 249              		.cfi_startproc
- 250              		@ args = 0, pretend = 0, frame = 8
- 251              		@ frame_needed = 1, uses_anonymous_args = 0
- 252              		@ link register save eliminated.
- 253 0000 80B4     		push	{r7}
- 254              	.LCFI5:
- 255              		.cfi_def_cfa_offset 4
- 256              		.cfi_offset 7, -4
- 257 0002 83B0     		sub	sp, sp, #12
- 258              	.LCFI6:
- 259              		.cfi_def_cfa_offset 16
- 260 0004 00AF     		add	r7, sp, #0
- 261              	.LCFI7:
- 262              		.cfi_def_cfa_register 7
- 263 0006 7860     		str	r0, [r7, #4]
+ 165              		.loc 1 176 0
+ 166              		.cfi_startproc
+ 167              		@ args = 0, pretend = 0, frame = 0
+ 168              		@ frame_needed = 0, uses_anonymous_args = 0
+ 169              		@ link register save eliminated.
+ 170              	.LVL9:
  177:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   EXTI_InitStruct->EXTI_Line = EXTI_LINENONE;
- 264              		.loc 1 177 0
- 265 0008 7B68     		ldr	r3, [r7, #4]
- 266 000a 0022     		movs	r2, #0
- 267 000c 1A60     		str	r2, [r3]
+ 171              		.loc 1 177 0
+ 172 0000 0023     		movs	r3, #0
+ 173 0002 0360     		str	r3, [r0]
  178:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   EXTI_InitStruct->EXTI_Mode = EXTI_Mode_Interrupt;
- 268              		.loc 1 178 0
- 269 000e 7B68     		ldr	r3, [r7, #4]
- 270 0010 0022     		movs	r2, #0
- 271 0012 1A71     		strb	r2, [r3, #4]
+ 174              		.loc 1 178 0
+ 175 0004 0371     		strb	r3, [r0, #4]
  179:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   EXTI_InitStruct->EXTI_Trigger = EXTI_Trigger_Falling;
- 272              		.loc 1 179 0
- 273 0014 7B68     		ldr	r3, [r7, #4]
- 274 0016 0C22     		movs	r2, #12
- 275 0018 5A71     		strb	r2, [r3, #5]
+ 176              		.loc 1 179 0
+ 177 0006 0C22     		movs	r2, #12
+ 178 0008 4271     		strb	r2, [r0, #5]
  180:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   EXTI_InitStruct->EXTI_LineCmd = DISABLE;
- 276              		.loc 1 180 0
- 277 001a 7B68     		ldr	r3, [r7, #4]
- 278 001c 0022     		movs	r2, #0
- 279 001e 9A71     		strb	r2, [r3, #6]
+ 179              		.loc 1 180 0
+ 180 000a 8371     		strb	r3, [r0, #6]
+ 181 000c 7047     		bx	lr
+ 182              		.cfi_endproc
+ 183              	.LFE112:
+ 185 000e 00BF     		.section	.text.EXTI_GenerateSWInterrupt,"ax",%progbits
+ 186              		.align	2
+ 187              		.global	EXTI_GenerateSWInterrupt
+ 188              		.thumb
+ 189              		.thumb_func
+ 191              	EXTI_GenerateSWInterrupt:
+ 192              	.LFB113:
  181:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c **** }
- 280              		.loc 1 181 0
- 281 0020 0C37     		adds	r7, r7, #12
- 282 0022 BD46     		mov	sp, r7
- 283              		@ sp needed
- 284 0024 5DF8047B 		ldr	r7, [sp], #4
- 285 0028 7047     		bx	lr
- 286              		.cfi_endproc
- 287              	.LFE112:
- 289 002a 00BF     		.section	.text.EXTI_GenerateSWInterrupt,"ax",%progbits
- 290              		.align	2
- 291              		.global	EXTI_GenerateSWInterrupt
- 292              		.thumb
- 293              		.thumb_func
- 295              	EXTI_GenerateSWInterrupt:
- 296              	.LFB113:
  182:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c **** 
  183:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c **** /**
  184:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   * @brief  Generates a Software interrupt on selected EXTI line.
@@ -478,51 +374,34 @@
  189:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   */
  190:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c **** void EXTI_GenerateSWInterrupt(uint32_t EXTI_Line)
  191:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c **** {
- 297              		.loc 1 191 0
- 298              		.cfi_startproc
- 299              		@ args = 0, pretend = 0, frame = 8
- 300              		@ frame_needed = 1, uses_anonymous_args = 0
- 301              		@ link register save eliminated.
- 302 0000 80B4     		push	{r7}
- 303              	.LCFI8:
- 304              		.cfi_def_cfa_offset 4
- 305              		.cfi_offset 7, -4
- 306 0002 83B0     		sub	sp, sp, #12
- 307              	.LCFI9:
- 308              		.cfi_def_cfa_offset 16
- 309 0004 00AF     		add	r7, sp, #0
- 310              	.LCFI10:
- 311              		.cfi_def_cfa_register 7
- 312 0006 7860     		str	r0, [r7, #4]
+ 193              		.loc 1 191 0
+ 194              		.cfi_startproc
+ 195              		@ args = 0, pretend = 0, frame = 0
+ 196              		@ frame_needed = 0, uses_anonymous_args = 0
+ 197              		@ link register save eliminated.
+ 198              	.LVL10:
  192:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   /* Check the parameters */
  193:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   assert_param(IS_EXTI_LINE(EXTI_Line));
  194:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   
  195:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   EXTI->SWIER |= EXTI_Line;
- 313              		.loc 1 195 0
- 314 0008 4FF47053 		mov	r3, #15360
- 315 000c C4F20103 		movt	r3, 16385
- 316 0010 4FF47052 		mov	r2, #15360
- 317 0014 C4F20102 		movt	r2, 16385
- 318 0018 1169     		ldr	r1, [r2, #16]
- 319 001a 7A68     		ldr	r2, [r7, #4]
- 320 001c 0A43     		orrs	r2, r2, r1
- 321 001e 1A61     		str	r2, [r3, #16]
+ 199              		.loc 1 195 0
+ 200 0000 4FF47053 		mov	r3, #15360
+ 201 0004 C4F20103 		movt	r3, 16385
+ 202 0008 1A69     		ldr	r2, [r3, #16]
+ 203 000a 1043     		orrs	r0, r0, r2
+ 204              	.LVL11:
+ 205 000c 1861     		str	r0, [r3, #16]
+ 206 000e 7047     		bx	lr
+ 207              		.cfi_endproc
+ 208              	.LFE113:
+ 210              		.section	.text.EXTI_GetFlagStatus,"ax",%progbits
+ 211              		.align	2
+ 212              		.global	EXTI_GetFlagStatus
+ 213              		.thumb
+ 214              		.thumb_func
+ 216              	EXTI_GetFlagStatus:
+ 217              	.LFB114:
  196:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c **** }
- 322              		.loc 1 196 0
- 323 0020 0C37     		adds	r7, r7, #12
- 324 0022 BD46     		mov	sp, r7
- 325              		@ sp needed
- 326 0024 5DF8047B 		ldr	r7, [sp], #4
- 327 0028 7047     		bx	lr
- 328              		.cfi_endproc
- 329              	.LFE113:
- 331 002a 00BF     		.section	.text.EXTI_GetFlagStatus,"ax",%progbits
- 332              		.align	2
- 333              		.global	EXTI_GetFlagStatus
- 334              		.thumb
- 335              		.thumb_func
- 337              	EXTI_GetFlagStatus:
- 338              	.LFB114:
  197:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c **** 
  198:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c **** /**
  199:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   * @}
@@ -548,74 +427,47 @@
  219:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   */
  220:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c **** FlagStatus EXTI_GetFlagStatus(uint32_t EXTI_Line)
  221:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c **** {
- 339              		.loc 1 221 0
- 340              		.cfi_startproc
- 341              		@ args = 0, pretend = 0, frame = 16
- 342              		@ frame_needed = 1, uses_anonymous_args = 0
- 343              		@ link register save eliminated.
- 344 0000 80B4     		push	{r7}
- 345              	.LCFI11:
- 346              		.cfi_def_cfa_offset 4
- 347              		.cfi_offset 7, -4
- 348 0002 85B0     		sub	sp, sp, #20
- 349              	.LCFI12:
- 350              		.cfi_def_cfa_offset 24
- 351 0004 00AF     		add	r7, sp, #0
- 352              	.LCFI13:
- 353              		.cfi_def_cfa_register 7
- 354 0006 7860     		str	r0, [r7, #4]
+ 218              		.loc 1 221 0
+ 219              		.cfi_startproc
+ 220              		@ args = 0, pretend = 0, frame = 0
+ 221              		@ frame_needed = 0, uses_anonymous_args = 0
+ 222              		@ link register save eliminated.
+ 223              	.LVL12:
  222:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   FlagStatus bitstatus = RESET;
- 355              		.loc 1 222 0
- 356 0008 0023     		movs	r3, #0
- 357 000a FB73     		strb	r3, [r7, #15]
  223:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   /* Check the parameters */
  224:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   assert_param(IS_GET_EXTI_LINE(EXTI_Line));
  225:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   
  226:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   if ((EXTI->PR & EXTI_Line) != (uint32_t)RESET)
- 358              		.loc 1 226 0
- 359 000c 4FF47053 		mov	r3, #15360
- 360 0010 C4F20103 		movt	r3, 16385
- 361 0014 5A69     		ldr	r2, [r3, #20]
- 362 0016 7B68     		ldr	r3, [r7, #4]
- 363 0018 1340     		ands	r3, r3, r2
- 364 001a 002B     		cmp	r3, #0
- 365 001c 02D0     		beq	.L10
+ 224              		.loc 1 226 0
+ 225 0000 4FF47053 		mov	r3, #15360
+ 226 0004 C4F20103 		movt	r3, 16385
+ 227 0008 5B69     		ldr	r3, [r3, #20]
+ 228 000a 1840     		ands	r0, r0, r3
+ 229              	.LVL13:
  227:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   {
  228:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****     bitstatus = SET;
- 366              		.loc 1 228 0
- 367 001e 0123     		movs	r3, #1
- 368 0020 FB73     		strb	r3, [r7, #15]
- 369 0022 01E0     		b	.L11
- 370              	.L10:
  229:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   }
  230:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   else
  231:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   {
  232:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****     bitstatus = RESET;
- 371              		.loc 1 232 0
- 372 0024 0023     		movs	r3, #0
- 373 0026 FB73     		strb	r3, [r7, #15]
- 374              	.L11:
  233:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   }
  234:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   return bitstatus;
- 375              		.loc 1 234 0
- 376 0028 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
  235:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c **** }
- 377              		.loc 1 235 0
- 378 002a 1846     		mov	r0, r3
- 379 002c 1437     		adds	r7, r7, #20
- 380 002e BD46     		mov	sp, r7
- 381              		@ sp needed
- 382 0030 5DF8047B 		ldr	r7, [sp], #4
- 383 0034 7047     		bx	lr
- 384              		.cfi_endproc
- 385              	.LFE114:
- 387 0036 00BF     		.section	.text.EXTI_ClearFlag,"ax",%progbits
- 388              		.align	2
- 389              		.global	EXTI_ClearFlag
- 390              		.thumb
- 391              		.thumb_func
- 393              	EXTI_ClearFlag:
- 394              	.LFB115:
+ 230              		.loc 1 235 0
+ 231 000c 0030     		adds	r0, r0, #0
+ 232 000e 18BF     		it	ne
+ 233 0010 0120     		movne	r0, #1
+ 234              	.LVL14:
+ 235 0012 7047     		bx	lr
+ 236              		.cfi_endproc
+ 237              	.LFE114:
+ 239              		.section	.text.EXTI_ClearFlag,"ax",%progbits
+ 240              		.align	2
+ 241              		.global	EXTI_ClearFlag
+ 242              		.thumb
+ 243              		.thumb_func
+ 245              	EXTI_ClearFlag:
+ 246              	.LFB115:
  236:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c **** 
  237:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c **** /**
  238:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   * @brief  Clears the EXTI's line pending flags.
@@ -625,47 +477,31 @@
  242:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   */
  243:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c **** void EXTI_ClearFlag(uint32_t EXTI_Line)
  244:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c **** {
- 395              		.loc 1 244 0
- 396              		.cfi_startproc
- 397              		@ args = 0, pretend = 0, frame = 8
- 398              		@ frame_needed = 1, uses_anonymous_args = 0
- 399              		@ link register save eliminated.
- 400 0000 80B4     		push	{r7}
- 401              	.LCFI14:
- 402              		.cfi_def_cfa_offset 4
- 403              		.cfi_offset 7, -4
- 404 0002 83B0     		sub	sp, sp, #12
- 405              	.LCFI15:
- 406              		.cfi_def_cfa_offset 16
- 407 0004 00AF     		add	r7, sp, #0
- 408              	.LCFI16:
- 409              		.cfi_def_cfa_register 7
- 410 0006 7860     		str	r0, [r7, #4]
+ 247              		.loc 1 244 0
+ 248              		.cfi_startproc
+ 249              		@ args = 0, pretend = 0, frame = 0
+ 250              		@ frame_needed = 0, uses_anonymous_args = 0
+ 251              		@ link register save eliminated.
+ 252              	.LVL15:
  245:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   /* Check the parameters */
  246:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   assert_param(IS_EXTI_LINE(EXTI_Line));
  247:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   
  248:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   EXTI->PR = EXTI_Line;
- 411              		.loc 1 248 0
- 412 0008 4FF47053 		mov	r3, #15360
- 413 000c C4F20103 		movt	r3, 16385
- 414 0010 7A68     		ldr	r2, [r7, #4]
- 415 0012 5A61     		str	r2, [r3, #20]
+ 253              		.loc 1 248 0
+ 254 0000 4FF47053 		mov	r3, #15360
+ 255 0004 C4F20103 		movt	r3, 16385
+ 256 0008 5861     		str	r0, [r3, #20]
+ 257 000a 7047     		bx	lr
+ 258              		.cfi_endproc
+ 259              	.LFE115:
+ 261              		.section	.text.EXTI_GetITStatus,"ax",%progbits
+ 262              		.align	2
+ 263              		.global	EXTI_GetITStatus
+ 264              		.thumb
+ 265              		.thumb_func
+ 267              	EXTI_GetITStatus:
+ 268              	.LFB116:
  249:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c **** }
- 416              		.loc 1 249 0
- 417 0014 0C37     		adds	r7, r7, #12
- 418 0016 BD46     		mov	sp, r7
- 419              		@ sp needed
- 420 0018 5DF8047B 		ldr	r7, [sp], #4
- 421 001c 7047     		bx	lr
- 422              		.cfi_endproc
- 423              	.LFE115:
- 425 001e 00BF     		.section	.text.EXTI_GetITStatus,"ax",%progbits
- 426              		.align	2
- 427              		.global	EXTI_GetITStatus
- 428              		.thumb
- 429              		.thumb_func
- 431              	EXTI_GetITStatus:
- 432              	.LFB116:
  250:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c **** 
  251:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c **** /**
  252:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   * @brief  Checks whether the specified EXTI line is asserted or not.
@@ -675,90 +511,60 @@
  256:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   */
  257:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c **** ITStatus EXTI_GetITStatus(uint32_t EXTI_Line)
  258:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c **** {
- 433              		.loc 1 258 0
- 434              		.cfi_startproc
- 435              		@ args = 0, pretend = 0, frame = 16
- 436              		@ frame_needed = 1, uses_anonymous_args = 0
- 437              		@ link register save eliminated.
- 438 0000 80B4     		push	{r7}
- 439              	.LCFI17:
- 440              		.cfi_def_cfa_offset 4
- 441              		.cfi_offset 7, -4
- 442 0002 85B0     		sub	sp, sp, #20
- 443              	.LCFI18:
- 444              		.cfi_def_cfa_offset 24
- 445 0004 00AF     		add	r7, sp, #0
- 446              	.LCFI19:
- 447              		.cfi_def_cfa_register 7
- 448 0006 7860     		str	r0, [r7, #4]
+ 269              		.loc 1 258 0
+ 270              		.cfi_startproc
+ 271              		@ args = 0, pretend = 0, frame = 0
+ 272              		@ frame_needed = 0, uses_anonymous_args = 0
+ 273              		@ link register save eliminated.
+ 274              	.LVL16:
  259:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   ITStatus bitstatus = RESET;
- 449              		.loc 1 259 0
- 450 0008 0023     		movs	r3, #0
- 451 000a FB73     		strb	r3, [r7, #15]
  260:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   uint32_t enablestatus = 0;
- 452              		.loc 1 260 0
- 453 000c 0023     		movs	r3, #0
- 454 000e BB60     		str	r3, [r7, #8]
  261:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   /* Check the parameters */
  262:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   assert_param(IS_GET_EXTI_LINE(EXTI_Line));
  263:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   
  264:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   enablestatus =  EXTI->IMR & EXTI_Line;
- 455              		.loc 1 264 0
- 456 0010 4FF47053 		mov	r3, #15360
- 457 0014 C4F20103 		movt	r3, 16385
- 458 0018 1A68     		ldr	r2, [r3]
- 459 001a 7B68     		ldr	r3, [r7, #4]
- 460 001c 1340     		ands	r3, r3, r2
- 461 001e BB60     		str	r3, [r7, #8]
+ 275              		.loc 1 264 0
+ 276 0000 4FF47053 		mov	r3, #15360
+ 277 0004 C4F20103 		movt	r3, 16385
+ 278 0008 1A68     		ldr	r2, [r3]
+ 279 000a 0240     		ands	r2, r2, r0
+ 280              	.LVL17:
  265:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   if (((EXTI->PR & EXTI_Line) != (uint32_t)RESET) && (enablestatus != (uint32_t)RESET))
- 462              		.loc 1 265 0
- 463 0020 4FF47053 		mov	r3, #15360
- 464 0024 C4F20103 		movt	r3, 16385
- 465 0028 5A69     		ldr	r2, [r3, #20]
- 466 002a 7B68     		ldr	r3, [r7, #4]
- 467 002c 1340     		ands	r3, r3, r2
- 468 002e 002B     		cmp	r3, #0
- 469 0030 05D0     		beq	.L15
- 470              		.loc 1 265 0 is_stmt 0 discriminator 1
- 471 0032 BB68     		ldr	r3, [r7, #8]
- 472 0034 002B     		cmp	r3, #0
- 473 0036 02D0     		beq	.L15
+ 281              		.loc 1 265 0
+ 282 000c 5B69     		ldr	r3, [r3, #20]
+ 283 000e 0342     		tst	r3, r0
+ 284 0010 03D0     		beq	.L14
  266:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   {
  267:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****     bitstatus = SET;
- 474              		.loc 1 267 0 is_stmt 1
- 475 0038 0123     		movs	r3, #1
- 476 003a FB73     		strb	r3, [r7, #15]
- 477 003c 01E0     		b	.L16
- 478              	.L15:
  268:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   }
  269:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   else
  270:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   {
  271:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****     bitstatus = RESET;
- 479              		.loc 1 271 0
- 480 003e 0023     		movs	r3, #0
- 481 0040 FB73     		strb	r3, [r7, #15]
- 482              	.L16:
+ 285              		.loc 1 271 0 discriminator 1
+ 286 0012 101C     		adds	r0, r2, #0
+ 287              	.LVL18:
+ 288 0014 18BF     		it	ne
+ 289 0016 0120     		movne	r0, #1
+ 290 0018 7047     		bx	lr
+ 291              	.LVL19:
+ 292              	.L14:
+ 293              		.loc 1 271 0 is_stmt 0
+ 294 001a 0020     		movs	r0, #0
+ 295              	.LVL20:
  272:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   }
  273:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   return bitstatus;
- 483              		.loc 1 273 0
- 484 0042 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
  274:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c **** }
- 485              		.loc 1 274 0
- 486 0044 1846     		mov	r0, r3
- 487 0046 1437     		adds	r7, r7, #20
- 488 0048 BD46     		mov	sp, r7
- 489              		@ sp needed
- 490 004a 5DF8047B 		ldr	r7, [sp], #4
- 491 004e 7047     		bx	lr
- 492              		.cfi_endproc
- 493              	.LFE116:
- 495              		.section	.text.EXTI_ClearITPendingBit,"ax",%progbits
- 496              		.align	2
- 497              		.global	EXTI_ClearITPendingBit
- 498              		.thumb
- 499              		.thumb_func
- 501              	EXTI_ClearITPendingBit:
- 502              	.LFB117:
+ 296              		.loc 1 274 0 is_stmt 1
+ 297 001c 7047     		bx	lr
+ 298              		.cfi_endproc
+ 299              	.LFE116:
+ 301 001e 00BF     		.section	.text.EXTI_ClearITPendingBit,"ax",%progbits
+ 302              		.align	2
+ 303              		.global	EXTI_ClearITPendingBit
+ 304              		.thumb
+ 305              		.thumb_func
+ 307              	EXTI_ClearITPendingBit:
+ 308              	.LFB117:
  275:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c **** 
  276:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c **** /**
  277:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   * @brief  Clears the EXTI's line pending bits.
@@ -768,65 +574,84 @@
  281:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   */
  282:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c **** void EXTI_ClearITPendingBit(uint32_t EXTI_Line)
  283:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c **** {
- 503              		.loc 1 283 0
- 504              		.cfi_startproc
- 505              		@ args = 0, pretend = 0, frame = 8
- 506              		@ frame_needed = 1, uses_anonymous_args = 0
- 507              		@ link register save eliminated.
- 508 0000 80B4     		push	{r7}
- 509              	.LCFI20:
- 510              		.cfi_def_cfa_offset 4
- 511              		.cfi_offset 7, -4
- 512 0002 83B0     		sub	sp, sp, #12
- 513              	.LCFI21:
- 514              		.cfi_def_cfa_offset 16
- 515 0004 00AF     		add	r7, sp, #0
- 516              	.LCFI22:
- 517              		.cfi_def_cfa_register 7
- 518 0006 7860     		str	r0, [r7, #4]
+ 309              		.loc 1 283 0
+ 310              		.cfi_startproc
+ 311              		@ args = 0, pretend = 0, frame = 0
+ 312              		@ frame_needed = 0, uses_anonymous_args = 0
+ 313              		@ link register save eliminated.
+ 314              	.LVL21:
  284:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   /* Check the parameters */
  285:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   assert_param(IS_EXTI_LINE(EXTI_Line));
  286:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   
  287:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c ****   EXTI->PR = EXTI_Line;
- 519              		.loc 1 287 0
- 520 0008 4FF47053 		mov	r3, #15360
- 521 000c C4F20103 		movt	r3, 16385
- 522 0010 7A68     		ldr	r2, [r7, #4]
- 523 0012 5A61     		str	r2, [r3, #20]
- 288:libs/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c **** }
- 524              		.loc 1 288 0
- 525 0014 0C37     		adds	r7, r7, #12
- 526 0016 BD46     		mov	sp, r7
- 527              		@ sp needed
- 528 0018 5DF8047B 		ldr	r7, [sp], #4
- 529 001c 7047     		bx	lr
- 530              		.cfi_endproc
- 531              	.LFE117:
- 533 001e 00BF     		.text
- 534              	.Letext0:
- 535              		.file 2 "/usr/include/newlib/machine/_default_types.h"
- 536              		.file 3 "/usr/include/newlib/stdint.h"
- 537              		.file 4 "libs/Device/STM32F4xx/Include/stm32f4xx.h"
- 538              		.file 5 "libs/STM32F4xx_StdPeriph_Driver/inc/stm32f4xx_exti.h"
- 539              		.file 6 "libs/CMSIS/Include/core_cm4.h"
+ 315              		.loc 1 287 0
+ 316 0000 4FF47053 		mov	r3, #15360
+ 317 0004 C4F20103 		movt	r3, 16385
+ 318 0008 5861     		str	r0, [r3, #20]
+ 319 000a 7047     		bx	lr
+ 320              		.cfi_endproc
+ 321              	.LFE117:
+ 323              		.text
+ 324              	.Letext0:
+ 325              		.file 2 "/usr/include/newlib/machine/_default_types.h"
+ 326              		.file 3 "/usr/include/newlib/stdint.h"
+ 327              		.file 4 "libs/Device/STM32F4xx/Include/stm32f4xx.h"
+ 328              		.file 5 "libs/STM32F4xx_StdPeriph_Driver/inc/stm32f4xx_exti.h"
+ 329              		.file 6 "libs/CMSIS/Include/core_cm4.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 stm32f4xx_exti.c
-     /tmp/ccLzqczu.s:20     .text.EXTI_DeInit:0000000000000000 $t
-     /tmp/ccLzqczu.s:25     .text.EXTI_DeInit:0000000000000000 EXTI_DeInit
-     /tmp/ccLzqczu.s:75     .text.EXTI_Init:0000000000000000 $t
-     /tmp/ccLzqczu.s:80     .text.EXTI_Init:0000000000000000 EXTI_Init
-     /tmp/ccLzqczu.s:241    .text.EXTI_StructInit:0000000000000000 $t
-     /tmp/ccLzqczu.s:246    .text.EXTI_StructInit:0000000000000000 EXTI_StructInit
-     /tmp/ccLzqczu.s:290    .text.EXTI_GenerateSWInterrupt:0000000000000000 $t
-     /tmp/ccLzqczu.s:295    .text.EXTI_GenerateSWInterrupt:0000000000000000 EXTI_GenerateSWInterrupt
-     /tmp/ccLzqczu.s:332    .text.EXTI_GetFlagStatus:0000000000000000 $t
-     /tmp/ccLzqczu.s:337    .text.EXTI_GetFlagStatus:0000000000000000 EXTI_GetFlagStatus
-     /tmp/ccLzqczu.s:388    .text.EXTI_ClearFlag:0000000000000000 $t
-     /tmp/ccLzqczu.s:393    .text.EXTI_ClearFlag:0000000000000000 EXTI_ClearFlag
-     /tmp/ccLzqczu.s:426    .text.EXTI_GetITStatus:0000000000000000 $t
-     /tmp/ccLzqczu.s:431    .text.EXTI_GetITStatus:0000000000000000 EXTI_GetITStatus
-     /tmp/ccLzqczu.s:496    .text.EXTI_ClearITPendingBit:0000000000000000 $t
-     /tmp/ccLzqczu.s:501    .text.EXTI_ClearITPendingBit:0000000000000000 EXTI_ClearITPendingBit
+     /tmp/ccLIxq40.s:20     .text.EXTI_DeInit:0000000000000000 $t
+     /tmp/ccLIxq40.s:25     .text.EXTI_DeInit:0000000000000000 EXTI_DeInit
+     /tmp/ccLIxq40.s:53     .text.EXTI_Init:0000000000000000 $t
+     /tmp/ccLIxq40.s:58     .text.EXTI_Init:0000000000000000 EXTI_Init
+     /tmp/ccLIxq40.s:158    .text.EXTI_StructInit:0000000000000000 $t
+     /tmp/ccLIxq40.s:163    .text.EXTI_StructInit:0000000000000000 EXTI_StructInit
+     /tmp/ccLIxq40.s:186    .text.EXTI_GenerateSWInterrupt:0000000000000000 $t
+     /tmp/ccLIxq40.s:191    .text.EXTI_GenerateSWInterrupt:0000000000000000 EXTI_GenerateSWInterrupt
+     /tmp/ccLIxq40.s:211    .text.EXTI_GetFlagStatus:0000000000000000 $t
+     /tmp/ccLIxq40.s:216    .text.EXTI_GetFlagStatus:0000000000000000 EXTI_GetFlagStatus
+     /tmp/ccLIxq40.s:240    .text.EXTI_ClearFlag:0000000000000000 $t
+     /tmp/ccLIxq40.s:245    .text.EXTI_ClearFlag:0000000000000000 EXTI_ClearFlag
+     /tmp/ccLIxq40.s:262    .text.EXTI_GetITStatus:0000000000000000 $t
+     /tmp/ccLIxq40.s:267    .text.EXTI_GetITStatus:0000000000000000 EXTI_GetITStatus
+     /tmp/ccLIxq40.s:302    .text.EXTI_ClearITPendingBit:0000000000000000 $t
+     /tmp/ccLIxq40.s:307    .text.EXTI_ClearITPendingBit:0000000000000000 EXTI_ClearITPendingBit
                      .debug_frame:0000000000000010 $d
+                           .group:0000000000000000 wm4.1.7402b5479d3fa4780665141f585fc0ee
+                           .group:0000000000000000 wm4.stm32f4xx.h.48.a3308e16720c7afc3eb28e585e628ce6
+                           .group:0000000000000000 wm4.core_cm4.h.32.5f62939b60122629d60d85d0c4a14709
+                           .group:0000000000000000 wm4.features.h.22.6a4ca7cd053637cc1d0db6c16f39b2d7
+                           .group:0000000000000000 wm4._default_types.h.15.8b2cb27e528498f8ff711db085d6e489
+                           .group:0000000000000000 wm4.stdint.h.20.796e373797e732130a803d4c0338fa1b
+                           .group:0000000000000000 wm4.core_cmInstr.h.25.f50f886f2edf670cf199b35fd96f5c91
+                           .group:0000000000000000 wm4.core_cm4_simd.h.29.b4a3fdfb606cb3b26119424324d4b963
+                           .group:0000000000000000 wm4.core_cm4.h.153.5393ef7e6cebf34dd51ca528f9218ab3
+                           .group:0000000000000000 wm4.stm32f4xx.h.282.95bae448a91bccfbf24a6f9d95904bb8
+                           .group:0000000000000000 wm4.stm32f4xx_adc.h.102.2061aa73008746f3c2cc6ce8f635cad3
+                           .group:0000000000000000 wm4.stm32f4xx_can.h.25.87f18ca48b2692d39f76e87b1f07c953
+                           .group:0000000000000000 wm4.stm32f4xx_cryp.h.25.db1951c06ee684df97ea3a11aba6cb51
+                           .group:0000000000000000 wm4.stm32f4xx_dac.h.25.c43557a6416ea4dfa986c1209c2558d6
+                           .group:0000000000000000 wm4.stm32f4xx_dbgmcu.h.24.7aedfdcf091890b5cb96019bd29a2bfc
+                           .group:0000000000000000 wm4.stm32f4xx_dcmi.h.24.64883d9be802a535b1d7770d14da73e0
+                           .group:0000000000000000 wm4.stm32f4xx_dma.h.25.c1fa1d44ae0bc9c2b3a0d1d355d8c1e6
+                           .group:0000000000000000 wm4.stm32f4xx_flash.h.25.65d4f351b72ee41355279f70305f361a
+                           .group:0000000000000000 wm4.stm32f4xx_fsmc.h.25.b907ac7bd9bec46e02d06b137d53cfd8
+                           .group:0000000000000000 wm4.stm32f4xx_hash.h.25.633fb84f031cf2ab1bd834e536716dfa
+                           .group:0000000000000000 wm4.stm32f4xx_gpio.h.25.5bd1d790d742a307b55aea5fa8fcdae8
+                           .group:0000000000000000 wm4.stm32f4xx_i2c.h.25.8fcdb817a00a67d4624d79bab0d9275f
+                           .group:0000000000000000 wm4.stm32f4xx_iwdg.h.25.3013e8d2058415cb9d51af77f748a146
+                           .group:0000000000000000 wm4.stm32f4xx_pwr.h.25.48b68c1f3a894ab012f9c2a2c222f159
+                           .group:0000000000000000 wm4.stm32f4xx_rcc.h.24.c15e7c8dc065bb29146f29591b195c87
+                           .group:0000000000000000 wm4.stm32f4xx_rng.h.25.cdb5c5c07de6a48aedfde608da3f447e
+                           .group:0000000000000000 wm4.stm32f4xx_rtc.h.25.4809a79ad46ad97b4a01e735a96738eb
+                           .group:0000000000000000 wm4.stm32f4xx_sdio.h.25.406302aabae34eada94e5f2cde635a3e
+                           .group:0000000000000000 wm4.stm32f4xx_spi.h.25.46c61b79ff8408da93e2e90cf9b717d6
+                           .group:0000000000000000 wm4.stm32f4xx_syscfg.h.25.9d5caab5677661b69e959531364e23d7
+                           .group:0000000000000000 wm4.stm32f4xx_tim.h.25.948f7fc943f34bd206e29758e77ee0a2
+                           .group:0000000000000000 wm4.stm32f4xx_usart.h.25.b64697dad017ba547dd272c2cdb5846a
+                           .group:0000000000000000 wm4.stm32f4xx_wwdg.h.25.09d70b7849c6894ddf1e83c8e86b70e1
+                           .group:0000000000000000 wm4.misc.h.25.a0cb758c1f091b46f201b19cec9e63a1
+                           .group:0000000000000000 wm4.stm32f4xx.h.6913.da011404ccb203790556c86f10c46b18
+                           .group:0000000000000000 wm4.stm32f4xx_exti.h.54.435fdeac3da378720d6c1615172f0bf3
 
 NO UNDEFINED SYMBOLS
